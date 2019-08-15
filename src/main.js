@@ -12,9 +12,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faCannabis } from '@fortawesome/free-solid-svg-icons'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faHiking } from '@fortawesome/free-solid-svg-icons'
 library.add(faCannabis)
 library.add(faBars)
 library.add(faSignOutAlt)
+library.add(faHiking)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

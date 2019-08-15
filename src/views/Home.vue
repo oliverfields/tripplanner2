@@ -1,21 +1,21 @@
 <template>
 	<div class="home">
 		<Menu />
-		<HelloWorld msg="Welcome to Your Vue.js App"/>
+		<Workspace />
 	</div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 import firebase from 'firebase';
 import Menu from '@/components/Menu'
+import Workspace from '@/components/Workspace'
 
 export default {
 	name: 'home',
 	components: {
-		HelloWorld,
-		Menu
+		Menu,
+		Workspace
 	},
 	methods: {
 	}
