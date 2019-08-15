@@ -9,7 +9,8 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
 	state: {
 		items: null,
-		trips: null
+		trips: null,
+		selected_trip_id: 'hola'
 	},
 	getters: {
 		getItems: state => {
@@ -17,6 +18,9 @@ export const store = new Vuex.Store({
 		},
 		get_trips: state => {
 			return state.trips
+		},
+		get_selected_trip_id: state => {
+			return state.selected_trip_id
 		}
 	},
 	mutations: {

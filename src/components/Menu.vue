@@ -12,7 +12,7 @@
 
 					<div class="dropdown-menu" aria-labelledby="trip-dropdown">
 						<div v-for="trip in this.$store.getters.get_trips" :key="trip.id">
-							<a class="dropdown-item" href="#">{{ trip.name }}</a>
+							<a class="dropdown-item" href="#" @click="select_trip(trip.id)">{{ trip.name }}</a>
 						</div>
 					</div>
 				</li>
@@ -39,6 +39,9 @@ export default {
 			auth.signOut().then(() => {
 				this.$router.replace('login')
 			})
+		},
+		select_trip: function(id) {
+			this.$store.state.selected_trip_id = id
 		}
 	}
 }
