@@ -2,7 +2,6 @@
 	<div class="home">
 		<Menu />
 		<HelloWorld msg="Welcome to Your Vue.js App"/>
-		<button @click="logout">Logout</button>
 	</div>
 </template>
 
@@ -19,11 +18,6 @@ export default {
 		Menu
 	},
 	methods: {
-		logout: function() {
-			firebase.auth().signOut().then(() => {
-			this.$router.replace('login')
-			})
-		}
 	}
 }
 </script>

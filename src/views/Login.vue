@@ -1,16 +1,21 @@
 <template>
 	<div class="login">
-		<h3>Sign in</h3>
-		<input type="text" v-model="email" placeholder="Email"><br>
-		<input type="password" v-model="password" placeholder="Password"><br>
-		<button @click="login">Connection</button>
+		<h1>Trip planner</h1>
+		<h2>Login with Google user</h2>
 
-		<p>
-			Sign in with Google<br />
+		<div>
 			<button class="social-button" @click="googleLogin">
 				<img alt="Google logo" src="images/google-logo.png" />
 			</button>
-		</p>
+		</div>
+
+		<h2>.. or local user</h2>
+		<div>
+			<input type="text" v-model="email" placeholder="Email"><br>
+			<input type="password" v-model="password" placeholder="Password"><br>
+			<button @click="login">Login</button>
+		</div>
+
 
 		<p>I need a <router-link to="/sign-up">new account</router-link>!</p>
 	</div>

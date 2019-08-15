@@ -5,6 +5,18 @@ import router from './router'
 import { store } from './store'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// Font awesome icons
+import { faCannabis } from '@fortawesome/free-solid-svg-icons'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+library.add(faCannabis)
+library.add(faBars)
+library.add(faSignOutAlt)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
 
