@@ -8,7 +8,7 @@
 		<p>
 			Sign in with Google<br />
 			<button class="social-button" @click="googleLogin">
-				<img alt="Google logo" src="../../assets/google-logo.png" />
+				<img alt="Google logo" src="images/google-logo.png" />
 			</button>
 		</p>
 
@@ -17,7 +17,9 @@
 </template>
 
 <script>
-import firebase from 'firebase';
+import firebase from 'firebase'
+import { auth } from '@/main'
+
 export default {
 	name: 'login',
 	data() {
@@ -28,7 +30,7 @@ export default {
 	},
 	methods: {
 		login: function() {
-			firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
+			auth.signInWithEmailAndPassword(this.email, this.password).then(
 				(user) => {
 					this.$router.replace('home')
 				},
@@ -39,7 +41,7 @@ export default {
 		},
 		googleLogin() {
 			const provider = new firebase.auth.GoogleAuthProvider();
-			firebase.auth().signInWithPopup(provider).then((resutl) => {
+			auth.signInWithPopup(provider).then((result) => {
 				this.$router.replace('home');
 			}).catch((err) => {
 				alert('Nope.. ' + err.message)

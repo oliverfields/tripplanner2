@@ -1,8 +1,10 @@
 import Vue from 'vue'
-import firebase from 'firebase';
+import firebase from 'firebase'
 import App from './App.vue'
 import router from './router'
 import { store } from './store'
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 Vue.config.productionTip = false
 
@@ -29,3 +31,4 @@ firebase.auth().onAuthStateChanged(() => {
 });
 
 export const db = firebase.firestore()
+export const auth = firebase.auth()
