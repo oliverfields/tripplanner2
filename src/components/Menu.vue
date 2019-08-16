@@ -40,8 +40,10 @@ export default {
 				this.$router.replace('login')
 			})
 		},
-		select_trip: function(id) {
-			this.$store.state.selected_trip_id = id
+		select_trip(id) {
+			//console.log('Setting id: ' + id)
+			this.$store.dispatch('set_active_trip', id)
+			//console.log('selected_trip_id is now: ' + this.$store.getters.selected_trip_id)
 		}
 	}
 }

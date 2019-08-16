@@ -3,7 +3,13 @@
 		<div id="menus" splitpanes-min="20" splitpanes-max="70" splitpanes-size="30">
 			<tabs>
 				<tab title="Trip">
-					<input v-model="selected_trip_id">
+					<button @click="log_trip_id">Log trip id</button>
+<!--
+					!!{{ this.$store.getters.getField('selected_trip_id') }}!!
+					<h1 v-if="selected_trip_id === 'hola'">Default</h1>
+					<h1 v-else>{{ active_trip.id }}</h1>
+-->
+					<input v-model="active_trip_id" />
 				</tab>
 				<tab title="Itinerary">Manage itinerary</tab>
 			</tabs>
@@ -36,6 +42,9 @@ export default {
 
 			$('#menus').css('height', remaining_height + 'px');
 			$('#map').css('height', remaining_height + 'px');
+		},
+		log_trip_id() {
+			console.log('Trip id: ' + this.$store.getters.active_trip.id)
 		}
 	},
 	mounted() {
@@ -43,7 +52,10 @@ export default {
 		this.resize_workspace()
 	},
 	computed: {
-	},
+		active_trip_id: function() {
+			return this.$store.getters.active_trip.id
+		}
+	}
 }
 
 </script>
