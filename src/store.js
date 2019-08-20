@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import { db } from '@/main'
 import { auth } from '@/main'
 
-
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
@@ -12,45 +11,33 @@ export const store = new Vuex.Store({
 		items: null,
 		trips: null,
 		active_trip: {
-			id: 'hola'
+			id: 'store set id<3'
 		}
 	},
 	getters: {
 		get_trips: state => {
 			return state.trips
 		},
-		getItems: state => {
-			return state.items
-		},
-		active_trip: state => {
-			return state.active_trip
+		active_trip_id: state => {
+			console.log('store.getters.active_trip_id')
+			return state.active_trip.id
 		}
 	},
 	mutations: {
-		set_active_trip: (state, payload) => {
-			console.log('Mutation: set_active_trip: ' + state + ' ' + payload)
+		set_active_trip_id: (state, payload) => {
+			console.log('Mutation: set_active_trip_id: ' + state + ' ' + payload)
 			state.active_trip.id = payload
-			console.log('active_trip.id is now ' + state.active_trip.id)
+			//Vue.set(state.active_trip, 'id', payload)
+			//state.active_trip = Object.assign({}, state.active_trip, payload)
 		},
-/*
-		setItems: state => {
-			let items = []
-
-			db.collection('items').orderBy('created_at').onSnapshot((snapshot) => {
-				snapshot.forEach((doc) => {
-					items.push({id: doc.id, title: doc.data().title})
-				})
-				state.items = items
-			})
-		},
-*/
 		set_trips: (state, payload) => {
 			state.trips = payload
 		}
 	},
 	actions: {
-		set_active_trip: (context, payload) => {
-			context.commit('set_active_trip', payload)
+		set_active_trip_id: (context, payload) => {
+			console.log('Action: set_active_trip_id: ' + payload)
+			context.commit('set_active_trip_id', payload)
 		},
 		setItems: context => {
 			context.commit('setItems')

@@ -12,7 +12,7 @@
 
 					<div class="dropdown-menu" aria-labelledby="trip-dropdown">
 						<div v-for="trip in this.$store.getters.get_trips" :key="trip.id">
-							<a class="dropdown-item" href="#" @click="select_trip(trip.id)">{{ trip.name }}</a>
+							<a class="dropdown-item" href="#" @click="set_active_trip_id(trip.id)">{{ trip.name }}</a>
 						</div>
 					</div>
 				</li>
@@ -40,10 +40,8 @@ export default {
 				this.$router.replace('login')
 			})
 		},
-		select_trip(id) {
-			//console.log('Setting id: ' + id)
-			this.$store.dispatch('set_active_trip', id)
-			//console.log('selected_trip_id is now: ' + this.$store.getters.selected_trip_id)
+		set_active_trip_id(payload) {
+			this.$store.dispatch('set_active_trip', payload)
 		}
 	}
 }

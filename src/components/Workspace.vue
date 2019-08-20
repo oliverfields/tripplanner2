@@ -1,15 +1,15 @@
 <template>
+	<div>
+	## {{ t }} ##
 	<splitpanes class="default-theme">
 		<div id="menus" splitpanes-min="20" splitpanes-max="70" splitpanes-size="30">
 			<tabs>
 				<tab title="Trip">
-					<button @click="log_trip_id">Log trip id</button>
-<!--
-					!!{{ this.$store.getters.getField('selected_trip_id') }}!!
-					<h1 v-if="selected_trip_id === 'hola'">Default</h1>
-					<h1 v-else>{{ active_trip.id }}</h1>
--->
-					<input v-model="active_trip_id" />
+					<input @input="set_active_trip_id" name="active_trip_id">
+					!! {{ active_trip_idx }} !!
+					!! {{ this.$store.state.active_trip }} !!
+					## {{ t }} ##
+					<button @click="log_active_trip_id">Log active trip id</button>
 				</tab>
 				<tab title="Itinerary">Manage itinerary</tab>
 			</tabs>
@@ -18,6 +18,7 @@
 			<h1>Map</h1>
 		</div>
 	</splitpanes>
+	</div>
 </template>
 
 <script>
@@ -25,6 +26,7 @@ import $ from 'jquery'
 import Splitpanes from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import { Tabs, Tab } from 'vue-slim-tabs'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
 	name: 'Workspace',
@@ -34,6 +36,10 @@ export default {
 		Tab
 	},
 	methods: {
+		log_active_trip_id(){
+			console.log('this.$store.getters.active_trip_id: ' + this.$store.getters.active_trip_id)
+			console.log(this.$store.state.active_trip)
+		},
 		resize_workspace(){
 			var nav_height = $('#nav').css('height');
 			nav_height = nav_height.replace('px', ''); // Remove px from height
@@ -43,8 +49,10 @@ export default {
 			$('#menus').css('height', remaining_height + 'px');
 			$('#map').css('height', remaining_height + 'px');
 		},
-		log_trip_id() {
-			console.log('Trip id: ' + this.$store.getters.active_trip.id)
+		set_active_trip_id(e) {
+			console.log('workspace.method.set_active_trip_id: ' + e.target.value)
+			this.$store.dispatch('set_active_trip_id', e.target.value)
+			console.log('Workspace.methods.set_active_trip_id: After action set_active_trip_id is now ' + this.$store.state.active_trip.id)
 		}
 	},
 	mounted() {
@@ -52,10 +60,26 @@ export default {
 		this.resize_workspace()
 	},
 	computed: {
-		active_trip_id: function() {
-			return this.$store.getters.active_trip.id
+		active_trip_idx() {
+			console.log('YYYYYYYYYYYworkspace.computed.active_trip_id calling store state')
+			//return this.$store.getters.active_trip_id
+			return this.$store.state.active_trip.id
+		},
+		t() {
+			return this.$store.state.active_trip.id
 		}
 	}
+/*,
+	watch: {
+		active_trip_id: {
+			handler () {
+				console.log("!!Changed!!");
+				//this.getConsumption();
+			},
+			deep: true
+		}
+	}
+*/
 }
 
 </script>
