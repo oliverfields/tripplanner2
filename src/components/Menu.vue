@@ -16,7 +16,7 @@
 						</div>
 					</div>
 				</li>
-				<li class="nav-item"><a class="nav-link tp-main-button" href="#">New trip</a></li>
+				<li class="nav-item"><a class="btn btn-success" href="#" @click="create_trip">+ New trip</a></li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item"><a class="nav-link" href="#" @click="logout"><font-awesome-icon icon="sign-out-alt" /> Logout</a></li>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import $ from 'jquery'
+//import $ from 'jquery'
 import { auth } from '@/main'
 
 export default {
@@ -42,6 +42,9 @@ export default {
 		},
 		set_active_trip(payload) {
 			this.$store.dispatch('set_active_trip', payload)
+		},
+		create_trip() {
+			this.$store.dispatch('create_trip')
 		}
 	}
 }
@@ -57,12 +60,6 @@ padding-left: 3rem;
 }
 svg.svg-inline--fa {
 margin-right: .5rem;
-}
-.tp-main-button {
-background-color: #008000;
-color: #fff ! important;
-text-align: center ! important;
-border-radius: 2px;
 }
 .nav-link {
 padding: .5rem 1rem ! important;

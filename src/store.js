@@ -5,18 +5,32 @@ import { auth } from '@/main'
 
 Vue.use(Vuex)
 
+function convert_firebase_timestamp_to_js_date_object(firebase_timestamp) {
+	let js_date = new Date(firebase_timestamp.seconds*1000)
+	return js_date
+}
+
+var new_trip_template = {
+	name: '',
+	start_date: new Date(),
+	end_date: new Date()
+}
+
 export const store = new Vuex.Store({
 	strict: true,
 	state: {
-		items: null,
-		trips: null,
-		active_trip: {
-			id: 'store set id<3'
-		}
+		trips: null
 	},
 	getters: {
 		get_trips: state => {
-			return state.trips
+			let tmp_trips = state.trips
+			if(tmp_trips) {
+				return tmp_trips.slice().sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+			}
+			return tmp_trips
+		},
+		active_trip: state => {
+
 		}
 	},
 	actions: {
@@ -26,12 +40,25 @@ export const store = new Vuex.Store({
 		setItems: context => {
 			context.commit('setItems')
 		},
+		create_trip: context => {
+			let new_trip = Object.create(new_trip_template)
+			new_trip.name = 'New trip'
+			context.commit('create_trip', new_trip)
+			context.commit('set_active_trip', new_trip)
+		},
+		delete_active_trip: context => {
+			context.commit('delete_active_trip')
+		},
 		set_trips: context => {
 			let trips = []
 			db.collection('users').doc(auth.currentUser.uid).collection('trips').orderBy('name').onSnapshot(snapshot => {
 				snapshot.forEach(doc => {
 					let trip = doc.data()
-					trip.id = doc.id;
+					trip.id = doc.id
+
+					// Firebase timestamps need converting JavaScript date objects
+					trip.start_date = convert_firebase_timestamp_to_js_date_object(trip.start_date)
+					trip.end_date = convert_firebase_timestamp_to_js_date_object(trip.end_date)
 					trips.push(trip)
 				})
 				context.commit('set_trips', trips)
@@ -61,9 +88,24 @@ export const store = new Vuex.Store({
 		}
 	},
 	mutations: {
-		update_trip_name: (state, payload) => {
-			console.log('update_trip_name: ' + payload)
-			state.active_trip.name = payload
+		update_active_trip: (state, payload) => {
+			switch (payload.property) {
+				case 'name':
+					state.active_trip.name = payload.value
+					break
+				case 'start_date':
+					state.active_trip.start_date = payload.value
+					break
+				case 'end_date':
+					state.active_trip.end_date = payload.value
+					break
+				default:
+					console.log('Unkown active_trip property: ' + payload.target_property)
+			}
+			//console.log(payload.property + ' set to ' + payload.value)
+		},
+		create_trip: (state, payload) => {
+			state.trips.push(payload)
 		},
 		set_active_trip: (state, payload) => {
 			state.active_trip = payload
@@ -71,8 +113,10 @@ export const store = new Vuex.Store({
 			//state.active_trip = Object.assign({}, state.active_trip, payload)
 		},
 		set_trips: (state, payload) => {
-			console.log('set_trips away')
 			state.trips = payload
+		},
+		delete_active_trip: (state) => {
+			state.active_trip = false
 		}
 	},
 })

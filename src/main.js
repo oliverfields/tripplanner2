@@ -3,6 +3,7 @@ import firebase from 'firebase'
 import App from './App.vue'
 import router from './router'
 import { store } from './store'
+import mixin from './mixin.js'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -13,6 +14,12 @@ import { faCannabis } from '@fortawesome/free-solid-svg-icons'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faHiking } from '@fortawesome/free-solid-svg-icons'
+import { faSave } from '@fortawesome/free-solid-svg-icons'
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
+library.add(faExclamationTriangle)
+library.add(faSave)
+library.add(faTrashAlt)
 library.add(faCannabis)
 library.add(faBars)
 library.add(faSignOutAlt)
@@ -35,6 +42,7 @@ firebase.initializeApp({
 });
 
 firebase.auth().onAuthStateChanged(() => {
+	Vue.mixin(mixin)
 	if(!app) {
 		app = new Vue({
 			router,
