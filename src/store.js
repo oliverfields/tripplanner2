@@ -10,16 +10,13 @@ function convert_firebase_timestamp_to_js_date_object(firebase_timestamp) {
 	return js_date
 }
 
-var new_trip_template = {
-	name: '',
-	start_date: new Date(),
-	end_date: new Date()
-}
+var new_trip_id_counter = 1
 
 export const store = new Vuex.Store({
 	strict: true,
 	state: {
-		trips: null
+		trips: null,
+		active_trip: false
 	},
 	getters: {
 		get_trips: state => {
@@ -28,9 +25,6 @@ export const store = new Vuex.Store({
 				return tmp_trips.slice().sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
 			}
 			return tmp_trips
-		},
-		active_trip: state => {
-
 		}
 	},
 	actions: {
@@ -41,13 +35,21 @@ export const store = new Vuex.Store({
 			context.commit('setItems')
 		},
 		create_trip: context => {
-			let new_trip = Object.create(new_trip_template)
-			new_trip.name = 'New trip'
+			let new_trip = {
+				name: '',
+				id: 'trip_planner_tmp_id_' + new_trip_id_counter,
+				start_date: new Date(),
+				end_date: new Date()
+			}
+			new_trip_id_counter += 1
+			
 			context.commit('create_trip', new_trip)
 			context.commit('set_active_trip', new_trip)
 		},
-		delete_active_trip: context => {
-			context.commit('delete_active_trip')
+		delete_active_trip: ({commit, state}, payload) => {
+			let delete_trip_id = state.active_trip.id
+			commit('delete_active_trip')
+			commit('delete_trip', delete_trip_id)
 		},
 		set_trips: context => {
 			let trips = []
@@ -107,16 +109,27 @@ export const store = new Vuex.Store({
 		create_trip: (state, payload) => {
 			state.trips.push(payload)
 		},
+		set_active_trip_id: (state, payload) => {
+			state.active_trip_id = payload
+		},
 		set_active_trip: (state, payload) => {
 			state.active_trip = payload
-			//Vue.set(state.active_trip, 'id', payload)
-			//state.active_trip = Object.assign({}, state.active_trip, payload)
 		},
 		set_trips: (state, payload) => {
 			state.trips = payload
 		},
 		delete_active_trip: (state) => {
 			state.active_trip = false
+		},
+		delete_trip: (state, payload) => {
+			state.trips.forEach(
+				function (trip, index, array) {
+					if(trip.id == payload) {
+						console.log('Deleting trip.id: ' + trip.id + ' at index ' + index)
+						state.trips.splice(index, 1) // remove 1 element starting at index from array
+					}
+				}
+			)
 		}
 	},
 })

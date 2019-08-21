@@ -1,6 +1,6 @@
 <template>
 	<div id="workspace">
-		<div v-if="active_trip">
+		<div v-if="this.$store.state.active_trip">
 			<div id="tabs_pane">
 				<Tabs />
 			</div>
@@ -41,9 +41,6 @@ export default {
 		this.resize_workspace()
 	},
 	computed: {
-		active_trip() {
-			return this.$store.state.active_trip
-		}
 	}
 }
 </script>

@@ -32,18 +32,19 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="form-group">
+						<a @click="save_trip" href="#" class="btn btn-success"><font-awesome-icon icon="save" /> Save</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
 						<div class="form-group-danger">
 							<h1><font-awesome-icon icon="exclamation-triangle" /> Delete trip</h1>
 							<p>Deleted trips can <strong>not</strong> be undeleted</p>
 							<a @click="delete_trip" id="delete_trip" href="#" class="btn btn-danger"><font-awesome-icon icon="trash-alt" /> Delete</a>
 						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-12">
-					<div class="form-group float-right">
-						<a @click="save_trip" href="#" class="btn btn-success"><font-awesome-icon icon="save" /> Save</a>
 					</div>
 				</div>
 			</div>
@@ -102,9 +103,7 @@ export default {
 
 <style>
 .form-group-danger {
-margin: 1rem 0;
-border: solid 2px red;
-padding: 1rem;
+margin: 2rem 0;
 }
 .form-group-danger h1{
 font-size: 1rem;

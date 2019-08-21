@@ -30,4 +30,7 @@ export default {
 </script>
 
 <style>
+#tripTabsContent {
+margin-top: 1rem;
+}
 </style>
