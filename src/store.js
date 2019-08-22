@@ -91,19 +91,26 @@ export const store = new Vuex.Store({
 	},
 	mutations: {
 		update_active_trip: (state, payload) => {
+			//let changed = false
 			switch (payload.property) {
 				case 'name':
 					state.active_trip.name = payload.value
+					//changed = true
 					break
 				case 'start_date':
 					state.active_trip.start_date = payload.value
+					//changed = true
 					break
 				case 'end_date':
 					state.active_trip.end_date = payload.value
+					//changed = true
 					break
 				default:
 					console.log('Unkown active_trip property: ' + payload.target_property)
 			}
+			//if(changed) {
+			//	Vue.set(state.active_trip, 'changed', true)
+			//}
 			//console.log(payload.property + ' set to ' + payload.value)
 		},
 		create_trip: (state, payload) => {

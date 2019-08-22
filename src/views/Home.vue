@@ -1,7 +1,10 @@
 <template>
 	<div>
 		<Menu />
-		<Workspace />
+		<Workspace v-if="this.$store.state.active_trip" />
+		<div id="workspace" v-else>
+			<p>Go on trip, man;)</p>
+		</div>
 	</div>
 </template>
 

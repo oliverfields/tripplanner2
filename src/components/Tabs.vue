@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import $ from 'jquery'
 import TripTab from '@/components/TripTab'
 import ItineraryTab from '@/components/ItineraryTab'
 

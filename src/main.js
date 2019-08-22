@@ -7,6 +7,7 @@ import mixin from './mixin.js'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
+
 // Font awesome icons
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -24,8 +25,19 @@ library.add(faCannabis)
 library.add(faBars)
 library.add(faSignOutAlt)
 library.add(faHiking)
-
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+
+// Leaflet
+import 'leaflet/dist/leaflet.css'
+// fix icon for marker
+import { Icon } from 'leaflet'
+delete Icon.Default.prototype._getIconUrl;
+Icon.Default.mergeOptions({
+	iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+	iconUrl: require('leaflet/dist/images/marker-icon.png'),
+	shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+});
 
 Vue.config.productionTip = false
 

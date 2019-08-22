@@ -26,7 +26,6 @@
 </template>
 
 <script>
-//import $ from 'jquery'
 import { auth } from '@/main'
 
 export default {
@@ -51,6 +50,13 @@ export default {
 </script>
 
 <style>
+#nav {
+position: absolute;
+top: 0px;
+right: 0px;
+width: 100%;
+height: 50px; /* NB! This is hardcoded into Workspace component */
+}
 .tp-nav-group-title {
 font-size: 1rem;
 color: #fff;

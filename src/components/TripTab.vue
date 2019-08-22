@@ -103,7 +103,7 @@ export default {
 
 <style>
 .form-group-danger {
-margin: 2rem 0;
+padding: 2rem 0;
 }
 .form-group-danger h1{
 font-size: 1rem;
