@@ -10,24 +10,20 @@
 				</div>
 			</div>
 
-			<div class="clearfix"></div>
-
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="trip_start_date">Start date</label>
-						<Datepicker v-model="trip_start_date" format="yyyy-MM-dd" monday-first bootstrap-styling name="trip_start_date"></Datepicker>
+						<Datepicker :value="trip_start_date" format="yyyy-MM-dd" monday-first bootstrap-styling name="trip_start_date"></Datepicker>
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="trip_end_date">End date</label>
-						<Datepicker v-model="trip_end_date" format="yyyy-MM-dd" monday-first bootstrap-styling name="trip_end_date"></Datepicker>
+						<Datepicker :value="trip_end_date" format="yyyy-MM-dd" monday-first bootstrap-styling name="trip_end_date"></Datepicker>
 					</div>
 				</div>
 			</div>
-
-			<div class="clearfix"></div>
 
 			<div class="row">
 				<div class="col-md-12">
@@ -53,8 +49,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { mapGetters } from 'vuex';
 import Datepicker from 'vuejs-datepicker';
 
 export default {
@@ -106,7 +100,6 @@ export default {
 padding: 2rem 0;
 }
 .form-group-danger h1{
-font-size: 1rem;
-color: red;
+font-size: 2rem;
 }
 </style>

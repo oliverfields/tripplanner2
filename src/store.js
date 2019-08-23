@@ -10,15 +10,30 @@ function convert_firebase_timestamp_to_js_date_object(firebase_timestamp) {
 	return js_date
 }
 
+function convert_firebase_geopoint(firebase_geopoint) {
+	return {
+		lat: firebase_geopoint._lat,
+		lng: firebase_geopoint._long
+	}
+}
+
 var new_trip_id_counter = 1
 
 export const store = new Vuex.Store({
 	strict: true,
 	state: {
 		trips: null,
-		active_trip: false
+		active_trip: false,
+		map: {
+			zoom: 2,
+			center: [52.529562,  13.413047],
+			bounds: null,
+		}
 	},
 	getters: {
+		map_settings: state => {
+			return state.map
+		},
 		get_trips: state => {
 			let tmp_trips = state.trips
 			if(tmp_trips) {
@@ -36,10 +51,12 @@ export const store = new Vuex.Store({
 		},
 		create_trip: context => {
 			let new_trip = {
-				name: '',
+				name: 'New trip',
 				id: 'trip_planner_tmp_id_' + new_trip_id_counter,
 				start_date: new Date(),
-				end_date: new Date()
+				end_date: new Date(),
+				map_center: { lat: 52.5125, lng: 13.3815 },
+				map_zoom: 2
 			}
 			new_trip_id_counter += 1
 			
@@ -59,8 +76,18 @@ export const store = new Vuex.Store({
 					trip.id = doc.id
 
 					// Firebase timestamps need converting JavaScript date objects
-					trip.start_date = convert_firebase_timestamp_to_js_date_object(trip.start_date)
-					trip.end_date = convert_firebase_timestamp_to_js_date_object(trip.end_date)
+					if(trip.start_date)
+						trip.start_date = convert_firebase_timestamp_to_js_date_object(trip.start_date)
+
+					if(trip.end_date)
+						trip.end_date = convert_firebase_timestamp_to_js_date_object(trip.end_date)
+
+					if(trip.map_center)
+						trip.map_center = convert_firebase_geopoint(trip.map_center)
+
+					if(trip.name)
+						trip.name = trip.name
+
 					trips.push(trip)
 				})
 				context.commit('set_trips', trips)
@@ -90,28 +117,36 @@ export const store = new Vuex.Store({
 		}
 	},
 	mutations: {
+		update_map_settings: (state, payload) => {
+			if(payload.zoom)
+				state.map.zoom = payload.zoom
+
+			if(payload.center)
+				state.map.center = payload.center
+		},
 		update_active_trip: (state, payload) => {
-			//let changed = false
+			//console.log('update_active_trip payload:')
+			//console.log(payload.property)
+
 			switch (payload.property) {
 				case 'name':
 					state.active_trip.name = payload.value
-					//changed = true
 					break
 				case 'start_date':
 					state.active_trip.start_date = payload.value
-					//changed = true
 					break
 				case 'end_date':
 					state.active_trip.end_date = payload.value
-					//changed = true
+					break
+				case 'map_center':
+					state.active_trip.map_center = payload.value
+					break
+				case 'map_zoom':
+					state.active_trip.map_zoom = parseInt(payload.value)
 					break
 				default:
-					console.log('Unkown active_trip property: ' + payload.target_property)
+					console.log('Unkown active_trip property: ' + payload.property)
 			}
-			//if(changed) {
-			//	Vue.set(state.active_trip, 'changed', true)
-			//}
-			//console.log(payload.property + ' set to ' + payload.value)
 		},
 		create_trip: (state, payload) => {
 			state.trips.push(payload)

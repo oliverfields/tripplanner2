@@ -18,6 +18,8 @@ import { faHiking } from '@fortawesome/free-solid-svg-icons'
 import { faSave } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
+import { faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
+library.add(faMapMarkedAlt)
 library.add(faExclamationTriangle)
 library.add(faSave)
 library.add(faTrashAlt)
