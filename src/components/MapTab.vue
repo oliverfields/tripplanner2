@@ -13,7 +13,7 @@
 						<input :value="this.$store.state.active_trip.map_zoom" class="form-control" id="map_zoom" ref="active_trip_map_zoom" />
 					</div>
 					<div class="form-group">
-						<a style="margin-top: 1rem; display: block;" href="#" @click="use_current_map_settings"><font-awesome-icon icon="map-marked-alt" /> Use current map settings</a>
+						<a style="margin-top: 1rem; display: block;" href="#" @click="use_current_map_settings"><font-awesome-icon icon="map-marked-alt" /> Use current map center and zoom</a>
 					</div>
 				</div>
 			</div>
@@ -41,7 +41,6 @@ export default {
 	},
 	methods: {
 		save_map_settings: function() {
-			console.log(this.tp_str_2_latlng(this.$refs.active_trip_map_center.value))
 			this.$store.commit('update_active_trip', {
 				property: 'map_center',
 				value: this.tp_str_2_latlng(this.$refs.active_trip_map_center.value)

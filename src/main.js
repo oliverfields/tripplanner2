@@ -7,7 +7,6 @@ import mixin from './mixin.js'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-
 // Font awesome icons
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -39,7 +38,9 @@ Icon.Default.mergeOptions({
 	iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
 	iconUrl: require('leaflet/dist/images/marker-icon.png'),
 	shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-});
+})
+
+
 
 Vue.config.productionTip = false
 
@@ -56,8 +57,8 @@ firebase.initializeApp({
 });
 
 firebase.auth().onAuthStateChanged(() => {
-	Vue.mixin(mixin)
 	if(!app) {
+		Vue.mixin(mixin)
 		app = new Vue({
 			router,
 			store,
