@@ -11,7 +11,7 @@
 							id="trip_name"
 							v-model="trip_name"
 						>
-						<div class="invalid-feedback">Name too short</div>
+						<div class="invalid-feedback">Name must be alpha numeric</div>
 					</div>
 				</div>
 			</div>
@@ -20,17 +20,16 @@
 				<div class="col-md-12">
 					<div class="form-group date-input">
 						<label for="trip_start_date">Start date</label>
-						<div class="control-group">
+						<div class="control-group datepicker-input">
+							<font-awesome-icon icon="calendar" />
 							<Datepicker
-								:value="trip_start_date"
-								@closed="this.trip_start_date_valid"
+								v-model="start_date"
 								format="yyyy-MM-dd"
 								monday-first
-								name="trip_start_date"
-								
+								style="display: inline-block;"
 							></Datepicker>
 						</div>
-						<div class="invalid-feedback" :style="trip_start_date_datepicker_style">Date cannot be empty and must be before End date</div>
+						<div class="invalid-feedback" style="display: block;" v-show="this.trip_dates_valid === false">Must be same or before End date</div>
 						
 					</div>
 				</div>
@@ -39,7 +38,16 @@
 				<div class="col-md-12">
 					<div class="form-group date-input">
 						<label for="trip_end_date">End date</label>
-						<Datepicker :value="trip_end_date" format="yyyy-MM-dd" monday-first bootstrap-styling name="trip_end_date"></Datepicker>
+						<div class="control-group datepicker-input">
+							<font-awesome-icon icon="calendar" />
+							<Datepicker
+								v-model="end_date"
+								format="yyyy-MM-dd"
+								monday-first
+								style="display: inline-block;"
+							></Datepicker>
+						</div>
+						<div class="invalid-feedback" style="display: block;" v-show="this.trip_dates_valid === false">Must be after Start date</div>
 					</div>
 				</div>
 			</div>
@@ -47,10 +55,12 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="form-group">
-						<a @click="save_trip" href="#" class="btn btn-success"><font-awesome-icon icon="save" /> Save</a>
+						<a @click="save_trip" href="#" :class="save_button_classes"><font-awesome-icon icon="save" /> Save</a>
 					</div>
 				</div>
 			</div>
+
+			<hr >
 
 			<div class="row">
 				<div class="col-md-12">
@@ -68,104 +78,115 @@
 </template>
 
 <script>
-import Datepicker from 'vuejs-datepicker';
+	import Datepicker from 'vuejs-datepicker'
 
-export default {
-	name: 'TripTab',
-	components: {
-		Datepicker
-	},
-	computed: {
-
-		// trip_name
-
-		trip_name: {
-			get() {
-				return this.$store.state.active_trip.name
-			},
-			set(value) {
-				this.$store.commit('update_active_trip', { property: 'name', value: value })
-			}
+	export default {
+		name: 'TripTab',
+		components: {
+			Datepicker
 		},
-		trip_name_valid: function() {
-			return (this.trip_name.length < 1)
-		},
-		trip_name_class: function() {
+		data() {
 			return {
-				'form-control': true,
-				'is-invalid': this.trip_name_valid
+				trip_dates_valid: true,
+				trip_name_valid: true,
+				trip_form_valid: true
 			}
 		},
-
-
-		// trip_start_date
-		trip_start_date: {
-			get() {
-				return this.tp_date_format(this.$store.state.active_trip.start_date)
+		computed: {
+			save_button_classes: function() {
+				return {
+					btn: true,
+					'btn-success': true,
+					disabled: !this.trip_dates_valid
+				}
 			},
-			set(value) {
-				this.$store.commit('update_active_trip', { property: 'start_date', value: value })
-			}
+			trip_name: {
+				get() {
+					return this.$store.state.active_trip.name
+				},
+				set(value) {
+					this.$store.commit('update_active_trip', { property: 'name', value: value })
+				}
+			},
+			trip_name_class: function() {
+				return {
+					'form-control': true,
+					'is-invalid': !this.validate_trip_name()
+				}
+			},
+			start_date: {
+				get() {
+					return this.$store.state.active_trip.start_date
+				},
+				set(value) {
+					if(this.validate_trip_dates({start_date: value, end_date: this.$store.state.active_trip.end_date})) {
+						this.trip_dates_valid = true
+						this.$store.commit('update_active_trip', { property: 'start_date', value: value })
+					}
+					else {
+						this.trip_dates_valid = false
+					}
+				}
+			},
+			end_date: {
+				get() {
+					return this.$store.state.active_trip.end_date
+				},
+				set(value) {
+					if(this.validate_trip_dates({start_date: this.$store.state.active_trip.start_date, end_date: value})) {
+						this.trip_dates_valid = true
+						this.$store.commit('update_active_trip', { property: 'end_date', value: value })
+					}
+					else {
+						this.trip_dates_valid = false
+					}
+				}
+			},
 		},
-
-
-		// trip_end_date
-		trip_end_date: {
-			get() {
-				return this.tp_date_format(this.$store.state.active_trip.end_date)
+		methods: {
+			delete_trip: function() {
+				this.$store.dispatch('delete_active_trip')
 			},
-			set(value) {
-				this.$store.commit('update_active_trip', { property: 'end_date', value: value })
+			save_trip: function() {
+				this.trip_dates_invalid = true
+				let has_error = false
+				has_error = this.trip_name_valid
+				has_error = this.trip_start_date_valid
+				if(
+					has_error
+				) {
+					console.log('Errors found, NOT saving trip')
+				}
+				else {
+					console.log('No errors, saving trip')
+				}
+			},
+			validate_trip_name: function() {
+				let re = this.$XRegExp("^[\\p{L}\\d\ \\_\\-]+$")
+				return re.test(this.trip_name)
+			},
+			validate_trip_dates: function(dates) {
+				console.log(dates.start_date)
+				console.log(dates.end_date)
+				return (dates.start_date <= dates.end_date)
 			}
 		}
-	},
-	methods: {
-		delete_trip: function() {
-			this.$store.dispatch('delete_active_trip')
-		},
-		save_trip: function() {
-			console.log(this.trip_start_date)
-			if(
-				this.trip_name_error
-				|| this.trip_start_date_error
-			) {
-				console.log('Errors found, NOT saving trip')
-			}
-			else {
-				console.log('No errors, saving trip')
-			}
-		},
-		trip_start_date_valid: function() {
-			let start_date = this.tp_date_from_str(this.trip_start_date)
-			let end_date = this.tp_date_from_str(this.trip_end_date)
-
-			console.log('Comparing: ' + start_date + ' <= ' + end_date)
-			console.log(start_date <= end_date)
-			return start_date <= end_date
-		},
-		trip_start_date_datepicker_style: function() {
-			if(this.trip_start_date_valid) {
-				return "display: block;"
-			}
-			else {
-				return "display: none;"
-			}
-		},
-
 	}
-}
 </script>
 
 <style>
-.form-group-danger {
-padding: 2rem 0;
-}
-.form-group-danger h1{
-font-size: 2rem;
-}
-.date-input input {
-border: none;
-background-color: none;
-color: #228CFF;
-}
+	.form-group-danger {
+	padding: 2rem 0;
+	}
+	.form-group-danger h1{
+	font-size: 2rem;
+	}
+	.date-input input {
+	border: none;
+	background-color: none;
+	color: #228CFF;
+	}
+	 .datepicker-input, .datepicker-input input {
+	 cursor: pointer;
+	}
 </style>

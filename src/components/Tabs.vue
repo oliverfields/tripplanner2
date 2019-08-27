@@ -35,24 +35,24 @@
 </template>
 
 <script>
-import TripTab from '@/components/TripTab'
-import MapTab from '@/components/MapTab'
-import ItineraryTab from '@/components/ItineraryTab'
+	import TripTab from '@/components/TripTab'
+	import MapTab from '@/components/MapTab'
+	import ItineraryTab from '@/components/ItineraryTab'
 
-export default {
-	name: 'Tabs',
-	components: {
-		TripTab,
-		MapTab,
-		ItineraryTab
-	},
-	methods: {
+	export default {
+		name: 'Tabs',
+		components: {
+			TripTab,
+			MapTab,
+			ItineraryTab
+		},
+		methods: {
+		}
 	}
-}
 </script>
 
 <style>
-#tripTabsContent {
-margin-top: 1rem;
-}
+	#tripTabsContent {
+	margin-top: 1rem;
+	}
 </style>

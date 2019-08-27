@@ -6,6 +6,9 @@ import { store } from './store'
 import mixin from './mixin.js'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import '../public/css/main.css'
+import XRegExp from 'xregexp'
+Object.defineProperty(Vue.prototype, '$XRegExp', { value: XRegExp });
 
 // Font awesome icons
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -18,7 +21,11 @@ import { faSave } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import { faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar } from '@fortawesome/free-solid-svg-icons'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 library.add(faMapMarkedAlt)
+library.add(faCalendar)
+library.add(faTimes)
 library.add(faExclamationTriangle)
 library.add(faSave)
 library.add(faTrashAlt)
@@ -62,6 +69,7 @@ firebase.auth().onAuthStateChanged(() => {
 		app = new Vue({
 			router,
 			store,
+			XRegExp,
 			render: h => h(App)
 		}).$mount('#app');
 	}

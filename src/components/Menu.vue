@@ -26,49 +26,49 @@
 </template>
 
 <script>
-import { auth } from '@/main'
+	import { auth } from '@/main'
 
-export default {
-	name: 'Menu',
-	beforeCreate: function() {
-		this.$store.dispatch('set_trips')
-	},
-	methods: {
-		logout: function() {
-			auth.signOut().then(() => {
-				this.$router.replace('login')
-			})
+	export default {
+		name: 'Menu',
+		beforeCreate: function() {
+			this.$store.dispatch('set_trips')
 		},
-		set_active_trip(payload) {
-			this.$store.dispatch('set_active_trip', payload)
-		},
-		create_trip() {
-			this.$store.dispatch('create_trip')
+		methods: {
+			logout: function() {
+				auth.signOut().then(() => {
+					this.$router.replace('login')
+				})
+			},
+			set_active_trip(payload) {
+				this.$store.dispatch('set_active_trip', payload)
+			},
+			create_trip() {
+				this.$store.dispatch('create_trip')
+			}
 		}
 	}
-}
 </script>
 
 <style>
-#nav {
-position: absolute;
-top: 0px;
-right: 0px;
-width: 100%;
-height: 50px; /* NB! This is hardcoded into Workspace component */
-}
-.tp-nav-group-title {
-font-size: 1rem;
-color: #fff;
-}
-.tp-nav-group ul {
-padding-left: 3rem;
-}
-svg.svg-inline--fa {
-margin-right: .5rem;
-}
-.nav-link {
-padding: .5rem 1rem ! important;
-margin: 0 1rem;
-}
+	#nav {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 100%;
+	height: 50px; /* NB! This is hardcoded into Workspace component */
+	}
+	.tp-nav-group-title {
+	font-size: 1rem;
+	color: #fff;
+	}
+	.tp-nav-group ul {
+	padding-left: 3rem;
+	}
+	svg.svg-inline--fa {
+	margin-right: .5rem;
+	}
+	.nav-link {
+	padding: .5rem 1rem ! important;
+	margin: 0 1rem;
+	}
 </style>

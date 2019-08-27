@@ -5,12 +5,12 @@
 </template>
 
 <script>
-window.$ = require('jquery')
-window.JQuery = require('jquery')
+	window.$ = require('jquery')
+	window.JQuery = require('jquery')
 
-export default {
-	name: 'App'
-}
+	export default {
+		name: 'App'
+	}
 </script>
 
 <style>
