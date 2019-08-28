@@ -8,3 +8,9 @@ margin: 1.5rem 0;
 float: right;
 min-width: 9rem;
 }
+.danger {
+color: red;
+}
+.info {
+color: blue;
+}

@@ -1,11 +1,11 @@
 <template>
-	<nav id="nav" class="navbar navbar-expand-md navbar-dark bg-dark">
-		<a class="navbar-brand" href="#"><font-awesome-icon icon="hiking" /> Trip planner</a>
-		<button class="navbar-toggler" style="border: none;" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+	<nav id="nav" class="navbar navbar-expand navbar-dark bg-dark">
+		<a class="navbar-brand" href="#"><font-awesome-icon icon="hiking" /> Ambulate</a>
+		<button class="navbar-toggler" style="border: none;" type="button" data-toggle="collapse" data-target="#navbars-site-menu" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
 			<span><font-awesome-icon icon="bars" /></span>
 		</button>
 
-		<div class="collapse navbar-collapse" id="navbarsExample04">
+		<div class="collapse navbar-collapse navbar-dark bg-dark" id="navbars-site-menu">
 			<ul class="navbar-nav mr-auto">
 				<li v-if="this.$store.getters.get_trips && this.$store.getters.get_trips.length > 0" class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="trip-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Trips</a>
@@ -56,6 +56,7 @@
 	right: 0px;
 	width: 100%;
 	height: 50px; /* NB! This is hardcoded into Workspace component */
+	padding: 0;
 	}
 	.tp-nav-group-title {
 	font-size: 1rem;
@@ -65,7 +66,7 @@
 	padding-left: 3rem;
 	}
 	svg.svg-inline--fa {
-	margin-right: .5rem;
+	margin: 0 .5rem;
 	}
 	.nav-link {
 	padding: .5rem 1rem ! important;

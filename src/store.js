@@ -125,9 +125,6 @@ export const store = new Vuex.Store({
 				state.map.center = payload.center
 		},
 		update_active_trip: (state, payload) => {
-			//console.log('update_active_trip payload:')
-			//console.log(payload.property)
-
 			switch (payload.property) {
 				case 'name':
 					state.active_trip.name = payload.value
@@ -139,7 +136,8 @@ export const store = new Vuex.Store({
 					state.active_trip.end_date = payload.value
 					break
 				case 'map_center':
-					state.active_trip.map_center = payload.value
+					state.active_trip.map_center.lat = payload.value.lat
+					state.active_trip.map_center.lng = payload.value.lng
 					break
 				case 'map_zoom':
 					state.active_trip.map_zoom = parseInt(payload.value)

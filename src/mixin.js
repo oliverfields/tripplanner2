@@ -12,13 +12,57 @@ export default {
 			string = string.replace(' ', '')
 			string = string.split(',')
 
-			return {
-				lat: string[0],
-				lng: string[1]
+			if(string.length != 2) { // Must have not been exactly one comma
+				return false
 			}
+
+			let lat_number = 0
+			let lng_number = 0
+
+			try {
+				lat_number = Number(string[0])
+			}
+			catch {
+				return false
+			}
+
+			try {
+				lng_number = Number(string[1])
+			}
+			catch {
+				return false
+			}
+
+			let latlng = {
+				lat: lat_number,
+				lng: lng_number
+			}
+
+			if(this.tp_valid_latlng(latlng))
+				return latlng
 		},
 		tp_latlng_2_str: function(latlng) {
-			return latlng.lat + ',' + latlng.lng
+			if(this.tp_valid_latlng(latlng))
+				return latlng.lat + ',' + latlng.lng
+			return false
+		},
+		tp_valid_latlng: function(latlng) {
+			if(
+				typeof latlng.lat === 'number'
+				&& !isNaN(latlng.lat)
+				&& typeof latlng.lng === 'number'
+				&& !isNaN(latlng.lng)
+			) {
+				return true
+			}
+			return false
+		},
+		tp_date_difference: function(d1, d2) {
+			if(d1.getTime() > d2.getTime())
+				return 0
+
+			let timeDiff = Math.abs(d2.getTime() - d1.getTime())
+			return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1
 		}
 	}
 }
