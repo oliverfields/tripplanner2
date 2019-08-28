@@ -16,7 +16,7 @@
 						</div>
 					</div>
 				</li>
-				<li class="nav-item"><a class="btn btn-success" href="#" @click="create_trip">+ New trip</a></li>
+				<li class="nav-item"><a class="btn btn-success" href="#" @click="create_trip"><font-awesome-icon icon="plus" /> New trip</a></li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item"><a class="nav-link" href="#" @click="logout"><font-awesome-icon icon="sign-out-alt" /> Logout</a></li>

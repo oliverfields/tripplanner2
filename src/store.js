@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { db } from '@/main'
 import { auth } from '@/main'
+import mixin from '@/mixin'
 
 Vue.use(Vuex)
 
@@ -88,6 +89,10 @@ export const store = new Vuex.Store({
 					if(trip.name)
 						trip.name = trip.name
 
+					if(trip.start_date && trip.end_date) // Always compute trip duration, must be done after dates are converted to javascript date objects
+						trip.trip_days_duration = mixin.methods.tp_date_difference(trip.start_date, trip.end_date)
+
+
 					trips.push(trip)
 				})
 				context.commit('set_trips', trips)
@@ -141,6 +146,9 @@ export const store = new Vuex.Store({
 					break
 				case 'map_zoom':
 					state.active_trip.map_zoom = parseInt(payload.value)
+					break
+				case 'trip_days_duration':
+					state.active_trip.trip_days_duration = payload.value
 					break
 				default:
 					console.log('Unkown active_trip property: ' + payload.property)

@@ -23,7 +23,11 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import { faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { faCalendar } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+library.add(faPlus)
+library.add(faChevronLeft)
 library.add(faMapMarkedAlt)
 library.add(faInfoCircle)
 library.add(faCalendar)

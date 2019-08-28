@@ -54,7 +54,7 @@
 
 			<div class="row">
 				<div class="col-md-12">
-					<div class="trip_duration" v-if="trip_dates_valid"><font-awesome-icon class="info" icon="info-circle" /> Trip duration {{ trip_duration }} days</div>
+					<div class="trip_duration" v-if="trip_dates_valid"><font-awesome-icon class="info" icon="info-circle" /> Trip duration {{ trip_duration }}</div>
 				</div>
 			</div>
 
@@ -99,7 +99,15 @@
 		},
 		computed: {
 			trip_duration: function() {
-				return this.tp_date_difference(this.start_date, this.end_date)
+				if(this.trip_dates_valid){
+					let duration = this.tp_date_difference(this.start_date, this.end_date)
+					this.$store.commit('update_active_trip', { property: 'trip_days_duration', value: duration })
+					if(duration == 1)
+						return '1 day'
+					else
+						return duration + ' days'
+				}
+				return false
 			},
 			save_button_classes: function() {
 				return {
