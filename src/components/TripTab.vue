@@ -54,7 +54,7 @@
 
 			<div class="row">
 				<div class="col-md-12">
-					<div class="trip_duration"><font-awesome-icon class="info" icon="info-circle" /> Trip duration {{ trip_duration }} days</div>
+					<div class="trip_duration" v-if="trip_dates_valid"><font-awesome-icon class="info" icon="info-circle" /> Trip duration {{ trip_duration }} days</div>
 				</div>
 			</div>
 
