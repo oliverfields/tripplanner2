@@ -101,7 +101,7 @@
 			trip_duration: function() {
 				if(this.trip_dates_valid){
 					let duration = this.tp_date_difference(this.start_date, this.end_date)
-					this.$store.commit('update_active_trip', { property: 'trip_days_duration', value: duration })
+					this.$store.dispatch('update_active_trip_duration', {duration: duration})
 					if(duration == 1)
 						return '1 day'
 					else

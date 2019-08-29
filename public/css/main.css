@@ -1,16 +1,32 @@
 label {
-font-weight: bold;
-color: #666;
-margin-top: 1rem;
+	font-weight: bold;
+	color: #666;
+	margin-top: 1rem;
 }
 .form-group .btn {
-margin: 1.5rem 0;
-float: right;
-min-width: 9rem;
+	margin: 1.5rem 0;
+	float: right;
+	min-width: 9rem;
 }
 .danger {
-color: red;
+	color: red;
 }
 .info {
-color: #228CFF;
+	color: #228CFF;
+}
+h2 {
+	font-size: 1.5rem;
+}
+h3 {
+	font-size: 1rem;
+	font-weight: bold;
+	color: #666;
+}
+.breadcrumb {
+	margin: 1rem 0;
+	background-color: transparent;
+	padding: 0;
+}
+.breadcrumb svg {
+	margin-left: 0;
 }

@@ -119,9 +119,64 @@ export const store = new Vuex.Store({
 			})
 			context.commit('set_trips', trips)
 */
+		},
+		update_active_trip_duration: (context, payload) => {
+			context.commit('update_active_trip', { property: 'trip_days_duration', value: payload.duration })
+			context.commit('update_active_itinerary_length') // Call after trip_days_duration is updated
 		}
 	},
 	mutations: {
+		update_active_itinerary_length: (state) => {
+			// Ensure length of itinerary list corresponds to trip_days_duration
+			if(!state.active_trip.itinerary)
+				state.active_trip.itinerary = []
+
+			let itinerary_length = state.active_trip.itinerary.length
+			let duration = state.active_trip.trip_days_duration
+			let itinerary = state.active_trip.itinerary
+			let day_date = state.active_trip.start_date
+			
+
+			// Add array items (days) to the itinerary to make it longer
+			if(itinerary_length < duration) {
+				for (let i = 0; i < duration; i++) {
+
+					// For array elements that already exist, just make sure the day object they contain reflects the trip
+					if(i < itinerary_length) {
+						itinerary[i].date = day_date
+						itinerary[i].date_pretty = mixin.methods.tp_date_format(day_date)
+						itinerary[i].day_number = i + 1
+						itinerary[i].day_index = i
+
+						if(!itinerary[i].activities)
+							itinerary[i].activities = []
+
+					}
+					// Add empty day objects
+					else {
+						itinerary.push({
+							date: day_date,
+							date_pretty: mixin.methods.tp_date_format(day_date),
+							day_number: i + 1,
+							day_index: i,
+							activities: []
+
+						})
+					}
+					day_date = mixin.methods.tp_add_days_to_date(day_date, 1)
+				}
+			}
+			else {
+				console.log('Decreasing itinerary')
+			}
+
+			// Add activity indexes (for template lookups
+			for (let x = 0; x < itinerary.length; x++) {
+				for (let n = 0; n < itinerary[x].activities.length; n++) {
+					itinerary[x].activities[n].activity_index = n
+				}
+			}
+		},
 		update_map_settings: (state, payload) => {
 			if(payload.zoom)
 				state.map.zoom = payload.zoom

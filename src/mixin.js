@@ -1,7 +1,16 @@
 export default {
 	methods: {
 		tp_date_format: function(date) {
-			return date.getFullYear() + '-' + ("0"+(date.getMonth()+1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2)
+			// returns D d MMM yyyy
+			let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+			let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+			let d = date.getDate()
+			let D = days[date.getDay()]
+			let MMM = months[date.getMonth()]
+			let yyyy = date.getFullYear();
+			return D + ' ' + d + ' ' + MMM + ' ' + yyyy
+
+			//return date.getFullYear() + '-' + ("0"+(date.getMonth()+1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2)
 		},
 		tp_date_from_str: function(str) {
 			// Assumes string is in format yyyy-mm-dd
@@ -63,6 +72,11 @@ export default {
 
 			let timeDiff = Math.abs(d2.getTime() - d1.getTime())
 			return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1
+		},
+		tp_add_days_to_date(date, days) {
+			let result = new Date(date)
+			result.setDate(result.getDate() + days)
+			return result
 		}
 	}
 }

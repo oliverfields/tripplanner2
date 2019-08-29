@@ -9,9 +9,9 @@
 		<div v-else>
 			<ItineraryTabOverview @show="show" />
 		</div>
-		<input v-model="itinerary_view" />
-		<input v-model="day_index" />
-		<input v-model="activity_index" />
+		View:<input v-model="itinerary_view" /><br />
+		Day:<input v-model="day_index" /><br />
+		Activity:<input v-model="activity_index" />
 	</div>
 </template>
 
@@ -25,8 +25,8 @@
 		data () {
 			return {
 				itinerary_view: 'overview', // overview, day_view, activity_view
-				day_index: 0 ,
-				activity_index: null,
+				day_index: 0,
+				activity_index: 0,
 			}
 		},
 		components: {
@@ -37,6 +37,17 @@
 		methods: {
 			show: function(args) {
 				console.log(args)
+				if(args.day_index != null) {
+					console.log('Setting day_index: ' + args.day_index)
+					this.day_index = args.day_index
+				}
+
+				if(args.activity_index != null)
+					this.activity_index = args.activity_index
+
+				console.log('di: ' + this.day_index)
+				console.log('ai: ' + this.activity_index)
+
 				if(
 					args.view == 'overview'
 					|| args.view == 'day_view'
@@ -45,13 +56,7 @@
 					this.itinerary_view = args.view
 				else
 					console.log('Unknown view: ' + args.view)
-				//this.day_index = index
 
-				if(args.day_index)
-					this.day_index = args.day_index
-
-				if(args.activity_index)
-					this.activity_index = args.activity_index
 			}
 		}
 	}

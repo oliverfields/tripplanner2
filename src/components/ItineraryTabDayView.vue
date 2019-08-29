@@ -1,9 +1,15 @@
 <template>
 	<div>
-		<a href="#" @click="show({view: 'overview'})"><font-awesome-icon icon="chevron-left" /> Overview</a>
-		<h1>Day view</h1>
-		Currently editing day {{ this.$parent.day_index }}
-		<a href="#" @click="show({view: 'activity_view', day_index: 99, activity_inded: 66})">Activity 66</a>
+		<div class="breadcrumb">
+			<a href="#" @click="show({view: 'overview'})"><font-awesome-icon icon="chevron-left" /> Overview</a>
+		</div>
+		<h2>{{ this.$store.state.active_trip.itinerary[this.$parent.day_index].date_pretty }}</h2>
+		<h3>Activities</h3>
+		<ul v-if="this.$store.state.active_trip.itinerary[this.$parent.day_index].activities">
+			<li class="activity" v-for="activity in this.$store.state.active_trip.itinerary[this.$parent.day_index].activities">
+				<a href="#" @click="show({view: 'activity_view', activity_index: activity.activity_index })">{{ activity.description }}</a>
+			</li>
+		</ul>
 	</div>
 </template>
 
@@ -23,3 +29,7 @@
 		}
 	}
 </script>
+
+<style>
+
+</style>

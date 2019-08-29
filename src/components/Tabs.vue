@@ -2,8 +2,16 @@
 	<div id="tabs">
 		<ul class="nav nav-tabs" id="tripTabs" role="tablist">
 			<li class="nav-item">
-				<a 
+				<a
 					class="nav-link active"
+					data-toggle="tab"
+					href="#itinerary-tab-content"
+					role="tab"
+				>Itinerary</a>
+			</li>
+			<li class="nav-item">
+				<a 
+					class="nav-link"
 					data-toggle="tab"
 					href="#trip-tab-content"
 					role="tab"
@@ -17,19 +25,11 @@
 					role="tab"
 				>Map</a>
 			</li>
-			<li class="nav-item">
-				<a
-					class="nav-link"
-					data-toggle="tab"
-					href="#itinerary-tab-content"
-					role="tab"
-				>Itinerary</a>
-			</li>
 		</ul>
 		<div class="tab-content" id="tripTabsContent">
-			<div class="tab-pane fade show active" id="trip-tab-content" role="tabpanel" aria-labelledby="trip-tab-content"><TripTab /></div>
+			<div class="tab-pane fade show active" id="itinerary-tab-content" role="tabpanel" aria-labelledby="itinerary-tab-content"><ItineraryTab /></div>
+			<div class="tab-pane fade" id="trip-tab-content" role="tabpanel" aria-labelledby="trip-tab-content"><TripTab /></div>
 			<div class="tab-pane fade" id="map-tab-content" role="tabpanel" aria-labelledby="map-tab-content"><MapTab /></div>
-			<div class="tab-pane fade" id="itinerary-tab-content" role="tabpanel" aria-labelledby="itinerary-tab-content"><ItineraryTab /></div>
 		</div>
 	</div>
 </template>

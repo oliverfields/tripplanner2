@@ -1,8 +1,11 @@
 <template>
 	<div>
-		<a href="#" @click="show({view: 'overview'})"><font-awesome-icon icon="chevron-left" /> Overview</a> <a href="#" @click="show({view: 'day_view', day_index: 99})"><font-awesome-icon icon="chevron-left" /> Day</a>
+		<div class="breadcrumb">
+			<a href="#" @click="show({view: 'overview'})"><font-awesome-icon icon="chevron-left" /> Overview</a> <a href="#" @click="show({view: 'day_view', day_index: this.$parent.day_index })"><font-awesome-icon icon="chevron-left" /> {{ this.$store.state.active_trip.itinerary[this.$parent.day_index].date_pretty }}</a>
+		</div>
+		{{ this.$parent.day_index }}
 		<h1>Activity view</h1>
-		Currently editing activity {{ this.$parent.activity_index }} on day {{ this.$parent.day_index }}
+		{{ this.$store.state.active_trip.itinerary[this.$parent.day_index].description }}
 	</div>
 </template>
 
