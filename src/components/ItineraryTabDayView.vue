@@ -1,8 +1,5 @@
 <template>
 	<div>
-		<div class="breadcrumb">
-			<a href="#" @click="show({view: 'overview'})"><font-awesome-icon icon="chevron-left" /> Overview</a>
-		</div>
 		<h2>{{ this.$store.state.active_trip.itinerary[this.$parent.day_index].date_pretty }}</h2>
 		<h3>Activities</h3>
 		<ul v-if="this.$store.state.active_trip.itinerary[this.$parent.day_index].activities">

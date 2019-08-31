@@ -4,7 +4,7 @@
 			<a href="#" @click="show({view: 'day_view', day_index: day.day_index })">{{ day.date_pretty }}, day {{ day.day_number }}</a>
 			<ul class="activities" v-if="day.activities">
 				<li class="activity" v-for="activity in day.activities">
-					<a href="#" @click="show({view: 'activity_view', activity_index: activity.activity_index })">{{ activity.description }}</a>
+					<a href="#" @click="show({view: 'activity_view', activity_index: activity.activity_index, day_index: day.day_index })">{{ activity.description }}</a>
 				</li>
 			</ul>
 		</li>
