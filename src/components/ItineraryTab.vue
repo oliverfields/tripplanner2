@@ -1,83 +1,106 @@
 <template>
 	<div>
-		View:<input v-model="itinerary_view" /><br />
-		Day:<input v-model="day_index" /><br />
-		Activity:<input v-model="activity_index" />
-<!--
 		<div class="breadcrumb">
-			<a href="#" @click="show({view: 'overview'})"><font-awesome-icon icon="chevron-left" /> Overview</a>
-		</div>
-		<div class="breadcrumb">
-			<a href="#" @click="show({view: 'overview'})"><font-awesome-icon icon="chevron-left" /> Overview</a> <a href="#" @click="show({view: 'day_view', day_index: this.$parent.day_index })"><font-awesome-icon icon="chevron-left" /> {{ this.$store.state.active_trip.itinerary[this.$parent.day_index].date_pretty }}</a>
-		</div>
--->
-		<div v-if="itinerary_view != 'overview'">
 			<a
 				href="#"
-				@click="show({view: 'overview'})"
-			><font-awesome-icon icon="chevron-left" /> Overview</a>
-			<a v-if="itinerary_view = 'activity_view'"
-				href="#" @click="show({view: 'day_view', day_index: this.day_index })"
-			><font-awesome-icon icon="chevron-left" />Day</a>
+				v-if="this.show_day_index != null || this.show_activity_index != null"
+				@click="show_itinerary()"
+			><font-awesome-icon icon="chevron-left" /> Overview</a> <a
+				href="#"
+				v-if="this.show_activity_index != null"
+				@click="show_day(show_day_index)"
+			><font-awesome-icon icon="chevron-left" /> {{ selected_day_date_pretty }}</a>
 		</div>
 
-		<div v-if="this.itinerary_view === 'day_view'">
-			<ItineraryTabDayView @show="show" />
+		<div v-if="this.show_activity_index != null">
+			<ItineraryTabActivityView />
 		</div>
-		<div v-else-if="this.itinerary_view === 'activity_view'">
-			<ItineraryTabActivityView  @show="show" />
+		<div v-else-if="this.show_day_index != null">
+			<ItineraryTabDayView />
 		</div>
 		<div v-else>
-			<ItineraryTabOverview  @show="show" />
+			<ul class="itinerary">
+				<li class="day" v-for="day in this.$store.state.active_trip.itinerary">
+					<a href="#" @click="show_day(day.day_index)">{{ day.date_pretty }}, day {{ day.day_number }}</a>
+					<ul class="activities" v-if="day.activities">
+						<li class="activity" v-for="activity in day.activities">
+							<a href="#" v-if="activity.description" @click="show_activity(day.day_index, activity.activity_index)">{{ activity.description }}</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
 		</div>
 	</div>
 </template>
 
 <script>
-	import ItineraryTabOverview from '@/components/ItineraryTabOverview'
 	import ItineraryTabDayView from '@/components/ItineraryTabDayView'
 	import ItineraryTabActivityView from '@/components/ItineraryTabActivityView'
 	
 	export default {
 	name: 'ItineraryTab',
-		data () {
-			return {
-				itinerary_view: 'overview', // overview, day_view, activity_view
-				day_index: 0,
-				activity_index: 0,
+		components: {
+			ItineraryTabDayView,
+			ItineraryTabActivityView
+		},
+		computed: {
+			show_day_index: {
+				get() {
+					return this.$store.state.active_trip.itinerary_navigation.show_day_index
+				},
+				set(index) {
+					this.$store.commit('update_itinerary_navigation', {property: 'show_day_index', value: index})
+				}
+			},
+			show_activity_index: {
+				get() {
+					return this.$store.state.active_trip.itinerary_navigation.show_activity_index
+				},
+				set(index) {
+					this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: index})
+				}
+			},
+			selected_day_date_pretty() {
+				let day_index = this.$store.state.active_trip.itinerary_navigation.show_day_index
+				if(day_index != null)
+					return this.$store.state.active_trip.itinerary[day_index].date_pretty
 			}
 		},
-		components: {
-			ItineraryTabOverview,
-			ItineraryTabDayView,
-			ItineraryTabActivityView,
-		},
 		methods: {
-			show: function(args) {
-				console.log(args)
-				if(args.day_index != null) {
-					console.log('Setting day_index: ' + args.day_index)
-					this.day_index = args.day_index
-				}
-
-				if(args.activity_index != null)
-					this.activity_index = args.activity_index
-
-				console.log('di: ' + this.day_index)
-				console.log('ai: ' + this.activity_index)
-
-				if(
-					args.view == 'overview'
-					|| args.view == 'day_view'
-					|| args.view == 'activity_view'
-				) {
-					console.log('Setting view: ' + args.view)
-					this.itinerary_view = args.view
-				}
-				else {
-					console.log('Unknown view: ' + args.view)
-				}
+			show_day(index){
+				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
+				this.$store.commit('update_itinerary_navigation', {property: 'show_day_index', value: index})
+			},
+			show_itinerary(){
+				this.$store.commit('update_itinerary_navigation', {property: 'show_day_index', value: null})
+				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
+			},
+			show_activity(day_index, activity_index){
+				this.$store.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})
 			}
 		}
 	}
 </script>
+
+<style>
+	.itinerary {
+		list-style: none;
+		padding: 1rem;
+		margin-top: 1rem;
+	}
+	.itinerary a{
+		margin: 0;
+	}
+	.day {
+		margin-bottom: 1.5rem;
+	}
+	.day>a {
+		display: block;
+	}
+	.activities {
+		padding: .2rem 0 0 2rem;
+	}
+	.breadcrumb a:nth-child(2) {
+		margin: 0 .5rem 0 1.5rem;
+	}
+</style>

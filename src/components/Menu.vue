@@ -40,6 +40,7 @@
 				})
 			},
 			set_active_trip(payload) {
+				// Set trip
 				this.$store.dispatch('set_active_trip', payload)
 			},
 			create_trip() {

@@ -1,7 +1,12 @@
 <template>
 	<div>
-		<h1>Activity view</h1>
-		{{ this.$store.state.active_trip.itinerary[this.$parent.day_index].description }}
+		<div v-for="day in this.$store.state.active_trip.itinerary">
+			<div v-for="activity in day.activities">
+				<div class="activity" v-show="show_activity(day.day_index, activity.activity_index)">
+					{{ activity.activity_id }}{{ activity.description }}
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -15,9 +20,11 @@
 		components: {
 		},
 		methods: {
-			show(args) {
-				this.$emit('show', args)
+			show_activity: function(day_index, activity_index) {
+				return this.$store.state.active_trip.itinerary_navigation.show_day_index == day_index && this.$store.state.active_trip.itinerary_navigation.show_activity_index == activity_index
 			}
+		},
+		computed: {
 		}
 	}
 </script>

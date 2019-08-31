@@ -92,6 +92,11 @@ export const store = new Vuex.Store({
 					if(trip.start_date && trip.end_date) // Always compute trip duration, must be done after dates are converted to javascript date objects
 						trip.trip_days_duration = mixin.methods.tp_date_difference(trip.start_date, trip.end_date)
 
+					// Controls for itinerary tab content
+					trip.itinerary_navigation = {
+						show_day_index: null,
+						show_activity_index: null
+					}
 
 					trips.push(trip)
 				})
@@ -123,9 +128,27 @@ export const store = new Vuex.Store({
 		update_active_trip_duration: (context, payload) => {
 			context.commit('update_active_trip', { property: 'trip_days_duration', value: payload.duration })
 			context.commit('update_active_itinerary_length') // Call after trip_days_duration is updated
+		},
+		show_activity: (context, payload) => {
+			context.commit('update_itinerary_navigation', { property: 'show_day_index', value: payload.day_index })
+			context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: payload.activity_index })
 		}
 	},
 	mutations: {
+		update_itinerary_navigation: (state, payload) => {
+			switch (payload.property) {
+				case 'show_day_index':
+					if(typeof payload.value != 'number') payload.value = null
+					state.active_trip.itinerary_navigation.show_day_index = payload.value
+					break
+				case 'show_activity_index':
+					if(typeof payload.value != 'number') payload.value = null
+					state.active_trip.itinerary_navigation.show_activity_index = payload.value
+					break
+				default:
+					console.log('Unkown itinerary_navigation property: ' + payload.property)
+			}
+		},
 		update_active_itinerary_length: (state) => {
 			// Ensure length of itinerary list corresponds to trip_days_duration
 			if(!state.active_trip.itinerary)
@@ -166,8 +189,11 @@ export const store = new Vuex.Store({
 					day_date = mixin.methods.tp_add_days_to_date(day_date, 1)
 				}
 			}
+			else if(itinerary_length == duration) {
+				console.log('Itinerary_length is same as duration, doing nothing (' +itinerary_length + ' = ' + duration +')')
+			}
 			else {
-				console.log('Decreasing itinerary')
+				console.log('Itinerary_length is less than duration, decreasing itinerary (' +itinerary_length + ' < ' + duration +')')
 			}
 
 			// Add activity indexes (for template lookups
