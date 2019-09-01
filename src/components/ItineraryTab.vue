@@ -22,6 +22,7 @@
 			<ul class="itinerary">
 				<li class="day" v-for="day in this.$store.state.active_trip.itinerary">
 					<a href="#" @click="show_day(day.day_index)">{{ day.date_pretty }}, day {{ day.day_number }}</a>
+					<div class="notes">{{ day.notes }}</div>
 					<ul class="activities" v-if="day.activities">
 						<li class="activity" v-for="activity in day.activities">
 							<a href="#" v-if="activity.description" @click="show_activity(day.day_index, activity.activity_index)">{{ activity.description }}</a>
@@ -102,5 +103,8 @@
 	}
 	.breadcrumb a:nth-child(2) {
 		margin: 0 .5rem 0 1.5rem;
+	}
+	.notes {
+		font-style: italic;
 	}
 </style>

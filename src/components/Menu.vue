@@ -17,6 +17,7 @@
 					</div>
 				</li>
 				<li class="nav-item"><a class="btn btn-success" href="#" @click="create_trip"><font-awesome-icon icon="plus" /> New trip</a></li>
+				<li class="nav-item"><a class="btn btn-primary" href="#" @click="log_trip">Console log active trip</a></li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item"><a class="nav-link" href="#" @click="logout"><font-awesome-icon icon="sign-out-alt" /> Logout</a></li>
@@ -45,6 +46,9 @@
 			},
 			create_trip() {
 				this.$store.dispatch('create_trip')
+			},
+			log_trip() {
+				console.log(this.$store.state.active_trip)
 			}
 		}
 	}

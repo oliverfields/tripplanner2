@@ -18,6 +18,40 @@ function convert_firebase_geopoint(firebase_geopoint) {
 	}
 }
 
+function setup_trip(trip) {
+	if(!trip.name)
+		trip.name = 'Trip name'
+
+	if(!trip.id)
+		trip.id = 'trip_planner_tmp_id_' + new_trip_id_counter
+
+	if(!trip.start_date)
+		trip.start_date = new Date()
+
+	if(!trip.end_date)
+		trip.end_date = new Date()
+
+	if(!trip.duration)
+		trip.duration = 1
+
+	if(!trip.map_center)
+		trip.map_center = { lat: 52.5125, lng: 13.3815 }
+
+	if(!trip.map_zoom)
+		trip.map_zoom = 2
+
+	if(trip.start_date && trip.end_date) // Always compute trip duration, must be done after dates are converted to javascript date objects
+		trip.trip_days_duration = mixin.methods.tp_date_difference(trip.start_date, trip.end_date)
+
+	// Controls for itinerary tab content
+	trip.itinerary_navigation = {
+		show_day_index: null,
+		show_activity_index: null
+	}
+
+	return trip
+}
+
 var new_trip_id_counter = 1
 
 export const store = new Vuex.Store({
@@ -51,18 +85,12 @@ export const store = new Vuex.Store({
 			context.commit('setItems')
 		},
 		create_trip: context => {
-			let new_trip = {
-				name: 'New trip',
-				id: 'trip_planner_tmp_id_' + new_trip_id_counter,
-				start_date: new Date(),
-				end_date: new Date(),
-				map_center: { lat: 52.5125, lng: 13.3815 },
-				map_zoom: 2
-			}
+			let new_trip = setup_trip({})
 			new_trip_id_counter += 1
 			
 			context.commit('create_trip', new_trip)
 			context.commit('set_active_trip', new_trip)
+			context.commit('update_active_itinerary_length')
 		},
 		delete_active_trip: ({commit, state}, payload) => {
 			let delete_trip_id = state.active_trip.id
@@ -86,44 +114,12 @@ export const store = new Vuex.Store({
 					if(trip.map_center)
 						trip.map_center = convert_firebase_geopoint(trip.map_center)
 
-					if(trip.name)
-						trip.name = trip.name
-
-					if(trip.start_date && trip.end_date) // Always compute trip duration, must be done after dates are converted to javascript date objects
-						trip.trip_days_duration = mixin.methods.tp_date_difference(trip.start_date, trip.end_date)
-
-					// Controls for itinerary tab content
-					trip.itinerary_navigation = {
-						show_day_index: null,
-						show_activity_index: null
-					}
+					trip = setup_trip(trip)
 
 					trips.push(trip)
 				})
 				context.commit('set_trips', trips)
 			})
-/*
-			db.collection('users').doc(auth.currentUser.uid).collection('trips').orderBy('name').get()
-			.then(function(snapshot) {
-				snapshot.forEach(function(doc) {
-					let d = doc.data()
-					trips.push({
-						id: doc.id,
-						name: d.name,
-						start_date: d.start_date,
-						end_date: d.end_date,
-						map_lat: d.map_lat,
-						map_lon: d.map_lon,
-						map_zoom: d.map_zoom,
-						itinerary: d.itinerary
-					})
-				})
-			})
-			.catch(function(error) {
-				console.log('Error getting trips: ', error)
-			})
-			context.commit('set_trips', trips)
-*/
 		},
 		update_active_trip_duration: (context, payload) => {
 			context.commit('update_active_trip', { property: 'trip_days_duration', value: payload.duration })
@@ -182,7 +178,8 @@ export const store = new Vuex.Store({
 							date_pretty: mixin.methods.tp_date_format(day_date),
 							day_number: i + 1,
 							day_index: i,
-							activities: []
+							activities: [],
+							notes: ''
 
 						})
 					}

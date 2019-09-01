@@ -74,7 +74,8 @@
 		name: 'MapTab',
 		data() {
 			return {
-				latlng_valid: true
+				latlng_valid: true,
+				latlng_tmp_value: this.tp_latlng_2_str(this.$store.state.active_trip.map_center)
 			}
 		},
 		components: {
@@ -95,21 +96,16 @@
 			},
 			latlng: {
 				get() {
-					let latlng_str = this.tp_latlng_2_str(this.$store.state.active_trip.map_center)
-					if(latlng_str) {
-						this.latlng_valid = true
-						return latlng_str
-					}
-					else {
-						this.latlng_valid = false
-						return this.$store.state.active_trip.map_center
-					}
+					return this.latlng_tmp_value
 				},
 				set(value) {
-					let latlng_object = this.tp_str_2_latlng(value) // Convert string from input field to latlng object
+					// If tmp value is valid latlng update store, else just update tmp value
+					this.latlng_tmp_value = value
+
+					let latlng_object = this.tp_str_2_latlng(value)
 					if(latlng_object) {
-						this.$store.commit('update_active_trip', { property: 'map_center', value: latlng_object })
 						this.latlng_valid = true
+						this.$store.commit('update_active_trip', { property: 'map_center', value: latlng_object })
 					}
 					else {
 						this.latlng_valid = false
@@ -133,16 +129,6 @@
 				else {
 					console.log('Form invalid, aborting save')
 				}
-/*
-				this.$store.commit('update_active_trip', {
-					property: 'map_center',
-					value: this.tp_str_2_latlng(this.$refs.active_trip_map_center.value)
-				})
-				this.$store.commit('update_active_trip', {
-					property: 'map_zoom',
-					value: this.$refs.active_trip_map_zoom.value
-				})
-*/
 			},
 			use_current_map_settings() {
 				this.$store.commit('update_active_trip', {
@@ -150,10 +136,6 @@
 					value: this.$store.getters.map_settings.zoom
 				})
 				this.$store.commit('update_active_trip', {property: 'map_center', value: this.$store.getters.map_settings.center})
-			},
-			validate_latlng: function() {
-				console.log('validating latlng')
-				return true
 			},
 		}
 	}

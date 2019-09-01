@@ -1,8 +1,21 @@
 <template>
-	<div>
+	<form>
 		<div v-for="day in this.$store.state.active_trip.itinerary">
 			<div class="day" v-show="show_day_index == day.day_index">
 				<h2>{{ day.date_pretty }}</h2>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<label for="trip_notes">Notes</label>
+							<textarea
+								class="form-control"
+								id="trip_notes"
+								v-model="day.notes"
+							/>
+							<div class="invalid-feedback">Notes can only use letters and numbers</div>
+						</div>
+					</div>
+				</div>
 				<h3>Activities</h3>
 				<ul v-if="day.activities">
 					<li class="activity" v-for="activity in day.activities">
@@ -11,7 +24,7 @@
 				</ul>
 			</div>
 		</div>
-	</div>
+	</form>
 </template>
 
 <script>

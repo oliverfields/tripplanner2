@@ -49,6 +49,8 @@ export default {
 
 			if(this.tp_valid_latlng(latlng))
 				return latlng
+			else
+				return false
 		},
 		tp_latlng_2_str: function(latlng) {
 			if(this.tp_valid_latlng(latlng))
