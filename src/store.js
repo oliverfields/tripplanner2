@@ -23,7 +23,7 @@ function setup_trip(trip) {
 		trip.name = 'Trip name'
 
 	if(!trip.id)
-		trip.id = 'trip_planner_tmp_id_' + new_trip_id_counter
+		trip.id = 'trip_planner_tmp_id_' + new_id()
 
 	if(!trip.start_date)
 		trip.start_date = new Date()
@@ -36,6 +36,9 @@ function setup_trip(trip) {
 
 	if(!trip.map_center)
 		trip.map_center = { lat: 52.5125, lng: 13.3815 }
+
+	if(!trip.itinerary)
+		trip.itinerary = []
 
 	if(!trip.map_zoom)
 		trip.map_zoom = 2
@@ -52,7 +55,11 @@ function setup_trip(trip) {
 	return trip
 }
 
-var new_trip_id_counter = 1
+var id_counter = 0
+function new_id() {
+	id_counter += 1
+	return id_counter
+}
 
 export const store = new Vuex.Store({
 	strict: true,
@@ -86,8 +93,7 @@ export const store = new Vuex.Store({
 		},
 		create_trip: context => {
 			let new_trip = setup_trip({})
-			new_trip_id_counter += 1
-			
+
 			context.commit('create_trip', new_trip)
 			context.commit('set_active_trip', new_trip)
 			context.commit('update_active_itinerary_length')
@@ -128,9 +134,24 @@ export const store = new Vuex.Store({
 		show_activity: (context, payload) => {
 			context.commit('update_itinerary_navigation', { property: 'show_day_index', value: payload.day_index })
 			context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: payload.activity_index })
-		}
+		},
+		add_activity_and_show: (context, payload) => {
+			let day_index = payload.day_index
+			let day = payload.day
+			context.commit('add_activity', day)
+			let activity_index = day.activities.length - 1 // New activity is appended to end, so index = length - 1
+			context.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})
+		},
 	},
 	mutations: {
+		add_activity: (state, day) => {
+			day.activities.push({
+				description: '',
+			})
+		},
+		delete_activity: (state, payload) => {
+			state.active_trip.itinerary[payload.day_index].activities.splice(payload.activity_index, 1)
+		},
 		update_itinerary_navigation: (state, payload) => {
 			switch (payload.property) {
 				case 'show_day_index':
@@ -165,7 +186,6 @@ export const store = new Vuex.Store({
 						itinerary[i].date = day_date
 						itinerary[i].date_pretty = mixin.methods.tp_date_format(day_date)
 						itinerary[i].day_number = i + 1
-						itinerary[i].day_index = i
 
 						if(!itinerary[i].activities)
 							itinerary[i].activities = []
@@ -177,10 +197,8 @@ export const store = new Vuex.Store({
 							date: day_date,
 							date_pretty: mixin.methods.tp_date_format(day_date),
 							day_number: i + 1,
-							day_index: i,
 							activities: [],
 							notes: ''
-
 						})
 					}
 					day_date = mixin.methods.tp_add_days_to_date(day_date, 1)
@@ -192,13 +210,6 @@ export const store = new Vuex.Store({
 			else {
 				console.log('Itinerary_length is less than duration, decreasing itinerary (' +itinerary_length + ' < ' + duration +')')
 			}
-
-			// Add activity indexes (for template lookups
-			for (let x = 0; x < itinerary.length; x++) {
-				for (let n = 0; n < itinerary[x].activities.length; n++) {
-					itinerary[x].activities[n].activity_index = n
-				}
-			}
 		},
 		update_map_settings: (state, payload) => {
 			if(payload.zoom)
@@ -206,6 +217,26 @@ export const store = new Vuex.Store({
 
 			if(payload.center)
 				state.map.center = payload.center
+		},
+		update_active_day: (state, payload) => {
+			let active_day = state.active_trip.itinerary[state.active_trip.itinerary_navigation.show_day_index]
+			switch (payload.property) {
+				case 'notes':
+					active_day.notes = payload.value
+					break
+				default:
+					console.log('Unkown active day property: ' + payload.property)
+			}
+		},
+		update_active_activity: (state, payload) => {
+			let active_activity = state.active_trip.itinerary[state.active_trip.itinerary_navigation.show_day_index].activities[state.active_trip.itinerary_navigation.show_activity_index]
+			switch (payload.property) {
+				case 'description':
+					active_activity.description = payload.value
+					break
+				default:
+					console.log('Unkown active activity property: ' + payload.property)
+			}
 		},
 		update_active_trip: (state, payload) => {
 			switch (payload.property) {

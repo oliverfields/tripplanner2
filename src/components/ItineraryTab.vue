@@ -20,12 +20,12 @@
 		</div>
 		<div v-else>
 			<ul class="itinerary">
-				<li class="day" v-for="day in this.$store.state.active_trip.itinerary">
-					<a href="#" @click="show_day(day.day_index)">{{ day.date_pretty }}, day {{ day.day_number }}</a>
+				<li class="day" v-for="(day, day_index) in this.$store.state.active_trip.itinerary">
+					<a href="#" @click="show_day(day_index)">{{ day.date_pretty }}, day {{ day.day_number }}</a>
 					<div class="notes">{{ day.notes }}</div>
 					<ul class="activities" v-if="day.activities">
-						<li class="activity" v-for="activity in day.activities">
-							<a href="#" v-if="activity.description" @click="show_activity(day.day_index, activity.activity_index)">{{ activity.description }}</a>
+						<li class="activity" v-for="(activity, activity_index) in day.activities">
+							<a href="#" v-if="activity.description" @click="show_activity(day_index, activity_index)">{{ activity.description }}</a>
 						</li>
 					</ul>
 				</li>

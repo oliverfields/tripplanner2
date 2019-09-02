@@ -1,13 +1,24 @@
 <template>
-	<div>
-		<div v-for="day in this.$store.state.active_trip.itinerary">
-			<div v-for="activity in day.activities">
-				<div class="activity" v-show="show_activity(day.day_index, activity.activity_index)">
-					{{ activity.activity_id }}{{ activity.description }}
+	<form>
+		<div v-for="(day, day_index) in this.$store.state.active_trip.itinerary">
+			<div v-for="(activity, activity_index) in day.activities">
+				<div class="activity" v-show="show_activity(day_index, activity_index)">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="activity_description">Description</label>
+								<input
+									class="form-control"
+									v-model="activity_description"
+								/>
+								<div class="invalid-feedback">Description can only use letters and numbers</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</form>
 </template>
 
 <script>
@@ -25,6 +36,20 @@
 			}
 		},
 		computed: {
+			activity_description: {
+				get() {
+					return this.$store.state.active_trip.itinerary[
+						this.$store.state.active_trip.itinerary_navigation.show_day_index
+					]
+					.activities[
+						this.$store.state.active_trip.itinerary_navigation.show_activity_index
+					]
+					.description
+				},
+				set(value) {
+					this.$store.commit('update_active_activity', {property: 'description', value: value})
+				}
+			},
 		}
 	}
 </script>
