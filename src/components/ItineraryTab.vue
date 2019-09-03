@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="breadcrumb">
+		<div key="breadcrumb" class="breadcrumb">
 			<a
 				href="#"
 				v-if="this.show_day_index != null || this.show_activity_index != null"
@@ -11,7 +11,6 @@
 				@click="show_day(show_day_index)"
 			><font-awesome-icon icon="chevron-left" /> {{ selected_day_date_pretty }}</a>
 		</div>
-
 		<div v-if="this.show_activity_index != null">
 			<ItineraryTabActivityView />
 		</div>
