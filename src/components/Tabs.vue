@@ -27,9 +27,9 @@
 			</li>
 		</ul>
 		<div class="tab-content" id="tripTabsContent">
-			<div class="tab-pane fade show active" id="itinerary-tab-content" role="tabpanel" aria-labelledby="itinerary-tab-content"><ItineraryTab /></div>
-			<div class="tab-pane fade" id="trip-tab-content" role="tabpanel" aria-labelledby="trip-tab-content"><TripTab /></div>
-			<div class="tab-pane fade" id="map-tab-content" role="tabpanel" aria-labelledby="map-tab-content"><MapTab /></div>
+			<div class="tab-pane show active" id="itinerary-tab-content" role="tabpanel" aria-labelledby="itinerary-tab-content"><ItineraryTab /></div>
+			<div class="tab-pane" id="trip-tab-content" role="tabpanel" aria-labelledby="trip-tab-content"><TripTab /></div>
+			<div class="tab-pane" id="map-tab-content" role="tabpanel" aria-labelledby="map-tab-content"><MapTab /></div>
 		</div>
 	</div>
 </template>

@@ -11,6 +11,7 @@
 				@click="show_day(show_day_index)"
 			><font-awesome-icon icon="chevron-left" /> {{ selected_day_date_pretty }}</a>
 		</div>
+
 		<div v-if="this.show_activity_index != null">
 			<ItineraryTabActivityView />
 		</div>
@@ -24,11 +25,17 @@
 					<div class="notes">{{ day.notes }}</div>
 					<ul class="activities" v-if="day.activities">
 						<li class="activity" v-for="(activity, activity_index) in day.activities">
-							<a href="#" v-if="activity.description" @click="show_activity(day_index, activity_index)">{{ activity.description }}</a>
+							<a href="#" @click="show_activity(day_index, activity_index)">
+								<span v-if="activity.description">{{ activity.description }}</span>
+								<span v-else><em>empty</em></span>
+							</a>
 						</li>
 					</ul>
 				</li>
 			</ul>
+			<div class="col-md-6">
+				<a class="btn btn-primary slim-button" href="#" @click="add_day_and_show()"><font-awesome-icon icon="plus" /> Add day</a>
+			</div>
 		</div>
 	</div>
 </template>
@@ -67,6 +74,9 @@
 			}
 		},
 		methods: {
+			add_day_and_show() {
+				this.$store.dispatch('add_day_and_show')
+			},
 			show_day(index){
 				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
 				this.$store.commit('update_itinerary_navigation', {property: 'show_day_index', value: index})

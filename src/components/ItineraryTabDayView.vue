@@ -9,10 +9,9 @@
 							<label for="trip_notes">Notes</label>
 							<textarea
 								:class="notes_class"
-								id="notes"
 								v-model="notes"
 							/>
-							<div v-show="validate_day_notes" class="invalid-feedback">Notes can only use letters and numbers</div>
+							<div v-show="validate_day_notes" class="invalid-feedback"><font-awesome-icon icon="exclamation-triangle" /> Notes can only use letters and numbers</div>
 						</div>
 					</div>
 				</div>
@@ -22,7 +21,10 @@
 							<h3>Activities</h3>
 							<ul>
 								<li class="activity" v-for="(activity, activity_index) in day.activities"">
-									<a href="#" @click="show_activity(day_index, activity_index)">{{ activity.description }}</a>
+									<a href="#" @click="show_activity(day_index, activity_index)">
+										<span v-if="activity.description">{{ activity.description }}</span>
+										<span v-else><em>empty</em></span>
+									</a>
 									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><font-awesome-icon icon="trash-alt" /></a>
 								</li>
 							</ul>
@@ -32,15 +34,6 @@
 						<a class="btn btn-primary slim-button" href="#" @click="add_activity_and_show(day_index, day)"><font-awesome-icon icon="plus" /> Add activity</a>
 					</div>
 				</div>
-
-				<div class="row">
-					<div class="col-md-12">
-						<div class="form-group">
-							<a @click="save_day" href="#" :class="save_button_classes"><font-awesome-icon icon="save" /> Save</a>
-						</div>
-					</div>
-				</div>
-
 			</div>
 		</div>
 	</form>
@@ -49,22 +42,7 @@
 <script>
 	export default {
 		name: 'ItineraryTabDayVeiw',
-		components: {
-		},
-		data() {
-			return {
-				day_notes_valid: true,
-			}
-		},
 		methods: {
-			save_day: function() {
-				if(this.form_valid) {
-					console.log('Saving day')
-				}
-				else {
-					console.log('Form invalid, aborting save')
-				}
-			},
 			show_activity(day_index, activity_index) {
 				this.$store.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})
 			},
@@ -74,29 +52,19 @@
 			delete_activity(payload) {
 				this.$store.commit('delete_activity', payload)
 			},
-			form_valid: function() {
-				return (this.day_notes_valid)
-			},
 			validate_day_notes: function() {
 				if(this.notes == '') {
-					this.day_notes_valid = true
+					this.$store.commit('update_active_trip', { property: 'valid', value: true})
 					return true
 				}
 
 				let re = this.$XRegExp("^[\\p{L}\\d\ \\_\\-]+$")
 				let result = re.test(this.notes)
-				this.day_notes_valid = result
+				this.$store.commit('update_active_trip', { property: 'valid', value: result})
 				return result
 			},
 		},
 		computed: {
-			save_button_classes: function() {
-				return {
-					btn: true,
-					'btn-success': true,
-					disabled: !this.submit_button_active
-				}
-			},
 			show_day_index: function() {
 				return this.$store.state.active_trip.itinerary_navigation.show_day_index
 			},
@@ -115,9 +83,6 @@
 				set(value) {
 					this.$store.commit('update_active_day', {property: 'notes', value: value})
 				}
-			},
-			submit_button_active: function() {
-				return this.form_valid()
 			},
 		}
 	}

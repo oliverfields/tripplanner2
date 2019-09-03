@@ -26,7 +26,9 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { faAsterisk } from '@fortawesome/free-solid-svg-icons'
 library.add(faPlus)
+library.add(faAsterisk)
 library.add(faChevronLeft)
 library.add(faMapMarkedAlt)
 library.add(faInfoCircle)

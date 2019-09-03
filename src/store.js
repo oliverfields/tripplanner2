@@ -20,19 +20,13 @@ function convert_firebase_geopoint(firebase_geopoint) {
 
 function setup_trip(trip) {
 	if(!trip.name)
-		trip.name = 'Trip name'
+		trip.name = 'new trip'
 
 	if(!trip.id)
 		trip.id = 'trip_planner_tmp_id_' + new_id()
 
 	if(!trip.start_date)
 		trip.start_date = new Date()
-
-	if(!trip.end_date)
-		trip.end_date = new Date()
-
-	if(!trip.duration)
-		trip.duration = 1
 
 	if(!trip.map_center)
 		trip.map_center = { lat: 52.5125, lng: 13.3815 }
@@ -43,8 +37,11 @@ function setup_trip(trip) {
 	if(!trip.map_zoom)
 		trip.map_zoom = 2
 
-	if(trip.start_date && trip.end_date) // Always compute trip duration, must be done after dates are converted to javascript date objects
-		trip.trip_days_duration = mixin.methods.tp_date_difference(trip.start_date, trip.end_date)
+	if(!trip.valid)
+		trip.valid = true
+
+	if(!trip.dirty)
+		trip.dirty = true
 
 	// Controls for itinerary tab content
 	trip.itinerary_navigation = {
@@ -87,6 +84,7 @@ export const store = new Vuex.Store({
 	actions: {
 		set_active_trip: (context, payload) => {
 			context.commit('set_active_trip', payload)
+			context.commit('set_itinerary_dates')
 		},
 		setItems: context => {
 			context.commit('setItems')
@@ -96,7 +94,6 @@ export const store = new Vuex.Store({
 
 			context.commit('create_trip', new_trip)
 			context.commit('set_active_trip', new_trip)
-			context.commit('update_active_itinerary_length')
 		},
 		delete_active_trip: ({commit, state}, payload) => {
 			let delete_trip_id = state.active_trip.id
@@ -114,9 +111,6 @@ export const store = new Vuex.Store({
 					if(trip.start_date)
 						trip.start_date = convert_firebase_timestamp_to_js_date_object(trip.start_date)
 
-					if(trip.end_date)
-						trip.end_date = convert_firebase_timestamp_to_js_date_object(trip.end_date)
-
 					if(trip.map_center)
 						trip.map_center = convert_firebase_geopoint(trip.map_center)
 
@@ -126,10 +120,6 @@ export const store = new Vuex.Store({
 				})
 				context.commit('set_trips', trips)
 			})
-		},
-		update_active_trip_duration: (context, payload) => {
-			context.commit('update_active_trip', { property: 'trip_days_duration', value: payload.duration })
-			context.commit('update_active_itinerary_length') // Call after trip_days_duration is updated
 		},
 		show_activity: (context, payload) => {
 			context.commit('update_itinerary_navigation', { property: 'show_day_index', value: payload.day_index })
@@ -142,11 +132,46 @@ export const store = new Vuex.Store({
 			let activity_index = day.activities.length - 1 // New activity is appended to end, so index = length - 1
 			context.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})
 		},
+		add_day_and_show: (context) => {
+			context.commit('add_day')
+			let day_index = context.state.active_trip.itinerary.length - 1 // New day is appended to itinerary end, so index = length - 1
+			//context.commit('update_itinerary_navigation', { property: 'show_day_index', value: day_index })
+			//context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
+			context.commit('set_itinerary_dates')
+
+		},
+		update_active_trip: (context, payload) => {
+			context.commit('set_active_trip', payload)
+			if(payload.property == 'start_date')
+				context.commit('set_itinerary_dates')
+		},
 	},
 	mutations: {
+		set_itinerary_dates: (state) => {
+			let day_date = state.active_trip.start_date
+
+			for (let i = 0; i < state.active_trip.itinerary.length; i++) {
+				day_date = mixin.methods.tp_add_days_to_date(day_date, i)
+				let day_number = i + 1
+				Vue.set(state.active_trip.itinerary[i], 'date', day_date)
+				Vue.set(state.active_trip.itinerary[i], 'date_pretty', mixin.methods.tp_date_format(day_date))
+				Vue.set(state.active_trip.itinerary[i], 'day_number', day_number)
+			}
+		},
+		add_day: (state) => {
+			let day_date = mixin.methods.tp_add_days_to_date(state.active_trip.start_date, state.active_trip.itinerary.length)
+			state.active_trip.itinerary.push({
+				date: day_date,
+				date_pretty: mixin.methods.tp_date_format(day_date),
+				day_number: state.active_trip.itinerary.length + 1,
+				activities: [],
+				notes: ''
+			})
+			
+		},
 		add_activity: (state, day) => {
 			day.activities.push({
-				description: '',
+				description: 'new activity',
 			})
 		},
 		delete_activity: (state, payload) => {
@@ -164,51 +189,6 @@ export const store = new Vuex.Store({
 					break
 				default:
 					console.log('Unkown itinerary_navigation property: ' + payload.property)
-			}
-		},
-		update_active_itinerary_length: (state) => {
-			// Ensure length of itinerary list corresponds to trip_days_duration
-			if(!state.active_trip.itinerary)
-				state.active_trip.itinerary = []
-
-			let itinerary_length = state.active_trip.itinerary.length
-			let duration = state.active_trip.trip_days_duration
-			let itinerary = state.active_trip.itinerary
-			let day_date = state.active_trip.start_date
-			
-
-			// Add array items (days) to the itinerary to make it longer
-			if(itinerary_length < duration) {
-				for (let i = 0; i < duration; i++) {
-
-					// For array elements that already exist, just make sure the day object they contain reflects the trip
-					if(i < itinerary_length) {
-						itinerary[i].date = day_date
-						itinerary[i].date_pretty = mixin.methods.tp_date_format(day_date)
-						itinerary[i].day_number = i + 1
-
-						if(!itinerary[i].activities)
-							itinerary[i].activities = []
-
-					}
-					// Add empty day objects
-					else {
-						itinerary.push({
-							date: day_date,
-							date_pretty: mixin.methods.tp_date_format(day_date),
-							day_number: i + 1,
-							activities: [],
-							notes: ''
-						})
-					}
-					day_date = mixin.methods.tp_add_days_to_date(day_date, 1)
-				}
-			}
-			else if(itinerary_length == duration) {
-				console.log('Itinerary_length is same as duration, doing nothing (' +itinerary_length + ' = ' + duration +')')
-			}
-			else {
-				console.log('Itinerary_length is less than duration, decreasing itinerary (' +itinerary_length + ' < ' + duration +')')
 			}
 		},
 		update_map_settings: (state, payload) => {
@@ -229,6 +209,7 @@ export const store = new Vuex.Store({
 			}
 		},
 		update_active_activity: (state, payload) => {
+			let dirty = true
 			let active_activity = state.active_trip.itinerary[state.active_trip.itinerary_navigation.show_day_index].activities[state.active_trip.itinerary_navigation.show_activity_index]
 			switch (payload.property) {
 				case 'description':
@@ -236,18 +217,18 @@ export const store = new Vuex.Store({
 					break
 				default:
 					console.log('Unkown active activity property: ' + payload.property)
+					dirty = false
 			}
+			state.active_trip.dirty = dirty
 		},
 		update_active_trip: (state, payload) => {
+			let dirty = true
 			switch (payload.property) {
 				case 'name':
 					state.active_trip.name = payload.value
 					break
 				case 'start_date':
 					state.active_trip.start_date = payload.value
-					break
-				case 'end_date':
-					state.active_trip.end_date = payload.value
 					break
 				case 'map_center':
 					state.active_trip.map_center.lat = payload.value.lat
@@ -256,12 +237,17 @@ export const store = new Vuex.Store({
 				case 'map_zoom':
 					state.active_trip.map_zoom = parseInt(payload.value)
 					break
-				case 'trip_days_duration':
-					state.active_trip.trip_days_duration = payload.value
+				case 'valid':
+					state.active_trip.valid = payload.value
+					break
+				case 'dirty':
+					state.active_trip.dirty = payload.value
 					break
 				default:
 					console.log('Unkown active_trip property: ' + payload.property)
+					dirty = false
 			}
+			state.active_trip.dirty = dirty
 		},
 		create_trip: (state, payload) => {
 			state.trips.push(payload)
