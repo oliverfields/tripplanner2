@@ -31,8 +31,21 @@ function setup_trip(trip) {
 	if(!trip.map_center)
 		trip.map_center = { lat: 52.5125, lng: 13.3815 }
 
-	if(!trip.itinerary)
+	if(!trip.itinerary){
 		trip.itinerary = []
+		trip.itinerary.push({
+			activities: []
+		})
+	}
+
+	if(!trip.itinerary_navigation)
+		trip.itinerary_navigation = {}
+
+	if(!trip.itinerary_navigation.show_day_index)
+		trip.itinerary_navigation.show_day_index = null
+
+	if(!trip.itinerary_navigation.show_activity_index)
+		trip.itinerary_navigation.show_activity_index = null
 
 	if(!trip.map_zoom)
 		trip.map_zoom = 2
@@ -41,7 +54,7 @@ function setup_trip(trip) {
 		trip.valid = true
 
 	if(!trip.dirty)
-		trip.dirty = true
+		trip.dirty = false
 
 	// Controls for itinerary tab content
 	trip.itinerary_navigation = {
@@ -91,9 +104,10 @@ export const store = new Vuex.Store({
 		},
 		create_trip: context => {
 			let new_trip = setup_trip({})
-
+			new_trip.dirty = true
 			context.commit('create_trip', new_trip)
 			context.commit('set_active_trip', new_trip)
+			context.commit('set_itinerary_dates')
 		},
 		delete_active_trip: ({commit, state}, payload) => {
 			let delete_trip_id = state.active_trip.id
@@ -141,21 +155,18 @@ export const store = new Vuex.Store({
 
 		},
 		update_active_trip: (context, payload) => {
-			context.commit('set_active_trip', payload)
+			context.commit('update_active_trip', payload)
 			if(payload.property == 'start_date')
 				context.commit('set_itinerary_dates')
 		},
 	},
 	mutations: {
 		set_itinerary_dates: (state) => {
-			let day_date = state.active_trip.start_date
-
 			for (let i = 0; i < state.active_trip.itinerary.length; i++) {
-				day_date = mixin.methods.tp_add_days_to_date(day_date, i)
-				let day_number = i + 1
+				let day_date = mixin.methods.tp_add_days_to_date(state.active_trip.start_date, i)
 				Vue.set(state.active_trip.itinerary[i], 'date', day_date)
 				Vue.set(state.active_trip.itinerary[i], 'date_pretty', mixin.methods.tp_date_format(day_date))
-				Vue.set(state.active_trip.itinerary[i], 'day_number', day_number)
+				Vue.set(state.active_trip.itinerary[i], 'day_number', i + 1)
 			}
 		},
 		add_day: (state) => {
@@ -239,6 +250,7 @@ export const store = new Vuex.Store({
 					break
 				case 'valid':
 					state.active_trip.valid = payload.value
+					dirty = state.active_trip.dirty // I.e. don't update dirty flag when just checking if valid
 					break
 				case 'dirty':
 					state.active_trip.dirty = payload.value

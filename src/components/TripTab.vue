@@ -21,14 +21,14 @@
 					<div class="form-group date-input">
 						<label for="trip_start_date">Start date</label>
 						<div class="control-group datepicker-input">
-							<font-awesome-icon icon="calendar" />
-							<Datepicker
-								v-model="start_date"
-								format="D d MMM yyyy"
-								monday-first
-								style="display: inline-block;"
-								class="form-control"
-							></Datepicker>
+							<div class="form-control">
+								<font-awesome-icon icon="calendar" />
+								<Datepicker
+									v-model="start_date"
+									format="D d MMM yyyy"
+									monday-first
+								></Datepicker>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -90,7 +90,6 @@
 			validate_trip_name: function() {
 				let re = this.$XRegExp("^[\\p{L}\\d\ \\_\\-]+$")
 				let result = re.test(this.trip_name)
-				this.trip_name_valid = result
 
 				this.$store.commit('update_active_trip', { property: 'valid', value: result})
 
@@ -112,12 +111,13 @@
 		background-color: none;
 		color: #228CFF;
 	}
-	 .datepicker-input, .datepicker-input input {
+	.datepicker-input, .datepicker-input input {
 		cursor: pointer;
 	}
 	.datepicker-input input {
+	}
+	.vdp-datepicker {
 		display: inline-block;
-		width: 18rem;
-		border: none;
+		min-width: 50px;
 	}
 </style>

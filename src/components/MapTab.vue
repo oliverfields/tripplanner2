@@ -52,19 +52,6 @@
 					</div>
 				</div>
 			</div>
-
-			<div class="row">
-				<div class="col-md-12">
-					<div class="form-group">
-						<a
-							@click="save_map_settings"
-							href="#"
-							class="btn btn-success"
-							:class="save_button_classes"
-						><font-awesome-icon icon="save" /> Save</a>
-					</div>
-				</div>
-			</div>
 		</form>
 	</div>
 </template>
@@ -74,24 +61,19 @@
 		name: 'MapTab',
 		data() {
 			return {
-				latlng_valid: true,
 				latlng_tmp_value: this.tp_latlng_2_str(this.$store.state.active_trip.map_center)
 			}
 		},
 		components: {
 		},
 		computed: {
-			save_button_classes: function() {
-				return {
-					btn: true,
-					'btn-success': true,
-					disabled: !this.latlng_valid
-				}
-			},
 			latlng_class: function() {
+				let latlng_valid = false
+				if(this.tp_str_2_latlng(this.latlng_tmp_value))
+					latlng_valid = true
 				return {
 					'form-control': true,
-					'is-invalid': !this.latlng_valid
+					'is-invalid': !latlng_valid
 				}
 			},
 			latlng: {
@@ -99,17 +81,12 @@
 					return this.latlng_tmp_value
 				},
 				set(value) {
-					// If tmp value is valid latlng update store, else just update tmp value
+					// If tmp value is valid latlng update store, else just update tmp value, so don't mess up bindings to map
 					this.latlng_tmp_value = value
 
 					let latlng_object = this.tp_str_2_latlng(value)
-					if(latlng_object) {
-						this.latlng_valid = true
+					if(latlng_object)
 						this.$store.commit('update_active_trip', { property: 'map_center', value: latlng_object })
-					}
-					else {
-						this.latlng_valid = false
-					}
 				}
 			},
 			zoom: {
@@ -122,20 +99,15 @@
 			}
 		},
 		methods: {
-			save_map_settings: function() {
-				if(this.latlng_valid) {
-					console.log('Saving map')
-				}
-				else {
-					console.log('Form invalid, aborting save')
-				}
-			},
 			use_current_map_settings() {
 				this.$store.commit('update_active_trip', {
 					property: 'map_zoom',
 					value: this.$store.getters.map_settings.zoom
 				})
-				this.$store.commit('update_active_trip', {property: 'map_center', value: this.$store.getters.map_settings.center})
+				let map_center = this.$store.getters.map_settings.center
+				
+				this.$store.commit('update_active_trip', {property: 'map_center', value: map_center})
+				this.latlng_tmp_value = this.tp_latlng_2_str(map_center)
 			},
 		}
 	}

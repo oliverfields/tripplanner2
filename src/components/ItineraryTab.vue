@@ -96,7 +96,6 @@
 	.itinerary {
 		list-style: none;
 		padding: 1rem;
-		margin-top: 1rem;
 	}
 	.itinerary a{
 		margin: 0;

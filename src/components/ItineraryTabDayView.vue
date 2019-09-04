@@ -2,7 +2,7 @@
 	<form>
 		<div v-for="(day, day_index) in this.$store.state.active_trip.itinerary">
 			<div class="day" v-show="show_day_index == day_index">
-				<h2>{{ day.date_pretty }}</h2>
+				<h2>{{ day.date_pretty }}, day {{ day.day_number }}</h2>
 				<div class="row">
 					<div class="col-md-12">
 						<div class="form-group">
