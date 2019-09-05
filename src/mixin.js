@@ -18,12 +18,22 @@ export default {
 			return new Date(d[0],d[1],d[2]);
 		},
 		tp_str_2_latlng: function(string) {
+			if (typeof string != 'string')
+				return false
+
 			string = string.replace(' ', '')
 			string = string.split(',')
 
 			if(string.length != 2) { // Must have not been exactly one comma
+				console.log('ho')
 				return false
 			}
+
+			if(string[0] == '')
+				return false
+
+			if(string[1] == '')
+				return false
 
 			let lat_number = 0
 			let lng_number = 0

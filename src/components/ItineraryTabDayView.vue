@@ -11,7 +11,7 @@
 								:class="notes_class"
 								v-model="notes"
 							/>
-							<div v-show="validate_day_notes" class="invalid-feedback"><font-awesome-icon icon="exclamation-triangle" /> Notes can only use letters and numbers</div>
+							<div class="invalid-feedback"><font-awesome-icon icon="exclamation-triangle" /> Notes can only use letters and numbers</div>
 						</div>
 					</div>
 				</div>
@@ -52,16 +52,25 @@
 			delete_activity(payload) {
 				this.$store.commit('delete_activity', payload)
 			},
-			validate_day_notes: function() {
+			validate_day_notes() {
+				console.log('validating')
+				console.log(this.notes)
+				let action = 'remove'
+				let is_valid = true
+
 				if(this.notes == '') {
-					this.$store.commit('update_active_trip', { property: 'valid', value: true})
-					return true
+					is_valid = true
+				}
+				else {
+					let re = this.$XRegExp("^[\\p{L}\\d\ \\_\\-]+$")
+					is_valid = re.test(this.notes)
 				}
 
-				let re = this.$XRegExp("^[\\p{L}\\d\ \\_\\-]+$")
-				let result = re.test(this.notes)
-				this.$store.commit('update_active_trip', { property: 'valid', value: result})
-				return result
+				if(!is_valid)
+					action = 'add'
+				this.$store.commit('error_registry', {action: action, tmp_id: this.day.tmp_id + '_notes'})
+
+				return is_valid
 			},
 		},
 		computed: {
@@ -69,19 +78,24 @@
 				return this.$store.state.active_trip.itinerary_navigation.show_day_index
 			},
 			notes_class: function() {
+				console.log('hello')
 				return {
 					'form-control': true,
 					'is-invalid': !this.validate_day_notes()
 				}
 			},
+			day: function() {
+				return this.$store.state.active_trip.itinerary[
+						this.$store.state.active_trip.itinerary_navigation.show_day_index
+					]
+			},
 			notes: {
 				get() {
-					return this.$store.state.active_trip.itinerary[
-						this.$store.state.active_trip.itinerary_navigation.show_day_index
-					].notes
+					return this.day.notes
 				},
 				set(value) {
 					this.$store.commit('update_active_day', {property: 'notes', value: value})
+					this.validate_day_notes()
 				}
 			},
 		}

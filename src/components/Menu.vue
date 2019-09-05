@@ -10,7 +10,7 @@
 				<li v-if="this.$store.state.active_trip" class="nav-item">
 					<a :class="save_button_classes" href="#" @click="log_trip">
 						<font-awesome-icon icon="save" /> Save {{ this.$store.state.active_trip.name }}
-						<sup v-if="this.$store.state.active_trip.valid == false">
+						<sup v-if="this.$store.state.active_trip.error_registry.length > 0">
 							<font-awesome-icon icon="exclamation-triangle" />
 						</sup>
 						<sup v-else-if="this.$store.state.active_trip.dirty">
@@ -50,9 +50,12 @@
 				return {
 					btn: true,
 					'btn-primary': true,
-					disabled: !this.$store.state.active_trip.valid
+					disabled: this.active_trip_has_errors
 				}
 			},
+			active_trip_has_errors() {
+				return (this.$store.state.active_trip.error_registry.length != 0)
+			}
 		},
 		methods: {
 			logout: function() {

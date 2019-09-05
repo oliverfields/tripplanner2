@@ -66,6 +66,7 @@
 				},
 				set(value) {
 					this.$store.commit('update_active_trip', { property: 'name', value: value })
+					this.$store.commit('update_active_trip', { property: 'valid', value: this.validate_trip_name()})
 				}
 			},
 			trip_name_class: function() {
@@ -88,12 +89,15 @@
 				this.$store.dispatch('delete_active_trip')
 			},
 			validate_trip_name: function() {
+				let action = 'remove'
 				let re = this.$XRegExp("^[\\p{L}\\d\ \\_\\-]+$")
-				let result = re.test(this.trip_name)
+				let is_valid = re.test(this.trip_name)
 
-				this.$store.commit('update_active_trip', { property: 'valid', value: result})
+				if(!is_valid)
+					action = 'add'
+				this.$store.commit('error_registry', {action: action, tmp_id: this.$store.state.active_trip.tmp_id + '_name'})
 
-				return result
+				return is_valid
 			},
 		}
 	}

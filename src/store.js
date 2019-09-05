@@ -22,8 +22,8 @@ function setup_trip(trip) {
 	if(!trip.name)
 		trip.name = 'new trip'
 
-	if(!trip.id)
-		trip.id = 'trip_planner_tmp_id_' + new_id()
+	if(!trip.tmp_id)
+		trip.tmp_id = 'trip_' + new_id()
 
 	if(!trip.start_date)
 		trip.start_date = new Date()
@@ -33,9 +33,13 @@ function setup_trip(trip) {
 
 	if(!trip.itinerary){
 		trip.itinerary = []
-		trip.itinerary.push({
-			activities: []
-		})
+		trip.itinerary.push({})
+		Vue.set(trip.itinerary[0], 'notes', '')
+		Vue.set(trip.itinerary[0], 'activities', [])
+		trip.itinerary[0].activities.push({})
+		Vue.set(trip.itinerary[0].activities[0], 'description', 'new activity')
+		Vue.set(trip.itinerary[0].activities[0], 'marker_coordinates', null)
+		Vue.set(trip.itinerary[0].activities[0], 'marker_icon', null)
 	}
 
 	if(!trip.itinerary_navigation)
@@ -50,8 +54,8 @@ function setup_trip(trip) {
 	if(!trip.map_zoom)
 		trip.map_zoom = 2
 
-	if(!trip.valid)
-		trip.valid = true
+	if(!trip.error_registry)
+		trip.error_registry = []
 
 	if(!trip.dirty)
 		trip.dirty = false
@@ -60,6 +64,17 @@ function setup_trip(trip) {
 	trip.itinerary_navigation = {
 		show_day_index: null,
 		show_activity_index: null
+	}
+
+	// Add ids for days and activities
+	for (let i = 0; i < trip.itinerary.length; ++i) {
+		if(!trip.itinerary[i].tmp_id)
+			Vue.set(trip.itinerary[i], 'tmp_id', 'day_' + new_id())
+
+		for(let n = 0; n < trip.itinerary[i].activities.length; n++) {
+			if(!trip.itinerary[i].activities[n].tmp_id)
+				Vue.set(trip.itinerary[i].activities[n], 'tmp_id', 'activity_' + new_id())
+		}
 	}
 
 	return trip
@@ -149,8 +164,6 @@ export const store = new Vuex.Store({
 		add_day_and_show: (context) => {
 			context.commit('add_day')
 			let day_index = context.state.active_trip.itinerary.length - 1 // New day is appended to itinerary end, so index = length - 1
-			//context.commit('update_itinerary_navigation', { property: 'show_day_index', value: day_index })
-			//context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
 			context.commit('set_itinerary_dates')
 
 		},
@@ -161,6 +174,24 @@ export const store = new Vuex.Store({
 		},
 	},
 	mutations: {
+		error_registry: (state, payload) => {
+			let errors = state.active_trip.error_registry
+
+			switch (payload.action) {
+				case 'add':
+					if(!errors.includes(payload.tmp_id))
+						errors.push(payload.tmp_id)
+					break
+				case'remove':
+					for(let i = 0; i < errors.length; i++){
+						if(errors[i] === payload.tmp_id)
+							errors.splice(i, 1)
+					}
+					break
+				default:
+					console.log('Invalid payload: ' + payload)
+			}
+		},
 		set_itinerary_dates: (state) => {
 			for (let i = 0; i < state.active_trip.itinerary.length; i++) {
 				let day_date = mixin.methods.tp_add_days_to_date(state.active_trip.start_date, i)
@@ -171,18 +202,18 @@ export const store = new Vuex.Store({
 		},
 		add_day: (state) => {
 			let day_date = mixin.methods.tp_add_days_to_date(state.active_trip.start_date, state.active_trip.itinerary.length)
-			state.active_trip.itinerary.push({
-				date: day_date,
-				date_pretty: mixin.methods.tp_date_format(day_date),
-				day_number: state.active_trip.itinerary.length + 1,
-				activities: [],
-				notes: ''
-			})
-			
+			state.active_trip.itinerary.push({})
+			let i = state.active_trip.itinerary.length - 1 // New index is length - 1
+			Vue.set(state.active_trip.itinerary[i], 'date', day_date)
+			Vue.set(state.active_trip.itinerary[i], 'date_pretty', mixin.methods.tp_date_format(day_date))
+			Vue.set(state.active_trip.itinerary[i], 'tmp_id', 'day_' + new_id())
+			Vue.set(state.active_trip.itinerary[i], 'activities', [])
+			Vue.set(state.active_trip.itinerary[i], 'notes', '')
 		},
 		add_activity: (state, day) => {
 			day.activities.push({
 				description: 'new activity',
+				tmp_id: 'activity_' + new_id(),
 			})
 		},
 		delete_activity: (state, payload) => {
@@ -226,6 +257,12 @@ export const store = new Vuex.Store({
 				case 'description':
 					active_activity.description = payload.value
 					break
+				case 'marker_coordinates':
+					active_activity.marker_coordinates = payload.value
+					break
+				case 'marker_icon':
+					active_activity.marker_icon = payload.value
+					break
 				default:
 					console.log('Unkown active activity property: ' + payload.property)
 					dirty = false
@@ -248,12 +285,8 @@ export const store = new Vuex.Store({
 				case 'map_zoom':
 					state.active_trip.map_zoom = parseInt(payload.value)
 					break
-				case 'valid':
-					state.active_trip.valid = payload.value
-					dirty = state.active_trip.dirty // I.e. don't update dirty flag when just checking if valid
-					break
 				case 'dirty':
-					state.active_trip.dirty = payload.value
+					dirty = payload.value
 					break
 				default:
 					console.log('Unkown active_trip property: ' + payload.property)

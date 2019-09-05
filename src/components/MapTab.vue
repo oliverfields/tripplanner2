@@ -83,10 +83,15 @@
 				set(value) {
 					// If tmp value is valid latlng update store, else just update tmp value, so don't mess up bindings to map
 					this.latlng_tmp_value = value
+					let action = 'add'
 
 					let latlng_object = this.tp_str_2_latlng(value)
-					if(latlng_object)
+					if(latlng_object) {
 						this.$store.commit('update_active_trip', { property: 'map_center', value: latlng_object })
+						action = 'remove'
+					}
+
+					this.$store.commit('error_registry', {action: action, tmp_id: this.$store.state.active_trip.tmp_id + '_map_center'})
 				}
 			},
 			zoom: {
