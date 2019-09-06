@@ -25,7 +25,6 @@ export default {
 			string = string.split(',')
 
 			if(string.length != 2) { // Must have not been exactly one comma
-				console.log('ho')
 				return false
 			}
 

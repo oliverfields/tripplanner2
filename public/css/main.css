@@ -30,3 +30,8 @@ h3 {
 .breadcrumb svg {
 	margin-left: 0;
 }
+.tp-dropdown-button {
+	display: block;
+	float: none ! important;
+	margin-top: 0 ! important;
+}

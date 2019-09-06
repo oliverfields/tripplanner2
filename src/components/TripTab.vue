@@ -66,7 +66,6 @@
 				},
 				set(value) {
 					this.$store.commit('update_active_trip', { property: 'name', value: value })
-					this.$store.commit('update_active_trip', { property: 'valid', value: this.validate_trip_name()})
 				}
 			},
 			trip_name_class: function() {

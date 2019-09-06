@@ -13,6 +13,7 @@ Object.defineProperty(Vue.prototype, '$XRegExp', { value: XRegExp });
 // Font awesome icons
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+/*
 import { faCannabis } from '@fortawesome/free-solid-svg-icons'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
@@ -27,7 +28,18 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { faAsterisk } from '@fortawesome/free-solid-svg-icons'
+import { faCircle } from '@fortawesome/free-solid-svg-icons'
+*/
+import { faCannabis, faBars, faSignOutAlt, faHiking, faSave, faTrashAlt, faExclamationTriangle, faMapMarkedAlt, faCalendar, faTimes, faPlus, faInfoCircle, faChevronLeft, faAsterisk, faCircle, faBed, faCampground, faMountain, faEye, faTrain, faBus, faCar, faPlane, faShip, faBicycle, faUtensils, faShoppingCart, faShoppingBasket, faTint, faCross, faMoneyBillAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+library.add(faMoneyBillAlt)
+library.add(faEnvelope)
+library.add(faUtensils)
+library.add(faShoppingCart)
+library.add(faShoppingBasket)
+library.add(faTint)
+library.add(faCross)
 library.add(faPlus)
+library.add(faCircle)
 library.add(faAsterisk)
 library.add(faChevronLeft)
 library.add(faMapMarkedAlt)
@@ -41,6 +53,16 @@ library.add(faCannabis)
 library.add(faBars)
 library.add(faSignOutAlt)
 library.add(faHiking)
+library.add(faBed)
+library.add(faCampground)
+library.add(faMountain)
+library.add(faEye)
+library.add(faTrain)
+library.add(faBus)
+library.add(faCar)
+library.add(faPlane)
+library.add(faShip)
+library.add(faBicycle)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 

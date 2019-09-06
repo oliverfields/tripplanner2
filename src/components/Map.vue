@@ -8,24 +8,66 @@
 		@update:zoom="zoomUpdated"
 		@update:center="centerUpdated"
 	>
-		<l-tile-layer :url="url"></l-tile-layer>
-		<l-marker :lat-lng="this.map_center"></l-marker>
-		<l-marker :lat-lng="this.$store.getters.map_settings.center"></l-marker>
+		<l-control-layers></l-control-layers>
+
+		<l-tile-layer
+			:url="url"
+			:attribution="this.attribution"
+		></l-tile-layer>
+
+		<l-marker :lat-lng="this.$store.getters.map_settings.center">
+			<l-icon
+				:icon-size="this.center_crosshairs_icon.size"
+				:icon-anchor="this.center_crosshairs_icon.anchor"
+				:icon-url="this.center_crosshairs_icon.image_url"
+			/>
+		</l-marker>
+
+		<l-layer-group
+			v-for="(day,day_index) in this.$store.state.active_trip.itinerary"
+			layer-type="overlay"
+			v-bind:name="day.date_pretty"
+		>
+			<l-marker
+				v-for="activity in day_activities_with_markers(day_index)"
+			></l-marker>-->
+		</l-layer-group>
 	</l-map>
 </template>
 
 <script>
-	import {LMap, LTileLayer, LMarker} from 'vue2-leaflet'
+	import {
+		LMap,
+		LTileLayer,
+		LMarker,
+		LIcon,
+		LControlLayers,
+		LLayerGroup
+	} from 'vue2-leaflet'
+	import { icon } from "leaflet"
 
 	export default {
 		name: 'Map',
-		components: { LMap, LTileLayer, LMarker },
+		components: {
+			LMap,
+			LTileLayer,
+			LMarker,
+			LIcon,
+			LControlLayers,
+			LLayerGroup
+		},
 		data() {
 			return {
 				url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 				map_dimensions: {
 					width: 0,
 					height: 0
+				},
+				center_crosshairs_icon: {
+					image_url: 'images/MapCenterCoordIcon2.svg',
+					size: [30, 30],
+					anchor: [15, 15]
 				}
 			}
 		},
@@ -46,6 +88,16 @@
 			},
 		},
 		computed: {
+			day_activities_with_markers(day_index) {
+				/*
+				let markers = []
+				for (let i = 0; i < this.$store.active_trip.itinerary[day_index]; i++) {
+					if(this.$store.active_trip.itinerary[day_index].activties[i].marker_coordinates)
+						markers.push(this.$store.active_trip.itinerary[day_index].activties[i])
+				}
+				return markers
+*/
+			},
 			map_center() {
 				let center = null
 				if(this.$store.state.active_trip.map_center)

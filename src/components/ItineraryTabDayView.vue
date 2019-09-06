@@ -20,7 +20,7 @@
 						<div v-if="day.activities">
 							<h3>Activities</h3>
 							<ul>
-								<li class="activity" v-for="(activity, activity_index) in day.activities"">
+								<li class="activity" v-for="(activity, activity_index) in day.activities">
 									<a href="#" @click="show_activity(day_index, activity_index)">
 										<span v-if="activity.description">{{ activity.description }}</span>
 										<span v-else><em>empty</em></span>
@@ -53,8 +53,6 @@
 				this.$store.commit('delete_activity', payload)
 			},
 			validate_day_notes() {
-				console.log('validating')
-				console.log(this.notes)
 				let action = 'remove'
 				let is_valid = true
 
@@ -78,7 +76,6 @@
 				return this.$store.state.active_trip.itinerary_navigation.show_day_index
 			},
 			notes_class: function() {
-				console.log('hello')
 				return {
 					'form-control': true,
 					'is-invalid': !this.validate_day_notes()

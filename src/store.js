@@ -39,7 +39,7 @@ function setup_trip(trip) {
 		trip.itinerary[0].activities.push({})
 		Vue.set(trip.itinerary[0].activities[0], 'description', 'new activity')
 		Vue.set(trip.itinerary[0].activities[0], 'marker_coordinates', null)
-		Vue.set(trip.itinerary[0].activities[0], 'marker_icon', null)
+		Vue.set(trip.itinerary[0].activities[0], 'marker_icon', 'circle')
 	}
 
 	if(!trip.itinerary_navigation)
@@ -119,10 +119,10 @@ export const store = new Vuex.Store({
 		},
 		create_trip: context => {
 			let new_trip = setup_trip({})
-			new_trip.dirty = true
 			context.commit('create_trip', new_trip)
 			context.commit('set_active_trip', new_trip)
 			context.commit('set_itinerary_dates')
+			context.commit('update_active_trip', {property: 'dirty', value: false})
 		},
 		delete_active_trip: ({commit, state}, payload) => {
 			let delete_trip_id = state.active_trip.id
@@ -174,6 +174,12 @@ export const store = new Vuex.Store({
 		},
 	},
 	mutations: {
+		toggle_loading: (state) => {
+			console.log('toggling loading')
+			if(!state.hasOwnProperty('is_loading'))
+				Vue.set(state, 'is_loading', false)
+			state.is_loading = !state.is_loading
+		},
 		error_registry: (state, payload) => {
 			let errors = state.active_trip.error_registry
 
@@ -211,10 +217,12 @@ export const store = new Vuex.Store({
 			Vue.set(state.active_trip.itinerary[i], 'notes', '')
 		},
 		add_activity: (state, day) => {
-			day.activities.push({
-				description: 'new activity',
-				tmp_id: 'activity_' + new_id(),
-			})
+			day.activities.push({})
+			let i = day.activities.length - 1 // New index is length - 1
+			Vue.set(day.activities[i], 'description', 'new activity')
+			Vue.set(day.activities[i], 'marker_icon', 'circle')
+			Vue.set(day.activities[i], 'marker_coordinates', null)
+			Vue.set(day.activities[i], 'tmp_id', 'activity_' + new_id())
 		},
 		delete_activity: (state, payload) => {
 			state.active_trip.itinerary[payload.day_index].activities.splice(payload.activity_index, 1)

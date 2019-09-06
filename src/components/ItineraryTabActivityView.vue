@@ -15,19 +15,6 @@
 							</div>
 						</div>
 					</div>
-<!--
-					<div class="row">
-						<div class="col-md-12">
-							<div class="form-group">
-								<label for="activity_marker">Marker</label>
-								<input
-									:class="activity_marker_class"
-									v-model="activity_marker"
-								/>
-							</div>
-						</div>
-					</div>
--->
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
@@ -38,6 +25,37 @@
 								/>
 								<small id="coordinates-help" class="form-text text-muted">Latitude, Longitude</small>
 								<div class="invalid-feedback"><font-awesome-icon icon="exclamation-triangle" /> Format must be xx.xxxx,yy.yyyy</div>
+							</div>
+							<a style="margin-top: 1rem; display: block;" href="#" @click="use_current_map_center"><font-awesome-icon icon="map-marked-alt" /> Use current map center</a>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="activity_marker_icon">Marker icon</label>
+								<div>
+									<div class="selected_marker_icon"><font-awesome-icon :icon="activity_marker_icon" /></div>
+									<div class="available_marker_icons">
+										<font-awesome-icon icon="circle" @click="activity_marker_icon = 'circle'"/>
+										<font-awesome-icon icon="bed" @click="activity_marker_icon = 'bed'"/>
+										<font-awesome-icon icon="campground" @click="activity_marker_icon = 'campground'"/>
+										<font-awesome-icon icon="mountain" @click="activity_marker_icon = 'mountain'"/>
+										<font-awesome-icon icon="eye" @click="activity_marker_icon = 'eye'"/>
+										<font-awesome-icon icon="utensils" @click="activity_marker_icon = 'utensils'"/>
+										<font-awesome-icon icon="shopping-cart" @click="activity_marker_icon = 'shopping-cart'"/>
+										<font-awesome-icon icon="shopping-basket" @click="activity_marker_icon = 'shopping-basket'"/>
+										<font-awesome-icon icon="money-bill-alt" @click="activity_marker_icon = 'money-bill-alt'"/>
+										<font-awesome-icon icon="envelope" @click="activity_marker_icon = 'envelope'"/>
+										<font-awesome-icon icon="tint" @click="activity_marker_icon = 'tint'"/>
+										<font-awesome-icon icon="cross" @click="activity_marker_icon = 'cross'"/>
+										<font-awesome-icon icon="train" @click="activity_marker_icon = 'train'"/>
+										<font-awesome-icon icon="bus" @click="activity_marker_icon = 'bus'"/>
+										<font-awesome-icon icon="car" @click="activity_marker_icon = 'car'"/>
+										<font-awesome-icon icon="plane" @click="activity_marker_icon = 'plane'"/>
+										<font-awesome-icon icon="ship" @click="activity_marker_icon = 'ship'"/>
+										<font-awesome-icon icon="bicycle" @click="activity_marker_icon = 'bicycle'"/>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -57,6 +75,12 @@
 			}
 		},
 		methods: {
+			use_current_map_center() {
+				let map_center = this.$store.getters.map_settings.center
+
+				this.$store.commit('update_active_activity', {property: 'marker_coordinates', value: map_center})
+				this.tmp_activity_coordinates =  this.tp_latlng_2_str(map_center)
+			},
 			validate_activity_coordinates() {
 				let latlng_valid = false
 				let action = 'remove'
@@ -121,6 +145,14 @@
 					this.$store.commit('update_active_activity', {property: 'description', value: value})
 				}
 			},
+			activity_marker_icon: {
+				get() {
+					return this.activity.marker_icon
+				},
+				set(value) {
+					this.$store.commit('update_active_activity', {property: 'marker_icon', value: value})
+				}
+			},
 			activity_coordinates_class: function() {
 				return {
 					'form-control': true,
@@ -145,3 +177,20 @@
 		}
 	}
 </script>
+
+<style>
+.selected_marker_icon {
+	font-size: 2rem;
+	width: 4rem;
+	float: left;
+}
+.available_marker_icons {
+	color: #999;
+	cursor: pointer;
+	position: relative;
+	top: 0;
+	left: 0;
+	width: 290px;
+	display: inline-block;
+}
+</style>
