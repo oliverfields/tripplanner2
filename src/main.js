@@ -30,7 +30,8 @@ import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { faAsterisk } from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-solid-svg-icons'
 */
-import { faCannabis, faBars, faSignOutAlt, faHiking, faSave, faTrashAlt, faExclamationTriangle, faMapMarkedAlt, faCalendar, faTimes, faPlus, faInfoCircle, faChevronLeft, faAsterisk, faCircle, faBed, faCampground, faMountain, faEye, faTrain, faBus, faCar, faPlane, faShip, faBicycle, faUtensils, faShoppingCart, faShoppingBasket, faTint, faCross, faMoneyBillAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { faCannabis, faBars, faSignOutAlt, faHiking, faSave, faTrashAlt, faExclamationTriangle, faMapMarkedAlt, faCalendar, faTimes, faPlus, faInfoCircle, faChevronLeft, faAsterisk, faCircle, faBed, faCampground, faMountain, faEye, faTrain, faBus, faCar, faPlane, faShip, faBicycle, faUtensils, faShoppingCart, faShoppingBasket, faTint, faCross, faMoneyBillAlt, faEnvelope, faMapMarker } from '@fortawesome/free-solid-svg-icons'
+library.add(faMapMarker)
 library.add(faMoneyBillAlt)
 library.add(faEnvelope)
 library.add(faUtensils)

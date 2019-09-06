@@ -140,8 +140,17 @@ export const store = new Vuex.Store({
 					if(trip.start_date)
 						trip.start_date = convert_firebase_timestamp_to_js_date_object(trip.start_date)
 
+					// Convert firestore coordinates to tp style
 					if(trip.map_center)
 						trip.map_center = convert_firebase_geopoint(trip.map_center)
+
+					// .. and for activity coordinates
+					for(let i=0; i < trip.itinerary.length; i++) {
+						for(let n=0; n < trip.itinerary[i].activities.length; n++) {
+							if(trip.itinerary[i].activities[n].marker_coordinates)
+								trip.itinerary[i].activities[n].marker_coordinates = convert_firebase_geopoint(trip.itinerary[i].activities[n].marker_coordinates)
+						}
+					}
 
 					trip = setup_trip(trip)
 

@@ -28,6 +28,10 @@
 							<a href="#" @click="show_activity(day_index, activity_index)">
 								<span v-if="activity.description">{{ activity.description }}</span>
 								<span v-else><em>empty</em></span>
+								<font-awesome-icon
+									:icon="activity.marker_icon"
+									v-if="activity.marker_coordinates"
+								/>
 							</a>
 						</li>
 					</ul>

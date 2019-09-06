@@ -29,13 +29,15 @@
 			v-bind:name="day.date_pretty"
 		>
 			<l-marker
-				v-for="activity in day_activities_with_markers(day_index)"
-			></l-marker>-->
+				v-for="activity in day_activities_with_markers(day_index)" v-bind:lat-lng="activity.marker_latlng"
+			></l-marker>
 		</l-layer-group>
 	</l-map>
 </template>
 
 <script>
+	// Fine guide: https://github.com/KoRiGaN/Vue2Leaflet/blob/master/examples/src/components/Example.vue
+
 	import {
 		LMap,
 		LTileLayer,
@@ -86,18 +88,23 @@
 				let available_height = window.innerHeight - 50 // 50 is hardcoded nav height..
 				this.map_dimensions.height = available_height + 'px'
 			},
+			day_activities_with_markers(day_index) {
+				let markers = []
+				let itinerary = this.$store.state.active_trip.itinerary[day_index]
+
+				if(itinerary.activities) {
+					for (let n = 0; n < itinerary.activities.length; n++) {
+						if(itinerary.activities[n].marker_coordinates != null) {
+							itinerary.activities[n].marker_latlng = [ itinerary.activities[n].marker_coordinates.lat, itinerary.activities[n].marker_coordinates.lng ]
+							markers.push(itinerary.activities[n])
+						}
+					}
+				}
+				console.log(markers)
+				return markers
+			},
 		},
 		computed: {
-			day_activities_with_markers(day_index) {
-				/*
-				let markers = []
-				for (let i = 0; i < this.$store.active_trip.itinerary[day_index]; i++) {
-					if(this.$store.active_trip.itinerary[day_index].activties[i].marker_coordinates)
-						markers.push(this.$store.active_trip.itinerary[day_index].activties[i])
-				}
-				return markers
-*/
-			},
 			map_center() {
 				let center = null
 				if(this.$store.state.active_trip.map_center)
