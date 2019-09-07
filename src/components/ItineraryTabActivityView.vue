@@ -42,10 +42,16 @@
 										<font-awesome-icon icon="mountain" @click="activity_marker_icon = 'mountain'"/>
 										<font-awesome-icon icon="eye" @click="activity_marker_icon = 'eye'"/>
 										<font-awesome-icon icon="utensils" @click="activity_marker_icon = 'utensils'"/>
+										<font-awesome-icon icon="coffee" @click="activity_marker_icon = 'coffee'"/>
+										<font-awesome-icon icon="beer" @click="activity_marker_icon = 'beer'"/>
+										<font-awesome-icon icon="wine-glass" @click="activity_marker_icon = 'wine-glass'"/>
+										<font-awesome-icon icon="glass-martini" @click="activity_marker_icon = 'glass-martini'"/>
 										<font-awesome-icon icon="shopping-cart" @click="activity_marker_icon = 'shopping-cart'"/>
 										<font-awesome-icon icon="shopping-basket" @click="activity_marker_icon = 'shopping-basket'"/>
 										<font-awesome-icon icon="money-bill-alt" @click="activity_marker_icon = 'money-bill-alt'"/>
 										<font-awesome-icon icon="envelope" @click="activity_marker_icon = 'envelope'"/>
+										<font-awesome-icon icon="gas-pump" @click="activity_marker_icon = 'gas-pump'"/>
+										<font-awesome-icon icon="plus-square" @click="activity_marker_icon = 'plus-square'"/>
 										<font-awesome-icon icon="tint" @click="activity_marker_icon = 'tint'"/>
 										<font-awesome-icon icon="cross" @click="activity_marker_icon = 'cross'"/>
 										<font-awesome-icon icon="train" @click="activity_marker_icon = 'train'"/>

@@ -31,7 +31,9 @@
 			v-bind:name="day.date_pretty"
 		>
 			<l-marker
-				v-for="activity in day_activities_with_markers(day_index)" v-bind:lat-lng="activity.marker_latlng"
+				v-for="activity in day_activities_with_markers(day_index)"
+				v-bind:lat-lng="activity.marker_latlng"
+				:icon="custom_icon"
 			></l-marker>
 		</l-layer-group>
 	</l-map>
@@ -40,6 +42,9 @@
 <script>
 	// Fine guide: https://github.com/KoRiGaN/Vue2Leaflet/blob/master/examples/src/components/Example.vue
 
+	import { L, icon } from 'leaflet'
+	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
+	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js'
 	import {
 		LMap,
 		LTileLayer,
@@ -48,7 +53,6 @@
 		LControlLayers,
 		LLayerGroup
 	} from 'vue2-leaflet'
-	import { icon } from "leaflet"
 
 	export default {
 		name: 'Map',
@@ -126,6 +130,12 @@
 			},
 		},
 		computed: {
+			custom_icon() {
+				return L.AwesomeMarkers.icon({
+					icon: 'coffee',
+					markerColor: 'red'
+				})
+			},
 			map_center() {
 				let center = null
 				if(this.$store.state.active_trip.map_center)
