@@ -66,6 +66,9 @@ export default {
 				return latlng.lat + ',' + latlng.lng
 			return false
 		},
+		tp_array_2_latlng: function(latlng) {
+			return { lat: latlng[0], lng: latlng[1] }
+		},
 		tp_valid_latlng: function(latlng) {
 			if(
 				typeof latlng.lat === 'number'

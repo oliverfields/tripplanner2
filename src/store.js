@@ -78,6 +78,12 @@ function setup_trip(trip) {
 			if(!trip.itinerary[i].activities[n].marker_icon)
 				Vue.set(trip.itinerary[i].activities[n], 'marker_icon', 'circle')
 
+			if(!trip.itinerary[i].activities[n].marker_color)
+				Vue.set(trip.itinerary[i].activities[n], 'marker_color', 'red')
+
+			if(!trip.itinerary[i].activities[n].marker_color_hex)
+				Vue.set(trip.itinerary[i].activities[n], 'marker_color_hex', '#D63E2A')
+
 			if(!trip.itinerary[i].activities[n].description)
 				Vue.set(trip.itinerary[i].activities[n], 'description', 'new activity')
 
@@ -101,7 +107,7 @@ export const store = new Vuex.Store({
 		active_trip: false,
 		map: {
 			zoom: 2,
-			center: [52.529562,  13.413047],
+			center: { lat: 52.5125, lng: 13.3815 },
 			bounds: null,
 		}
 	},
@@ -121,6 +127,12 @@ export const store = new Vuex.Store({
 		set_active_trip: (context, payload) => {
 			context.commit('set_active_trip', payload)
 			context.commit('set_itinerary_dates')
+
+			if(context.state.active_trip.map_center)
+				context.commit('update_map_settings', { map_center: context.state.active_trip.map_center })
+
+			if(context.state.active_trip.zoom)
+				context.commit('update_map_settings', { zoom: context.state.active_trip.map_zoom })
 		},
 		setItems: context => {
 			context.commit('setItems')
@@ -240,6 +252,8 @@ export const store = new Vuex.Store({
 			let i = day.activities.length - 1 // New index is length - 1
 			Vue.set(day.activities[i], 'description', 'new activity')
 			Vue.set(day.activities[i], 'marker_icon', 'circle')
+			Vue.set(day.activities[i], 'marker_color', 'red')
+			Vue.set(day.activities[i], 'marker_color_hex', '#D63E2A')
 			Vue.set(day.activities[i], 'marker_coordinates', null)
 			Vue.set(day.activities[i], 'tmp_id', 'activity_' + new_id())
 		},
@@ -261,11 +275,15 @@ export const store = new Vuex.Store({
 			}
 		},
 		update_map_settings: (state, payload) => {
+			console.log('setting map zoom')
+			console.log(payload.zoom)
 			if(payload.zoom)
 				state.map.zoom = payload.zoom
-
-			if(payload.center)
+			console.log('setting map Center')
+			console.log(payload.center)
+			if(payload.center) {
 				state.map.center = payload.center
+			}
 		},
 		update_active_day: (state, payload) => {
 			let active_day = state.active_trip.itinerary[state.active_trip.itinerary_navigation.show_day_index]
@@ -289,18 +307,39 @@ export const store = new Vuex.Store({
 					break
 				case 'marker_coordinates':
 					active_activity.marker_coordinates = payload.value
-/*
-					if(payload.value == null)
-						active_activity.marker_coordinates = payload.value
-					else {
-						Vue.set(active_activity, marker_coordinates, {})
-						Vue.set(active_activity.marker_coordinates, 'lat', payload.lat)
-						Vue.set(active_activity.marker_coordinates, 'lng', payload.lng)
-					}
-*/
 					break
 				case 'marker_icon':
 					active_activity.marker_icon = payload.value
+					break
+				case 'marker_color':
+					active_activity.marker_color = payload.value
+
+					let colors = {
+						//white: '#FFFFFF',
+						lightred: '#EB7D7F',
+						red: '#D63E2A',
+						darkred: '#A23336',
+						orange: '#F69730',
+						beige: '#FFCB92',
+						lightgreen: '#BBF970',
+						green: '#72AF26',
+						darkgreen: '#728224',
+						lightblue: '#8ADAFF',
+						blue: '#38AADD',
+						darkblue: '#0067A3',
+						cadetblue: '#436978',
+						purple: '#D252B9',
+						darkpurple: '#5B396B',
+						pink: '#FF91EA',
+						lightgray: '#A3A3A3',
+						gray: '#575757',
+						black: '#000000',
+					}
+
+					active_activity.marker_color_hex = colors[payload.value]
+
+
+
 					break
 				default:
 					console.log('Unkown active activity property: ' + payload.property)

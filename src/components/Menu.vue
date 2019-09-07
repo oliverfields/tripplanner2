@@ -1,6 +1,6 @@
 <template>
 	<nav id="nav" class="navbar navbar-expand navbar-dark bg-dark">
-		<a class="navbar-brand" href="#"><font-awesome-icon icon="hiking" /> Ambulate</a>
+		<a class="navbar-brand" href="#"><i class="fa fa-hiking" /> Ambulate</a>
 		<button
 			class="navbar-toggler"
 			style="border: none;"
@@ -10,7 +10,7 @@
 			aria-expanded="false"
 			aria-label="Toggle navigation"
 		>
-			<span><font-awesome-icon icon="bars" /></span>
+			<span><i class="fa fa-bars" /></span>
 		</button>
 
 		<div class="collapse navbar-collapse navbar-dark bg-dark" id="navbars-site-menu">
@@ -21,7 +21,7 @@
 						href="#" @click="create_trip"
 						style="margin-top: 4px;"
 				>
-					<font-awesome-icon icon="plus" /> New trip</a>
+					<i class="fa fa-plus" /> New trip</a>
 				</li>
 				<li v-if="this.$store.getters.get_trips && this.$store.getters.get_trips.length > 0" class="nav-item dropdown" style="margin-left: 0;">
 					<a class="nav-link dropdown-toggle" href="#" id="trip-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select trip</a>
@@ -35,7 +35,7 @@
 				<li class="nav-item"><a class="btn btn-secondary" href="#" @click="log_trip">Console log active trip</a></li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item"><a class="nav-link" href="#" @click="logout"><font-awesome-icon icon="sign-out-alt" /> Logout</a></li>
+				<li class="nav-item"><a class="nav-link" href="#" @click="logout"><i class="fa fa-sign-out-alt" /> Logout</a></li>
 			</ul>
 		</div>
 	</nav>

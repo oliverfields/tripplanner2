@@ -6,12 +6,12 @@
 			v-if="this.$store.state.active_trip"
 			class="nav-item"
 		>
-			<font-awesome-icon icon="save" /> Save {{ this.$store.state.active_trip.name }}
+			<i class="fa fa-save" /> Save {{ this.$store.state.active_trip.name }}
 			<sup v-if="this.$store.state.active_trip.error_registry.length > 0">
-				<font-awesome-icon icon="exclamation-triangle" />
+				<i class="fa fa-exclamation-triangle" />
 			</sup>
 			<sup v-else-if="this.$store.state.active_trip.dirty">
-				<font-awesome-icon icon="asterisk" />
+				<i class="fa fa-asterisk" />
 			</sup>
 		</a>
 		<ul class="nav nav-tabs" id="tripTabs" role="tablist">

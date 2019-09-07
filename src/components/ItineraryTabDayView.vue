@@ -11,7 +11,7 @@
 								:class="notes_class"
 								v-model="notes"
 							/>
-							<div class="invalid-feedback"><font-awesome-icon icon="exclamation-triangle" /> Notes can only use letters and numbers</div>
+							<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> Notes can only use letters and numbers</div>
 						</div>
 					</div>
 				</div>
@@ -25,13 +25,14 @@
 										<span v-if="activity.description">{{ activity.description }}</span>
 										<span v-else><em>empty</em></span>
 									</a>
-									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><font-awesome-icon icon="trash-alt" /></a>
+									&nbsp;
+									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><i class="fa fa-trash-alt" /></a>
 								</li>
 							</ul>
 						</div>
 					</div>
 					<div class="col-md-6">
-						<a class="btn btn-primary slim-button" href="#" @click="add_activity_and_show(day_index, day)"><font-awesome-icon icon="plus" /> Add activity</a>
+						<a class="btn btn-primary slim-button" href="#" @click="add_activity_and_show(day_index, day)"><i class="fa fa-plus" /> Add activity</a>
 					</div>
 				</div>
 			</div>

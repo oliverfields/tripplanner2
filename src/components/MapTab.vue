@@ -48,7 +48,7 @@
 						<small id="zoom-help" class="form-text text-muted">Some maps may not support high zoom</small>
 					</div>
 					<div class="form-group">
-						<a style="margin-top: 2rem; display: block;" href="#" @click="use_current_map_settings"><font-awesome-icon icon="map-marked-alt" /> Use current map center and zoom</a>
+						<a style="margin-top: 2rem; display: block;" href="#" @click="use_current_map_settings"><i class="fa fa-map-marked-alt" /> Use current map center and zoom</a>
 					</div>
 				</div>
 			</div>

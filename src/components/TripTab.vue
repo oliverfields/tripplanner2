@@ -11,7 +11,7 @@
 							id="trip_name"
 							v-model="trip_name"
 						>
-						<div class="invalid-feedback"><font-awesome-icon icon="exclamation-triangle" />Name can only use letters and numbers</div>
+						<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" />Name can only use letters and numbers</div>
 					</div>
 				</div>
 			</div>
@@ -22,7 +22,7 @@
 						<label for="trip_start_date">Start date</label>
 						<div class="control-group datepicker-input">
 							<div class="form-control">
-								<font-awesome-icon icon="calendar" />
+								<i class="fa fa-calendar" />
 								<Datepicker
 									v-model="start_date"
 									format="D d MMM yyyy"
@@ -41,8 +41,8 @@
 					<div class="form-group">
 						<div class="form-group-danger">
 							<h1>Delete trip</h1>
-							<p><font-awesome-icon class="danger" icon="exclamation-triangle" /> Deleted trips can <strong>not</strong> be undeleted</p>
-							<a @click="delete_trip" id="delete_trip" href="#" class="btn btn-danger"><font-awesome-icon icon="trash-alt" /> Delete</a>
+							<p><i class="danger fa fa-exclamation-triangle" /> Deleted trips can <strong>not</strong> be undeleted</p>
+							<a @click="delete_trip" id="delete_trip" href="#" class="btn btn-danger"><i class="fa fa-trash-alt" /> Delete</a>
 						</div>
 					</div>
 				</div>

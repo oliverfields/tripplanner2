@@ -5,11 +5,11 @@
 				href="#"
 				v-if="this.show_day_index != null || this.show_activity_index != null"
 				@click="show_itinerary()"
-			><font-awesome-icon icon="chevron-left" /> Overview</a> <a
+			><i class="fa fa-chevron-left" /> Overview</a> <a
 				href="#"
 				v-if="this.show_activity_index != null"
 				@click="show_day(show_day_index)"
-			><font-awesome-icon icon="chevron-left" /> {{ selected_day_date_pretty }}</a>
+			><i class="fa fa-chevron-left" /> {{ selected_day_date_pretty }}</a>
 		</div>
 
 		<div v-if="this.show_activity_index != null">
@@ -28,17 +28,20 @@
 							<a href="#" @click="show_activity(day_index, activity_index)">
 								<span v-if="activity.description">{{ activity.description }}</span>
 								<span v-else><em>empty</em></span>
-								<font-awesome-icon
-									:icon="activity.marker_icon"
-									v-if="activity.marker_coordinates"
-								/>
+								&nbsp;
 							</a>
+							<i
+								:class="activity_marker_icon_class(activity)"
+								:style="activity_marker_icon_color(activity)"
+								v-if="activity.marker_coordinates"
+								@click="set_map_center(activity.marker_coordinates)"
+							/>
 						</li>
 					</ul>
 				</li>
 			</ul>
 			<div class="col-md-6">
-				<a class="btn btn-primary slim-button" href="#" @click="add_day_and_show()"><font-awesome-icon icon="plus" /> Add day</a>
+				<a class="btn btn-primary slim-button" href="#" @click="add_day_and_show()"><i class="fa fa-plus" /> Add day</a>
 			</div>
 		</div>
 	</div>
@@ -78,6 +81,17 @@
 			}
 		},
 		methods: {
+			set_map_center(latlng) {
+				console.log('setting map center')
+				console.log(latlng)
+				this.$store.commit('set_map_center', latlng)
+			},
+			activity_marker_icon_class(activity) {
+				return 'fa fa-' + activity.marker_icon
+			},
+			activity_marker_icon_color(activity) {
+				return 'color: ' + activity.marker_color_hex
+			},
 			add_day_and_show() {
 				this.$store.dispatch('add_day_and_show')
 			},

@@ -1,11 +1,11 @@
 <template>
+		<!--@update:zoom="zoom_updated"-->
 	<l-map
 		id="map"
 		ref="map"
 		:style="{'width': this.map_dimensions.width, 'height': this.map_dimensions.height}"
 		:zoom="this.map_zoom"
 		:center="this.map_center"
-		@update:zoom="zoomUpdated"
 		@update:center="centerUpdated"
 	>
 		<l-control-layers></l-control-layers>
@@ -32,8 +32,8 @@
 		>
 			<l-marker
 				v-for="activity in day_activities_with_markers(day_index)"
-				v-bind:lat-lng="activity.marker_latlng"
-				:icon="custom_icon"
+				v-bind:lat-lng="latlng_array(activity)"
+				:icon="marker_icon(activity)"
 			></l-marker>
 		</l-layer-group>
 	</l-map>
@@ -42,9 +42,6 @@
 <script>
 	// Fine guide: https://github.com/KoRiGaN/Vue2Leaflet/blob/master/examples/src/components/Example.vue
 
-	import { L, icon } from 'leaflet'
-	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
-	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js'
 	import {
 		LMap,
 		LTileLayer,
@@ -53,6 +50,9 @@
 		LControlLayers,
 		LLayerGroup
 	} from 'vue2-leaflet'
+
+	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
+	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js'
 
 	export default {
 		name: 'Map',
@@ -80,10 +80,31 @@
 			}
 		},
 		methods: {
-			zoomUpdated (zoom) {
-				this.$store.commit('update_map_settings', {'zoom': zoom})
+			marker_icon(activity) {
+				let icon_name = 'circle'
+				let icon_color = 'red'
+
+				if(activity.marker_icon)
+					icon_name = activity.marker_icon
+
+				if(activity.marker_color)
+					icon_color = activity.marker_color
+
+				let icon = L.AwesomeMarkers.icon({
+					prefix: 'fa',
+					icon: icon_name,
+					markerColor: icon_color
+				})
+
+				return icon
+			},
+			zoom_updated (zoom) {
+				//console.log('updating zoom')
+				//this.$store.commit('update_map_settings', {'zoom': this.$refs.map.mapObject._zoom})
 			},
 			centerUpdated (center) {
+				console.log('Map is updateing itself')
+				console.log(center)
 				this.$store.commit('update_map_settings', {'center': center})
 			},
 			handleResize() {
@@ -121,33 +142,22 @@
 				if(itinerary.activities) {
 					for (let n = 0; n < itinerary.activities.length; n++) {
 						if(itinerary.activities[n].marker_coordinates != null) {
-							itinerary.activities[n].marker_latlng = [ itinerary.activities[n].marker_coordinates.lat, itinerary.activities[n].marker_coordinates.lng ]
+							//itinerary.activities[n].marker_latlng = [ itinerary.activities[n].marker_coordinates.lat, itinerary.activities[n].marker_coordinates.lng ]
 							markers.push(itinerary.activities[n])
 						}
 					}
 				}
 				return markers
 			},
+			latlng_array(activity) {
+				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
+			}
 		},
 		computed: {
-			custom_icon() {
-				return L.AwesomeMarkers.icon({
-					icon: 'coffee',
-					markerColor: 'red'
-				})
-			},
 			map_center() {
-				let center = null
-				if(this.$store.state.active_trip.map_center)
-					return this.$store.state.active_trip.map_center
-
-				return this.$store.state.map.center
+				return [this.$store.state.map.center.lat, this.$store.state.map.center.lng]
 			},
 			map_zoom() {
-				let zoom = null
-				if(this.$store.state.active_trip.map_zoom)
-					return this.$store.state.active_trip.map_zoom
-
 				return this.$store.state.map.zoom
 			}
 		},
@@ -166,4 +176,7 @@
 </script>
 
 <style>
+	.awesome-marker i {
+		margin-top: 12px ! important;
+	}
 </style>
