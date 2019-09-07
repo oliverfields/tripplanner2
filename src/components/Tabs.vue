@@ -1,5 +1,19 @@
 <template>
 	<div id="tabs">
+		<a
+			:class="save_button_classes"
+			href="#" @click="save_trip"
+			v-if="this.$store.state.active_trip"
+			class="nav-item"
+		>
+			<font-awesome-icon icon="save" /> Save {{ this.$store.state.active_trip.name }}
+			<sup v-if="this.$store.state.active_trip.error_registry.length > 0">
+				<font-awesome-icon icon="exclamation-triangle" />
+			</sup>
+			<sup v-else-if="this.$store.state.active_trip.dirty">
+				<font-awesome-icon icon="asterisk" />
+			</sup>
+		</a>
 		<ul class="nav nav-tabs" id="tripTabs" role="tablist">
 			<li class="nav-item">
 				<a
@@ -47,12 +61,32 @@
 			ItineraryTab
 		},
 		methods: {
-		}
+			save_trip() {
+				console.log(this.$store.state.active_trip)
+			}
+		},
+		computed: {
+			save_button_classes: function() {
+				let is_active = (this.active_trip_has_errors || !this.$store.state.active_trip.dirty)
+				return {
+					btn: true,
+					'btn-primary': true,
+					'trip_save_button': true,
+					disabled: is_active,
+				}
+			},
+			active_trip_has_errors() {
+				return (this.$store.state.active_trip.error_registry.length != 0)
+			},
+		},
 	}
 </script>
 
 <style>
 	#tripTabsContent {
 	margin-top: 1rem;
+	}
+	.trip_save_button {
+		margin-bottom: 1.5rem;
 	}
 </style>

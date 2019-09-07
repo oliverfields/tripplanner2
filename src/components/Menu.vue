@@ -1,24 +1,28 @@
 <template>
 	<nav id="nav" class="navbar navbar-expand navbar-dark bg-dark">
 		<a class="navbar-brand" href="#"><font-awesome-icon icon="hiking" /> Ambulate</a>
-		<button class="navbar-toggler" style="border: none;" type="button" data-toggle="collapse" data-target="#navbars-site-menu" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+		<button
+			class="navbar-toggler"
+			style="border: none;"
+			type="button"
+			data-toggle="collapse"
+			data-target="#navbars-site-menu"
+			aria-expanded="false"
+			aria-label="Toggle navigation"
+		>
 			<span><font-awesome-icon icon="bars" /></span>
 		</button>
 
 		<div class="collapse navbar-collapse navbar-dark bg-dark" id="navbars-site-menu">
 			<ul class="navbar-nav mr-auto">
-				<li v-if="this.$store.state.active_trip" class="nav-item">
-					<a :class="save_button_classes" href="#" @click="log_trip">
-						<font-awesome-icon icon="save" /> Save {{ this.$store.state.active_trip.name }}
-						<sup v-if="this.$store.state.active_trip.error_registry.length > 0">
-							<font-awesome-icon icon="exclamation-triangle" />
-						</sup>
-						<sup v-else-if="this.$store.state.active_trip.dirty">
-							<font-awesome-icon icon="asterisk" />
-						</sup>
-					</a>
+				<li class="nav-item">
+					<a
+						class="btn btn-success"
+						href="#" @click="create_trip"
+						style="margin-top: 4px;"
+				>
+					<font-awesome-icon icon="plus" /> New trip</a>
 				</li>
-				<li class="nav-item"><a class="btn btn-success" href="#" @click="create_trip"><font-awesome-icon icon="plus" /> New trip</a></li>
 				<li v-if="this.$store.getters.get_trips && this.$store.getters.get_trips.length > 0" class="nav-item dropdown" style="margin-left: 0;">
 					<a class="nav-link dropdown-toggle" href="#" id="trip-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select trip</a>
 
@@ -46,16 +50,6 @@
 			this.$store.dispatch('set_trips')
 		},
 		computed: {
-			save_button_classes: function() {
-				return {
-					btn: true,
-					'btn-primary': true,
-					disabled: this.active_trip_has_errors
-				}
-			},
-			active_trip_has_errors() {
-				return (this.$store.state.active_trip.error_registry.length != 0)
-			}
 		},
 		methods: {
 			logout: function() {
@@ -78,12 +72,13 @@
 
 <style>
 	#nav {
-	position: absolute;
+		position: absolute;
 		top: 0px;
 		right: 0px;
 		width: 100%;
 		height: 50px; /* NB! This is hardcoded into Workspace component */
 		padding: 0;
+		z-index: 3000;
 	}
 	.tp-nav-group-title {
 		font-size: 1rem;
@@ -101,5 +96,23 @@
 	}
 	#nav .nav-item {
 		margin-left: 2rem;
+	}
+	.dropdown-toggle {
+		margin-top: 4px;
+	}
+	.dropdown-menu {
+		background-color: #343A40 ! important;
+		border: none ! important;
+		border-top-left-radius: 0 ! important;
+		border-top-right-radius: 0 ! important;
+		border-bottom-left-radius: 4px ! important;
+		border-bottom-right-radius: 4px ! important;
+	}
+	.dropdown-menu a {
+		color: #CCCDCF ! important;
+	}
+	.dropdown-menu a:hover {
+		color: #fff ! important;
+		background-color: #343A40 ! important;
 	}
 </style>

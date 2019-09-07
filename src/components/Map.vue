@@ -15,6 +15,7 @@
 			:attribution="this.attribution"
 		></l-tile-layer>
 
+<!--
 		<l-marker :lat-lng="this.$store.getters.map_settings.center">
 			<l-icon
 				:icon-size="this.center_crosshairs_icon.size"
@@ -22,6 +23,7 @@
 				:icon-url="this.center_crosshairs_icon.image_url"
 			/>
 		</l-marker>
+-->
 
 		<l-layer-group
 			v-for="(day,day_index) in this.$store.state.active_trip.itinerary"
@@ -81,12 +83,32 @@
 				this.$store.commit('update_map_settings', {'center': center})
 			},
 			handleResize() {
+				let nav_height = 50 // 50 is hardcoded nav height..
+				let tabs_width = 400 // 400 is hardcoded tabs width..
+
 				// map width
-				this.map_dimensions.width = (window.innerWidth - 400) + 'px' // 400 is hardcoded tabs width..
+				this.map_dimensions.width = (window.innerWidth - tabs_width) + 'px'
 
 				// map height
-				let available_height = window.innerHeight - 50 // 50 is hardcoded nav height..
+				let available_height = window.innerHeight - nav_height
 				this.map_dimensions.height = available_height + 'px'
+
+				let map_horizontal_center = (window.innerWidth - tabs_width) / 2
+				let map_vertical_center = (window.innerHeight - nav_height) / 2
+
+
+				if(!$('#map_center_crosshairs').length) {
+					$('#map').append('<object type="image/svg+xml" data="images/MapCenterCoordIcon2.svg" id="map_center_crosshairs" />')
+					$('#map_center_crosshairs').css({
+						'position': 'relative',
+						'width': '30px',
+						'height': '30px',
+						'margin-top': '-15px',
+						'margin-left': '-15px',
+						'z-index': 2000
+					})
+				}
+				$('#map_center_crosshairs').css({'top': map_vertical_center + 'px', 'left': map_horizontal_center + 'px'})
 			},
 			day_activities_with_markers(day_index) {
 				let markers = []
@@ -100,7 +122,6 @@
 						}
 					}
 				}
-				console.log(markers)
 				return markers
 			},
 		},
@@ -126,6 +147,7 @@
 			this.$nextTick(function () {
 				this.$refs.map.mapObject.invalidateSize()
 			})
+			this.$refs.map.mapObject.zoomControl.setPosition('bottomright')
 		},
 		destroyed() {
 			window.removeEventListener('resize', this.handleResize)

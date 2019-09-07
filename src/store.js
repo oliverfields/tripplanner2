@@ -37,9 +37,6 @@ function setup_trip(trip) {
 		Vue.set(trip.itinerary[0], 'notes', '')
 		Vue.set(trip.itinerary[0], 'activities', [])
 		trip.itinerary[0].activities.push({})
-		Vue.set(trip.itinerary[0].activities[0], 'description', 'new activity')
-		Vue.set(trip.itinerary[0].activities[0], 'marker_coordinates', null)
-		Vue.set(trip.itinerary[0].activities[0], 'marker_icon', 'circle')
 	}
 
 	if(!trip.itinerary_navigation)
@@ -66,7 +63,7 @@ function setup_trip(trip) {
 		show_activity_index: null
 	}
 
-	// Add ids for days and activities
+	// Ensure itinerary and activities have required properties
 	for (let i = 0; i < trip.itinerary.length; ++i) {
 		if(!trip.itinerary[i].tmp_id)
 			Vue.set(trip.itinerary[i], 'tmp_id', 'day_' + new_id())
@@ -74,6 +71,17 @@ function setup_trip(trip) {
 		for(let n = 0; n < trip.itinerary[i].activities.length; n++) {
 			if(!trip.itinerary[i].activities[n].tmp_id)
 				Vue.set(trip.itinerary[i].activities[n], 'tmp_id', 'activity_' + new_id())
+
+			if(!trip.itinerary[i].activities[n].marker_coordinates)
+				Vue.set(trip.itinerary[i].activities[n], 'marker_coordinates', null)
+
+			if(!trip.itinerary[i].activities[n].marker_icon)
+				Vue.set(trip.itinerary[i].activities[n], 'marker_icon', 'circle')
+
+			if(!trip.itinerary[i].activities[n].description)
+				Vue.set(trip.itinerary[i].activities[n], 'description', 'new activity')
+
+
 		}
 	}
 
@@ -172,7 +180,7 @@ export const store = new Vuex.Store({
 		},
 		add_day_and_show: (context) => {
 			context.commit('add_day')
-			let day_index = context.state.active_trip.itinerary.length - 1 // New day is appended to itinerary end, so index = length - 1
+			//let day_index = context.state.active_trip.itinerary.length - 1 // New day is appended to itinerary end, so index = length - 1
 			context.commit('set_itinerary_dates')
 
 		},
@@ -224,6 +232,8 @@ export const store = new Vuex.Store({
 			Vue.set(state.active_trip.itinerary[i], 'tmp_id', 'day_' + new_id())
 			Vue.set(state.active_trip.itinerary[i], 'activities', [])
 			Vue.set(state.active_trip.itinerary[i], 'notes', '')
+
+			state.active_trip.dirty = true
 		},
 		add_activity: (state, day) => {
 			day.activities.push({})
@@ -259,6 +269,8 @@ export const store = new Vuex.Store({
 		},
 		update_active_day: (state, payload) => {
 			let active_day = state.active_trip.itinerary[state.active_trip.itinerary_navigation.show_day_index]
+			let dirty = true
+
 			switch (payload.property) {
 				case 'notes':
 					active_day.notes = payload.value
@@ -266,6 +278,7 @@ export const store = new Vuex.Store({
 				default:
 					console.log('Unkown active day property: ' + payload.property)
 			}
+			state.active_trip.dirty = dirty
 		},
 		update_active_activity: (state, payload) => {
 			let dirty = true
@@ -276,6 +289,15 @@ export const store = new Vuex.Store({
 					break
 				case 'marker_coordinates':
 					active_activity.marker_coordinates = payload.value
+/*
+					if(payload.value == null)
+						active_activity.marker_coordinates = payload.value
+					else {
+						Vue.set(active_activity, marker_coordinates, {})
+						Vue.set(active_activity.marker_coordinates, 'lat', payload.lat)
+						Vue.set(active_activity.marker_coordinates, 'lng', payload.lng)
+					}
+*/
 					break
 				case 'marker_icon':
 					active_activity.marker_icon = payload.value
