@@ -13,7 +13,7 @@
 							aria-describedby="coordinates-help"
 						/>
 						<small id="coordinates-help" class="form-text text-muted">Latitude, Longitude</small>
-						<div class="invalid-feedback">Format must be xx.xxxx,yy.yyyy</div>
+						<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> DD coordinates, e.g. xx.xxxx,yy.yyyy</div>
 					</div>
 					<div class="form-group">
 						<label for="map_zoom">Zoom</label>
@@ -88,6 +88,7 @@
 					let latlng_object = this.tp_str_2_latlng(value)
 					if(latlng_object) {
 						this.$store.commit('update_active_trip', { property: 'map_center', value: latlng_object })
+						this.$store.commit('update_map_settings', { center: latlng_object })
 						action = 'remove'
 					}
 
@@ -100,6 +101,7 @@
 				},
 				set(value) {
 					this.$store.commit('update_active_trip', { property: 'map_zoom', value: value })
+					this.$store.commit('update_map_settings', { zoom: value })
 				}
 			}
 		},

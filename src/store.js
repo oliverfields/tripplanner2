@@ -29,7 +29,10 @@ function setup_trip(trip) {
 		trip.start_date = new Date()
 
 	if(!trip.map_center)
-		trip.map_center = { lat: 52.5125, lng: 13.3815 }
+		trip.map_center = { lat: 51.1739726374, lng: -1.82237671048 }
+
+	if(!trip.map_zoom)
+		trip.map_zoom = 2
 
 	if(!trip.itinerary){
 		trip.itinerary = []
@@ -47,9 +50,6 @@ function setup_trip(trip) {
 
 	if(!trip.itinerary_navigation.show_activity_index)
 		trip.itinerary_navigation.show_activity_index = null
-
-	if(!trip.map_zoom)
-		trip.map_zoom = 2
 
 	if(!trip.error_registry)
 		trip.error_registry = []
@@ -107,7 +107,7 @@ export const store = new Vuex.Store({
 		active_trip: false,
 		map: {
 			zoom: 2,
-			center: { lat: 52.5125, lng: 13.3815 },
+			center: { lat: 51.1739726374, lng: -1.82237671048 },
 			bounds: null,
 		}
 	},
@@ -128,10 +128,10 @@ export const store = new Vuex.Store({
 			context.commit('set_active_trip', payload)
 			context.commit('set_itinerary_dates')
 
-			if(context.state.active_trip.map_center)
-				context.commit('update_map_settings', { map_center: context.state.active_trip.map_center })
+			if(payload.map_center)
+				context.commit('update_map_settings', { center: context.state.active_trip.map_center })
 
-			if(context.state.active_trip.zoom)
+			if(payload.map_zoom)
 				context.commit('update_map_settings', { zoom: context.state.active_trip.map_zoom })
 		},
 		setItems: context => {
@@ -140,7 +140,7 @@ export const store = new Vuex.Store({
 		create_trip: context => {
 			let new_trip = setup_trip({})
 			context.commit('create_trip', new_trip)
-			context.commit('set_active_trip', new_trip)
+			context.dispatch('set_active_trip', new_trip)
 			context.commit('set_itinerary_dates')
 			context.commit('update_active_trip', {property: 'dirty', value: false})
 		},
@@ -275,12 +275,9 @@ export const store = new Vuex.Store({
 			}
 		},
 		update_map_settings: (state, payload) => {
-			console.log('setting map zoom')
-			console.log(payload.zoom)
 			if(payload.zoom)
-				state.map.zoom = payload.zoom
-			console.log('setting map Center')
-			console.log(payload.center)
+				state.map.zoom = parseInt(payload.zoom)
+
 			if(payload.center) {
 				state.map.center = payload.center
 			}

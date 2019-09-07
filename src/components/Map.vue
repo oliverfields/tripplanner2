@@ -1,12 +1,12 @@
 <template>
-		<!--@update:zoom="zoom_updated"-->
 	<l-map
 		id="map"
 		ref="map"
 		:style="{'width': this.map_dimensions.width, 'height': this.map_dimensions.height}"
 		:zoom="this.map_zoom"
 		:center="this.map_center"
-		@update:center="centerUpdated"
+		@update:zoom="zoom_updated"
+		@update:center="center_updated"
 	>
 		<l-control-layers></l-control-layers>
 
@@ -98,13 +98,10 @@
 
 				return icon
 			},
-			zoom_updated (zoom) {
-				//console.log('updating zoom')
-				//this.$store.commit('update_map_settings', {'zoom': this.$refs.map.mapObject._zoom})
+			zoom_updated () {
+				this.$store.commit('update_map_settings', {'zoom': this.$refs.map.mapObject._zoom})
 			},
-			centerUpdated (center) {
-				console.log('Map is updateing itself')
-				console.log(center)
+			center_updated (center) {
 				this.$store.commit('update_map_settings', {'center': center})
 			},
 			handleResize() {
@@ -177,6 +174,6 @@
 
 <style>
 	.awesome-marker i {
-		margin-top: 12px ! important;
+		margin: 12px 10px ! important;
 	}
 </style>

@@ -24,9 +24,9 @@
 									v-model="activity_coordinates"
 								/>
 								<small id="coordinates-help" class="form-text text-muted">Latitude, Longitude</small>
-								<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> Format must be xx.xxxx,yy.yyyy</div>
+								<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> DD coordinates, e.g. xx.xxxx,yy.yyyy</div>
 							</div>
-							<a style="margin-top: 1rem; display: block;" href="#" @click="use_current_map_center"><i class="fa fa-map-marked-alt" /> Use current map center</a>
+							<a style="margin: 1rem 0; display: block;" href="#" @click="use_current_map_center"><i class="fa fa-map-marked-alt" /> Use current map center</a>
 						</div>
 					</div>
 					<div class="row">
@@ -39,8 +39,8 @@
 <!--
 										<span style="background-color: #FFFFFF;" @click="activity_marker_color = 'white'">&nbsp;</span>
 -->
-										<span style="background-color: #EB7D7F;" @click="activity_marker_color = 'lightred'">&nbsp;</span>
 										<span style="background-color: #D63E2A;" @click="activity_marker_color = 'red'">&nbsp;</span>
+										<span style="background-color: #EB7D7F;" @click="activity_marker_color = 'lightred'">&nbsp;</span>
 										<span style="background-color: #A23336;" @click="activity_marker_color = 'darkred'">&nbsp;</span>
 										<span style="background-color: #F69730;" @click="activity_marker_color = 'orange'">&nbsp;</span>
 										<span style="background-color: #FFCB92;" @click="activity_marker_color = 'beige'">&nbsp;</span>
@@ -105,9 +105,6 @@
 		},
 		methods: {
 			use_current_map_center() {
-				console.log('Setting map senter in activity')
-				console.log(this.$store.getters.map_settings.center)
-
 				this.$store.commit('update_active_activity', {property: 'marker_coordinates', value: this.$store.getters.map_settings.center})
 				this.tmp_activity_coordinates =  this.tp_latlng_2_str(this.$store.getters.map_settings.center)
 			},
@@ -233,7 +230,9 @@
 					this.tmp_activity_coordinates = value
 
 					if(this.validate_activity_coordinates()){
-						this.$store.commit('update_active_activity', { property: 'marker_coordinates', value: this.tp_str_2_latlng(this.tmp_activity_coordinates) })
+						let latlng  = this.tp_str_2_latlng(this.tmp_activity_coordinates)
+						this.$store.commit('update_active_activity', { property: 'marker_coordinates', value: latlng })
+						this.$store.commit('update_map_settings', { center: latlng })
 					}
 					else
 						this.$store.commit('update_active_activity', { property: 'marker_coordinates', value: null })
@@ -251,9 +250,9 @@
 		border-radius: 50%;
 		background-color: red;
 		height: 4rem;
-		padding-top: .5rem;
-		color: white;
+		padding: .5rem 0 0 .5rem;
 		margin-right: 1rem;
+		color: white;
 		text-align: center;
 	}
 	.available_marker_icons, .available_marker_colors {
@@ -266,11 +265,12 @@
 		display: inline-block;
 	}
 	.available_marker_icons i, .available_marker_colors span {
-		margin-right: .5rem;
+		margin: 0 .5rem 0 0;
 		width: 1rem;
 		text-align: center;
 	}
 	.available_marker_colors span {
+		margin: 0 .5rem 0 0 ! important;
 		height: 1rem;
 		width: 1rem;
 		display: inline-block;

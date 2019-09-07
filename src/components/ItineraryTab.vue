@@ -28,8 +28,8 @@
 							<a href="#" @click="show_activity(day_index, activity_index)">
 								<span v-if="activity.description">{{ activity.description }}</span>
 								<span v-else><em>empty</em></span>
-								&nbsp;
 							</a>
+							&nbsp;
 							<i
 								:class="activity_marker_icon_class(activity)"
 								:style="activity_marker_icon_color(activity)"
@@ -82,9 +82,7 @@
 		},
 		methods: {
 			set_map_center(latlng) {
-				console.log('setting map center')
-				console.log(latlng)
-				this.$store.commit('set_map_center', latlng)
+				this.$store.commit('update_map_settings', { center: latlng })
 			},
 			activity_marker_icon_class(activity) {
 				return 'fa fa-' + activity.marker_icon
@@ -132,5 +130,8 @@
 	}
 	.notes {
 		font-style: italic;
+	}
+	li.activity i {
+		cursor: pointer;
 	}
 </style>

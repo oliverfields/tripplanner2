@@ -115,4 +115,7 @@
 		color: #fff ! important;
 		background-color: #343A40 ! important;
 	}
+	.navbar-brand i {
+		margin-left: 1rem ! important;
+	}
 </style>

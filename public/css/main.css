@@ -35,3 +35,6 @@ h3 {
 	float: none ! important;
 	margin-top: 0 ! important;
 }
+i.fa {
+margin: 0 .5rem 0 0;
+}
