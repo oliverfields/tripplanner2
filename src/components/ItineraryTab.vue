@@ -30,12 +30,7 @@
 								<span v-else><em>empty</em></span>
 							</a>
 							&nbsp;
-							<i
-								:class="activity_marker_icon_class(activity)"
-								:style="activity_marker_icon_color(activity)"
-								v-if="activity.marker_coordinates"
-								@click="set_map_center(activity.marker_coordinates)"
-							/>
+							<MarkerLink :activity="activity" />
 						</li>
 					</ul>
 				</li>
@@ -50,12 +45,14 @@
 <script>
 	import ItineraryTabDayView from '@/components/ItineraryTabDayView'
 	import ItineraryTabActivityView from '@/components/ItineraryTabActivityView'
+	import MarkerLink from '@/components/MarkerLink'
 	
 	export default {
-	name: 'ItineraryTab',
+		name: 'ItineraryTab',
 		components: {
 			ItineraryTabDayView,
-			ItineraryTabActivityView
+			ItineraryTabActivityView,
+			MarkerLink,
 		},
 		computed: {
 			show_day_index: {
@@ -130,8 +127,5 @@
 	}
 	.notes {
 		font-style: italic;
-	}
-	li.activity i {
-		cursor: pointer;
 	}
 </style>

@@ -86,8 +86,6 @@ function setup_trip(trip) {
 
 			if(!trip.itinerary[i].activities[n].description)
 				Vue.set(trip.itinerary[i].activities[n], 'description', 'new activity')
-
-
 		}
 	}
 
@@ -178,6 +176,30 @@ export const store = new Vuex.Store({
 				})
 				context.commit('set_trips', trips)
 			})
+		},
+		show_tab: (context, object) => {
+			// Display tab based on object tmp_id
+
+			// Look through days first
+			for (let i = 0; i < context.state.active_trip.itinerary.length; i++) {
+				if(object.tmp_id === context.state.active_trip.itinerary[i].tmp_id) {
+					context.commit('update_itinerary_navigation', { property: 'show_day_index', value: i })
+					context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
+					return true
+				}
+			}
+
+			// If not day it should be an activity
+			for (let i = 0; i < context.state.active_trip.itinerary.length; i++) {
+				for(let n = 0; n < context.state.active_trip.itinerary[i].activities.length; n++) {
+					if(object.tmp_id === context.state.active_trip.itinerary[i].activities[n].tmp_id) {
+						context.commit('update_itinerary_navigation', { property: 'show_day_index', value: i })
+						context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: n })
+						return true
+					}
+				}
+			}
+			return false
 		},
 		show_activity: (context, payload) => {
 			context.commit('update_itinerary_navigation', { property: 'show_day_index', value: payload.day_index })

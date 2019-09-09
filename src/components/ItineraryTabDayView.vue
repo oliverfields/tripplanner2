@@ -26,6 +26,8 @@
 										<span v-else><em>empty</em></span>
 									</a>
 									&nbsp;
+									<MarkerLink :activity="activity" />
+									&nbsp;
 									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><i class="fa fa-trash-alt" /></a>
 								</li>
 							</ul>
@@ -41,8 +43,13 @@
 </template>
 
 <script>
+	import MarkerLink from '@/components/MarkerLink'
+
 	export default {
 		name: 'ItineraryTabDayVeiw',
+		components: {
+			MarkerLink
+		},
 		methods: {
 			show_activity(day_index, activity_index) {
 				this.$store.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})

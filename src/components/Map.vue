@@ -15,16 +15,6 @@
 			:attribution="this.attribution"
 		></l-tile-layer>
 
-<!--
-		<l-marker :lat-lng="this.$store.getters.map_settings.center">
-			<l-icon
-				:icon-size="this.center_crosshairs_icon.size"
-				:icon-anchor="this.center_crosshairs_icon.anchor"
-				:icon-url="this.center_crosshairs_icon.image_url"
-			/>
-		</l-marker>
--->
-
 		<l-layer-group
 			v-for="(day,day_index) in this.$store.state.active_trip.itinerary"
 			layer-type="overlay"
@@ -34,6 +24,7 @@
 				v-for="activity in day_activities_with_markers(day_index)"
 				v-bind:lat-lng="latlng_array(activity)"
 				:icon="marker_icon(activity)"
+				@click="show_activity_tab(activity)"
 			></l-marker>
 		</l-layer-group>
 	</l-map>
@@ -48,7 +39,7 @@
 		LMarker,
 		LIcon,
 		LControlLayers,
-		LLayerGroup
+		LLayerGroup,
 	} from 'vue2-leaflet'
 
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
@@ -62,7 +53,7 @@
 			LMarker,
 			LIcon,
 			LControlLayers,
-			LLayerGroup
+			LLayerGroup,
 		},
 		data() {
 			return {
@@ -98,6 +89,9 @@
 
 				return icon
 			},
+			show_activity_tab(activity) {
+				this.$store.dispatch('show_tab', activity)
+			},
 			zoom_updated () {
 				this.$store.commit('update_map_settings', {'zoom': this.$refs.map.mapObject._zoom})
 			},
@@ -118,10 +112,11 @@
 				let map_horizontal_center = (window.innerWidth - tabs_width) / 2
 				let map_vertical_center = (window.innerHeight - nav_height) / 2
 
-
 				if(!$('#map_center_crosshairs').length) {
-					$('#map').append('<object type="image/svg+xml" data="images/MapCenterCoordIcon2.svg" id="map_center_crosshairs" />')
+					$('#map').append('<div id="map_center_crosshairs" />')
 					$('#map_center_crosshairs').css({
+						'background': 'url(images/MapCenterCoordIcon2.svg) 50% 50% no-repeat',
+						'background-size': '30px 30px',
 						'position': 'relative',
 						'width': '30px',
 						'height': '30px',
@@ -131,6 +126,7 @@
 					})
 				}
 				$('#map_center_crosshairs').css({'top': map_vertical_center + 'px', 'left': map_horizontal_center + 'px'})
+
 			},
 			day_activities_with_markers(day_index) {
 				let markers = []
@@ -139,7 +135,6 @@
 				if(itinerary.activities) {
 					for (let n = 0; n < itinerary.activities.length; n++) {
 						if(itinerary.activities[n].marker_coordinates != null) {
-							//itinerary.activities[n].marker_latlng = [ itinerary.activities[n].marker_coordinates.lat, itinerary.activities[n].marker_coordinates.lng ]
 							markers.push(itinerary.activities[n])
 						}
 					}

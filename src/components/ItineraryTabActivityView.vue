@@ -18,7 +18,7 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								<label for="activity_coordinates">Marker coordinates</label>
+								<label for="activity_coordinates">Marker coordinates <MarkerLink :activity="activity" /></label>
 								<input
 									:class="activity_coordinates_class"
 									v-model="activity_coordinates"
@@ -95,8 +95,13 @@
 </template>
 
 <script>
+	import MarkerLink from '@/components/MarkerLink'
+
 	export default {
 		name: 'ItineraryTabActivityView',
+		components: {
+			MarkerLink
+		},
 		data() {
 			return {
 				tmp_activity_coordinates: null,
@@ -231,11 +236,14 @@
 
 					if(this.validate_activity_coordinates()){
 						let latlng  = this.tp_str_2_latlng(this.tmp_activity_coordinates)
+						if(latlng == false)
+							latlng = null
 						this.$store.commit('update_active_activity', { property: 'marker_coordinates', value: latlng })
 						this.$store.commit('update_map_settings', { center: latlng })
 					}
-					else
+					else {
 						this.$store.commit('update_active_activity', { property: 'marker_coordinates', value: null })
+					}
 				}
 			},
 		}
