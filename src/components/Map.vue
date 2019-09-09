@@ -25,7 +25,11 @@
 				v-bind:lat-lng="latlng_array(activity)"
 				:icon="marker_icon(activity)"
 				@click="show_activity_tab(activity)"
-			></l-marker>
+			>
+<!--
+				<l-popup :content="activity_popup(day, activity)"></l-popup>
+-->
+			</l-marker>
 		</l-layer-group>
 	</l-map>
 </template>
@@ -37,6 +41,7 @@
 		LMap,
 		LTileLayer,
 		LMarker,
+		LPopup,
 		LIcon,
 		LControlLayers,
 		LLayerGroup,
@@ -54,6 +59,7 @@
 			LIcon,
 			LControlLayers,
 			LLayerGroup,
+			LPopup,
 		},
 		data() {
 			return {
@@ -71,6 +77,9 @@
 			}
 		},
 		methods: {
+			activity_popup(day, activity) {
+				return '<div class="tp-popup"><p class="description">' + activity.description + '</p><p>' + day.date_pretty + '</p></div>';
+			},
 			marker_icon(activity) {
 				let icon_name = 'circle'
 				let icon_color = 'red'
@@ -170,5 +179,13 @@
 <style>
 	.awesome-marker i {
 		margin: 12px 10px ! important;
+	}
+	.tp-popup {
+		font-size: .8rem;
+	}
+	.tp-popup .description {
+		font-weight: bold;
+		color: #666;
+		margin-top: 1rem;
 	}
 </style>

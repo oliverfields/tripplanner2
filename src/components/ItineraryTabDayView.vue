@@ -28,7 +28,7 @@
 									&nbsp;
 									<MarkerLink :activity="activity" />
 									&nbsp;
-									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><i class="fa fa-trash-alt" /></a>
+									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><i class="danger fa fa-trash-alt" /></a>
 								</li>
 							</ul>
 						</div>
