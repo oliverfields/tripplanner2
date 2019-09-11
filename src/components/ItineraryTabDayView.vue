@@ -17,17 +17,15 @@
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<div v-if="day.activities">
+						<div>
 							<h3>Activities</h3>
-							<ul>
+							<ul v-if="day.activities">
 								<li class="activity" v-for="(activity, activity_index) in day.activities">
 									<a href="#" @click="show_activity(day_index, activity_index)">
 										<span v-if="activity.description">{{ activity.description }}</span>
 										<span v-else><em>empty</em></span>
 									</a>
-									&nbsp;
 									<MarkerLink :activity="activity" />
-									&nbsp;
 									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><i class="danger fa fa-trash-alt" /></a>
 								</li>
 							</ul>
@@ -35,6 +33,26 @@
 					</div>
 					<div class="col-md-6">
 						<a class="btn btn-primary slim-button" href="#" @click="add_activity_and_show(day_index, day)"><i class="fa fa-plus" /> Add activity</a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div>
+							<h3>Routes</h3>
+							<ul>
+								<li  v-if="day.routes.length > 0" class="route" v-for="(route, route_index) in day.routes">
+									<a href="#" @click="show_route(day_index, route_index)">
+										<span v-if="route.name">{{ route.name }}</span>
+										<span v-else><em>empty</em></span>
+									</a>
+									<span>34km</span>
+									<a href="#" @click="delete_route({day_index: day_index, route_index: route_index})"><i class="danger fa fa-trash-alt" /></a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<a class="btn btn-primary slim-button" href="#" @click="add_route_and_show(day_index, day)"><i class="fa fa-plus" /> Add route</a>
 					</div>
 				</div>
 			</div>
@@ -57,8 +75,17 @@
 			add_activity_and_show(day_index, day) {
 				this.$store.dispatch('add_activity_and_show', {day_index: day_index, day: day})
 			},
+			show_route(day_index, route_index) {
+				this.$store.dispatch('show_route', {day_index: day_index, route_index: route_index})
+			},
+			add_route_and_show(day_index, day) {
+				this.$store.dispatch('add_route_and_show', {day_index: day_index, day: day})
+			},
 			delete_activity(payload) {
 				this.$store.commit('delete_activity', payload)
+			},
+			delete_route(payload) {
+				this.$store.commit('delete_route', payload)
 			},
 			validate_day_notes() {
 				let action = 'remove'
@@ -108,4 +135,7 @@
 </script>
 
 <style>
+	.slim-button {
+		margin-bottom: 2rem;
+	}
 </style>

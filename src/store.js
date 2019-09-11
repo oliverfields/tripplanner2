@@ -38,8 +38,6 @@ function setup_trip(trip) {
 		trip.itinerary = []
 		trip.itinerary.push({})
 		Vue.set(trip.itinerary[0], 'notes', '')
-		Vue.set(trip.itinerary[0], 'activities', [])
-		trip.itinerary[0].activities.push({})
 	}
 
 	if(!trip.itinerary_navigation)
@@ -51,6 +49,9 @@ function setup_trip(trip) {
 	if(!trip.itinerary_navigation.show_activity_index)
 		trip.itinerary_navigation.show_activity_index = null
 
+	if(!trip.itinerary_navigation.show_route_index)
+		trip.itinerary_navigation.show_route_index = null
+
 	if(!trip.error_registry)
 		trip.error_registry = []
 
@@ -60,13 +61,23 @@ function setup_trip(trip) {
 	// Controls for itinerary tab content
 	trip.itinerary_navigation = {
 		show_day_index: null,
-		show_activity_index: null
+		show_activity_index: null,
+		show_route_index: null,
 	}
 
-	// Ensure itinerary and activities have required properties
+	// Ensure itinerary, activities and routes have required properties
 	for (let i = 0; i < trip.itinerary.length; ++i) {
 		if(!trip.itinerary[i].tmp_id)
 			Vue.set(trip.itinerary[i], 'tmp_id', 'day_' + new_id())
+
+		if(!trip.itinerary[i].activities) {
+			Vue.set(trip.itinerary[i], 'activities', [])
+			trip.itinerary[i].activities.push({})
+		}
+
+		if(!trip.itinerary[i].routes) {
+			Vue.set(trip.itinerary[i], 'routes', [])
+		}
 
 		for(let n = 0; n < trip.itinerary[i].activities.length; n++) {
 			if(!trip.itinerary[i].activities[n].tmp_id)
@@ -185,16 +196,30 @@ export const store = new Vuex.Store({
 				if(object.tmp_id === context.state.active_trip.itinerary[i].tmp_id) {
 					context.commit('update_itinerary_navigation', { property: 'show_day_index', value: i })
 					context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
+					context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
 					return true
 				}
 			}
 
-			// If not day it should be an activity
+			// If not day it chould be an activity
 			for (let i = 0; i < context.state.active_trip.itinerary.length; i++) {
 				for(let n = 0; n < context.state.active_trip.itinerary[i].activities.length; n++) {
 					if(object.tmp_id === context.state.active_trip.itinerary[i].activities[n].tmp_id) {
 						context.commit('update_itinerary_navigation', { property: 'show_day_index', value: i })
 						context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: n })
+						context.commit('update_itinerary_navigation', { property: 'show_route_index', value: null })
+						return true
+					}
+				}
+			}
+
+			// Guess it must be a route then
+			for (let i = 0; i < context.state.active_trip.itinerary.length; i++) {
+				for(let m = 0; m < context.state.active_trip.itinerary[i].routes.length; m++) {
+					if(object.tmp_id === context.state.active_trip.itinerary[i].routes[m].tmp_id) {
+						context.commit('update_itinerary_navigation', { property: 'show_day_index', value: i })
+						context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
+						context.commit('update_itinerary_navigation', { property: 'show_route_index', value: m })
 						return true
 					}
 				}
@@ -204,6 +229,12 @@ export const store = new Vuex.Store({
 		show_activity: (context, payload) => {
 			context.commit('update_itinerary_navigation', { property: 'show_day_index', value: payload.day_index })
 			context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: payload.activity_index })
+			context.commit('update_itinerary_navigation', { property: 'show_route_index', value: null })
+		},
+		show_route: (context, payload) => {
+			context.commit('update_itinerary_navigation', { property: 'show_day_index', value: payload.day_index })
+			context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
+			context.commit('update_itinerary_navigation', { property: 'show_route_index', value: payload.route_index })
 		},
 		add_activity_and_show: (context, payload) => {
 			let day_index = payload.day_index
@@ -211,6 +242,13 @@ export const store = new Vuex.Store({
 			context.commit('add_activity', day)
 			let activity_index = day.activities.length - 1 // New activity is appended to end, so index = length - 1
 			context.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})
+		},
+		add_route_and_show: (context, payload) => {
+			let day_index = payload.day_index
+			let day = payload.day
+			context.commit('add_route', day)
+			let route_index = day.routes.length - 1 // New route is appended to end, so index = length - 1
+			context.dispatch('show_route', {day_index: day_index, route_index: route_index})
 		},
 		add_day_and_show: (context) => {
 			context.commit('add_day')
@@ -265,6 +303,7 @@ export const store = new Vuex.Store({
 			Vue.set(state.active_trip.itinerary[i], 'date_pretty', mixin.methods.tp_date_format(day_date))
 			Vue.set(state.active_trip.itinerary[i], 'tmp_id', 'day_' + new_id())
 			Vue.set(state.active_trip.itinerary[i], 'activities', [])
+			Vue.set(state.active_trip.itinerary[i], 'routes', [])
 			Vue.set(state.active_trip.itinerary[i], 'notes', '')
 
 			state.active_trip.dirty = true
@@ -279,8 +318,19 @@ export const store = new Vuex.Store({
 			Vue.set(day.activities[i], 'marker_coordinates', null)
 			Vue.set(day.activities[i], 'tmp_id', 'activity_' + new_id())
 		},
+		add_route: (state, day) => {
+			day.routes.push({})
+			let i = day.routes.length - 1 // New index is length - 1
+			Vue.set(day.routes[i], 'name', '')
+			Vue.set(day.routes[i], 'color_hex', '#FF0000')
+			Vue.set(day.routes[i], 'url', null)
+			Vue.set(day.routes[i], 'tmp_id', 'route_' + new_id())
+		},
 		delete_activity: (state, payload) => {
 			state.active_trip.itinerary[payload.day_index].activities.splice(payload.activity_index, 1)
+		},
+		delete_route: (state, payload) => {
+			state.active_trip.itinerary[payload.day_index].routes.splice(payload.route_index, 1)
 		},
 		update_itinerary_navigation: (state, payload) => {
 			switch (payload.property) {
@@ -291,6 +341,10 @@ export const store = new Vuex.Store({
 				case 'show_activity_index':
 					if(typeof payload.value != 'number') payload.value = null
 					state.active_trip.itinerary_navigation.show_activity_index = payload.value
+					break
+				case 'show_route_index':
+					if(typeof payload.value != 'number') payload.value = null
+					state.active_trip.itinerary_navigation.show_route_index = payload.value
 					break
 				default:
 					console.log('Unkown itinerary_navigation property: ' + payload.property)
@@ -314,6 +368,26 @@ export const store = new Vuex.Store({
 					break
 				default:
 					console.log('Unkown active day property: ' + payload.property)
+			}
+			state.active_trip.dirty = dirty
+		},
+		update_active_route: (state, payload) => {
+			let active_route = state.active_trip.itinerary[state.active_trip.itinerary_navigation.show_day_index].routes[state.active_trip.itinerary_navigation.show_route_index]
+			let dirty = true
+
+			switch (payload.property) {
+				case 'name':
+					active_route.name = payload.value
+					break
+				case 'url':
+					active_route.url = payload.value
+					break
+				case 'color_hex':
+					active_route.color_hex = payload.value
+					break
+				default:
+					console.log('Unkown active route property: ' + payload.property)
+					dirty = false
 			}
 			state.active_trip.dirty = dirty
 		},
@@ -356,8 +430,6 @@ export const store = new Vuex.Store({
 					}
 
 					active_activity.marker_color_hex = colors[payload.value]
-
-
 
 					break
 				default:

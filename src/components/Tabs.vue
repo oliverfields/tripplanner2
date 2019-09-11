@@ -14,7 +14,7 @@
 				<i class="fa fa-asterisk" />
 			</sup>
 		</a>
-		<ul class="nav nav-tabs" id="tripTabs" role="tablist">
+		<ul class="nav nav-tabs" id="trip-tabs" role="tablist">
 			<li class="nav-item">
 				<a
 					class="nav-link active"
@@ -40,7 +40,7 @@
 				>Map</a>
 			</li>
 		</ul>
-		<div class="tab-content" id="tripTabsContent">
+		<div class="tab-content" id="trip-tabs-content">
 			<div class="tab-pane show active" id="itinerary-tab-content" role="tabpanel" aria-labelledby="itinerary-tab-content"><ItineraryTab /></div>
 			<div class="tab-pane" id="trip-tab-content" role="tabpanel" aria-labelledby="trip-tab-content"><TripTab /></div>
 			<div class="tab-pane" id="map-tab-content" role="tabpanel" aria-labelledby="map-tab-content"><MapTab /></div>
@@ -83,10 +83,16 @@
 </script>
 
 <style>
-	#tripTabsContent {
+	#trip-tabs-content {
 	margin-top: 1rem;
 	}
 	.trip_save_button {
 		margin-bottom: 1.5rem;
+	}
+	#trip-tabs a.active {
+		border-color: #6C757D #6C757D #ffffff !important;
+	}
+	#trip-tabs {
+		border-bottom: 1px solid #6C757D !important;
 	}
 </style>

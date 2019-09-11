@@ -3,17 +3,19 @@
 		<div key="breadcrumb" class="breadcrumb">
 			<a
 				href="#"
-				v-if="this.show_day_index != null || this.show_activity_index != null"
+				v-if="this.show_day_index != null || this.show_activity_index != null || this.show_route_index != null"
 				@click="show_itinerary()"
 			><i class="fa fa-chevron-left" /> Overview</a> <a
 				href="#"
-				v-if="this.show_activity_index != null"
+				v-if="this.show_activity_index != null || this.show_route_index != null"
 				@click="show_day(show_day_index)"
 			><i class="fa fa-chevron-left" /> {{ selected_day_date_pretty }}</a>
 		</div>
-
 		<div v-if="this.show_activity_index != null">
 			<ItineraryTabActivityView />
+		</div>
+		<div v-else-if="this.show_route_index != null">
+			<ItineraryTabRouteView />
 		</div>
 		<div v-else-if="this.show_day_index != null">
 			<ItineraryTabDayView />
@@ -29,7 +31,6 @@
 								<span v-if="activity.description">{{ activity.description }}</span>
 								<span v-else><em>empty</em></span>
 							</a>
-							&nbsp;
 							<MarkerLink :activity="activity" />
 						</li>
 					</ul>
@@ -45,6 +46,7 @@
 <script>
 	import ItineraryTabDayView from '@/components/ItineraryTabDayView'
 	import ItineraryTabActivityView from '@/components/ItineraryTabActivityView'
+	import ItineraryTabRouteView from '@/components/ItineraryTabRouteView'
 	import MarkerLink from '@/components/MarkerLink'
 	
 	export default {
@@ -52,6 +54,7 @@
 		components: {
 			ItineraryTabDayView,
 			ItineraryTabActivityView,
+			ItineraryTabRouteView,
 			MarkerLink,
 		},
 		computed: {
@@ -71,6 +74,14 @@
 					this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: index})
 				}
 			},
+			show_route_index: {
+				get() {
+					return this.$store.state.active_trip.itinerary_navigation.show_route_index
+				},
+				set(index) {
+					this.$store.commit('update_itinerary_navigation', {property: 'show_route_index', value: index})
+				}
+			},
 			selected_day_date_pretty() {
 				let day_index = this.$store.state.active_trip.itinerary_navigation.show_day_index
 				if(day_index != null)
@@ -81,25 +92,34 @@
 			set_map_center(latlng) {
 				this.$store.commit('update_map_settings', { center: latlng })
 			},
+/*
 			activity_marker_icon_class(activity) {
 				return 'fa fa-' + activity.marker_icon
 			},
 			activity_marker_icon_color(activity) {
 				return 'color: ' + activity.marker_color_hex
 			},
+*/
 			add_day_and_show() {
 				this.$store.dispatch('add_day_and_show')
 			},
 			show_day(index){
 				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
+				this.$store.commit('update_itinerary_navigation', {property: 'show_route_index', value: null})
 				this.$store.commit('update_itinerary_navigation', {property: 'show_day_index', value: index})
 			},
 			show_itinerary(){
 				this.$store.commit('update_itinerary_navigation', {property: 'show_day_index', value: null})
 				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
+				this.$store.commit('update_itinerary_navigation', {property: 'show_route_index', value: null})
 			},
 			show_activity(day_index, activity_index){
 				this.$store.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})
+				this.$store.commit('update_itinerary_navigation', {property: 'show_route_index', value: null})
+			},
+			show_route(day_index, route_index){
+				this.$store.dispatch('show_route', {day_index: day_index, route_index: route_index})
+				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
 			}
 		}
 	}

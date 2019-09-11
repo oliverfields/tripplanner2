@@ -3,11 +3,12 @@
 		<div v-for="(day, day_index) in this.$store.state.active_trip.itinerary">
 			<div v-for="(activity, activity_index) in day.activities">
 				<div class="activity" v-show="show_activity(day_index, activity_index)">
+					<h2>Activity</h2>
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
 								<label for="activity_description">Description</label>
-								<input
+								<textarea
 									:class="activity_description_class"
 									v-model="activity_description"
 								/>
@@ -83,6 +84,7 @@
 										<i class="fa fa-plane" @click="activity_marker_icon = 'plane'"/>
 										<i class="fa fa-ship" @click="activity_marker_icon = 'ship'"/>
 										<i class="fa fa-bicycle" @click="activity_marker_icon = 'bicycle'"/>
+										<i class="fa fa-parking" @click="activity_marker_icon = 'parking'"/>
 									</div>
 								</div>
 							</div>
