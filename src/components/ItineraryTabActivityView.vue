@@ -19,7 +19,7 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								<label for="activity_coordinates">Marker coordinates <MarkerLink :activity="activity" /></label>
+								<label for="activity_coordinates">Marker coordinates <MarkerLink :activity="activity" class="text-to-left" /></label>
 								<input
 									:class="activity_coordinates_class"
 									v-model="activity_coordinates"
@@ -27,7 +27,9 @@
 								<small id="coordinates-help" class="form-text text-muted">Latitude, Longitude</small>
 								<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> DD coordinates, e.g. xx.xxxx,yy.yyyy</div>
 							</div>
-							<a style="margin: 1rem 0; display: block;" href="#" @click="use_current_map_center"><i class="fa fa-map-marked-alt" /> Use current map center</a>
+							<div class="form-group">
+								<a class="btn btn-primary" href="#" @click="use_current_map_center"><i class="fa fa-map-marked-alt" /> Use current map center</a>
+							</div>
 						</div>
 					</div>
 					<div class="row">

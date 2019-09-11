@@ -21,6 +21,7 @@
 					data-toggle="tab"
 					href="#itinerary-tab-content"
 					role="tab"
+					@click="show_itinerary()"
 				>Itinerary</a>
 			</li>
 			<li class="nav-item">
@@ -63,7 +64,10 @@
 		methods: {
 			save_trip() {
 				console.log(this.$store.state.active_trip)
-			}
+			},
+			show_itinerary() {
+				this.$store.dispatch('show_tab', null)
+			},
 		},
 		computed: {
 			save_button_classes: function() {

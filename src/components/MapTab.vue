@@ -4,6 +4,9 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="form-group">
+						<a style="margin-top: 1rem;" title="Set default map center and zoom for trip" class="btn btn-primary" href="#" @click="use_current_map_settings"><i class="fa fa-map-marked-alt" /> Use current map center and zoom</a>
+					</div>
+					<div class="form-group">
 						<label for="map_center_coordinates">Center</label>
 						<input
 							v-model="latlng"
@@ -46,9 +49,6 @@
 							<option value="20">20 - Maximum</option>
 						</select>
 						<small id="zoom-help" class="form-text text-muted">Some maps may not support high zoom</small>
-					</div>
-					<div class="form-group">
-						<a style="margin-top: 2rem; display: block;" href="#" @click="use_current_map_settings"><i class="fa fa-map-marked-alt" /> Use current map center and zoom</a>
 					</div>
 				</div>
 			</div>

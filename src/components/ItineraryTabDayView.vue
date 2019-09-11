@@ -17,16 +17,16 @@
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<div>
-							<h3>Activities</h3>
-							<ul v-if="day.activities">
+						<div class="form-group">
+							<label for="activities">Activities</label>
+							<ul id="activities" v-if="day.activities">
 								<li class="activity" v-for="(activity, activity_index) in day.activities">
 									<a href="#" @click="show_activity(day_index, activity_index)">
 										<span v-if="activity.description">{{ activity.description }}</span>
 										<span v-else><em>empty</em></span>
 									</a>
-									<MarkerLink :activity="activity" />
-									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><i class="danger fa fa-trash-alt" /></a>
+									<MarkerLink :activity="activity" class="text-to-left" />
+									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><i class="danger fa fa-trash-alt text-to-left" title="Delete activity" /></a>
 								</li>
 							</ul>
 						</div>
@@ -37,16 +37,16 @@
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<div>
-							<h3>Routes</h3>
-							<ul>
+						<div class="form-group">
+							<label for="routes">Routes</label>
+							<ul id="label">
 								<li  v-if="day.routes.length > 0" class="route" v-for="(route, route_index) in day.routes">
 									<a href="#" @click="show_route(day_index, route_index)">
 										<span v-if="route.name">{{ route.name }}</span>
 										<span v-else><em>empty</em></span>
 									</a>
 									<span>34km</span>
-									<a href="#" @click="delete_route({day_index: day_index, route_index: route_index})"><i class="danger fa fa-trash-alt" /></a>
+									<a href="#" @click="delete_route({day_index: day_index, route_index: route_index})"><i class="danger fa fa-trash-alt text-to-left" title="Delete route" /></a>
 								</li>
 							</ul>
 						</div>

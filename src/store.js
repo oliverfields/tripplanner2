@@ -191,12 +191,20 @@ export const store = new Vuex.Store({
 		show_tab: (context, object) => {
 			// Display tab based on object tmp_id
 
+			// Show overview
+			if(object == null) {
+				context.commit('update_itinerary_navigation', { property: 'show_day_index', value: null })
+				context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
+				context.commit('update_itinerary_navigation', { property: 'show_route_index', value: null })
+				return true
+			}
+
 			// Look through days first
 			for (let i = 0; i < context.state.active_trip.itinerary.length; i++) {
 				if(object.tmp_id === context.state.active_trip.itinerary[i].tmp_id) {
 					context.commit('update_itinerary_navigation', { property: 'show_day_index', value: i })
 					context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
-					context.commit('update_itinerary_navigation', { property: 'show_activity_index', value: null })
+					context.commit('update_itinerary_navigation', { property: 'show_route_index', value: null })
 					return true
 				}
 			}

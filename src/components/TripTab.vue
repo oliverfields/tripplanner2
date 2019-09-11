@@ -34,7 +34,7 @@
 				</div>
 			</div>
 
-			<hr >
+			<hr style="margin-top: 3rem;" />
 
 			<div class="row">
 				<div class="col-md-12">

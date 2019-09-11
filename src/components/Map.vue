@@ -27,6 +27,7 @@
 				@click="show_activity_tab(activity)"
 			>
 <!--
+				:title="marker_title(day, activity)"
 				<l-popup :content="activity_popup(day, activity)"></l-popup>
 -->
 			</l-marker>
@@ -77,9 +78,14 @@
 			}
 		},
 		methods: {
+/*
 			activity_popup(day, activity) {
-				return '<div class="tp-popup"><p class="description">' + activity.description + '</p><p>' + day.date_pretty + '</p></div>';
+				return '<div class="tp-popup"><p class="description">' + activity.description + '</p><p>' + day.date_pretty + '</p></div>'
 			},
+			marker_title(day, activity) {
+				return activity.description + ', ' + day.date_pretty
+			},
+*/
 			marker_icon(activity) {
 				let icon_name = 'circle'
 				let icon_color = 'red'

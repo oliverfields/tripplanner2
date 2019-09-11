@@ -23,7 +23,20 @@
 		<div v-else>
 			<ul class="itinerary">
 				<li class="day" v-for="(day, day_index) in this.$store.state.active_trip.itinerary">
-					<a href="#" @click="show_day(day_index)">{{ day.date_pretty }}, day {{ day.day_number }}</a>
+					<div>
+						<a href="#" @click="show_day(day_index)">{{ day.date_pretty }}, day {{ day.day_number }}</a>
+						<span class="routes" v-if="day.routes.length > -1">
+							<i
+								v-for="(route, route_index) in day.routes"
+								class="fa fa-route text-to-left"
+								:title="route.name"
+								:style="{ color: route.color_hex }"
+								@click="show_route(day_index, route_index)"
+						/>
+						</span>
+					</div>
+
+
 					<div class="notes">{{ day.notes }}</div>
 					<ul class="activities" v-if="day.activities">
 						<li class="activity" v-for="(activity, activity_index) in day.activities">
@@ -31,7 +44,7 @@
 								<span v-if="activity.description">{{ activity.description }}</span>
 								<span v-else><em>empty</em></span>
 							</a>
-							<MarkerLink :activity="activity" />
+							<MarkerLink :activity="activity" class="text-to-left" />
 						</li>
 					</ul>
 				</li>

@@ -4,7 +4,7 @@
 		:style="activity_marker_icon_color(activity)"
 		v-if="activity.marker_coordinates"
 		@click="set_map_center(activity.marker_coordinates)"
-		alt="Center map on marker"
+		title="Center map on marker"
 	/>
 </template>
 
