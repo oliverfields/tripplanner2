@@ -1,6 +1,6 @@
 <template>
 	<nav id="nav" class="navbar navbar-expand navbar-dark bg-dark">
-		<a class="navbar-brand" href="#"><object id="logo" type="image/svg+xml" data="images/ambulate-logo.svg"></object> Ambulate</a>
+		<a class="navbar-brand" href="#"><object id="logo" type="image/svg+xml" data="images/ambulate-logo.svg"></object></a>
 		<button
 			class="navbar-toggler"
 			style="border: none;"
@@ -19,7 +19,7 @@
 					<a
 						class="btn btn-success"
 						href="#" @click="create_trip"
-						style="margin-top: 4px;"
+						style="margin-top: 3px;"
 				>
 					<i class="fa fa-plus" /> New trip</a>
 				</li>
@@ -119,8 +119,10 @@
 		margin-left: 1rem ! important;
 	}
 	#logo {
-		height: 20px;
-		width: 40px;
-		margin-left: 1rem;
+		height: 28px;
+		margin: 8px 0 0 1rem;
+	}
+	#trip-dropdown {
+		margin-top: 2px ! important;
 	}
 </style>

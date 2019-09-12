@@ -98,6 +98,11 @@ function setup_trip(trip) {
 			if(!trip.itinerary[i].activities[n].description)
 				Vue.set(trip.itinerary[i].activities[n], 'description', 'new activity')
 		}
+
+		for (let r = 0; r < trip.itinerary[i].routes.length; r++) {
+			if(!trip.itinerary[i].routes[r].tmp_id)
+				Vue.set(trip.itinerary[i].routes[r], 'tmp_id', 'route_' + new_id())
+		}
 	}
 
 	return trip
@@ -118,7 +123,9 @@ export const store = new Vuex.Store({
 			zoom: 2,
 			center: { lat: 51.1739726374, lng: -1.82237671048 },
 			bounds: null,
-		}
+			active_route: null,
+		},
+		
 	},
 	getters: {
 		map_settings: state => {
@@ -133,6 +140,30 @@ export const store = new Vuex.Store({
 		}
 	},
 	actions: {
+		replace_active_route: (context, route) => {
+			let active_route = context.state.map.active_route
+			if(route == null && active_route == null) {
+				//console.log('both null doing nothing')
+			}
+			else if(route == null && active_route != null) {
+				//console.log('overwriting active route with null')
+				context.commit('set_map_active_route', null)
+			}
+			else if(route != null && active_route == null) {
+				//console.log('Setting route because active route is null')
+				context.commit('set_map_active_route', route)
+			}
+			else {
+				if(route.tmp_id == active_route.tmp_id) {
+					//console.log('route is already active, doing nothing')
+				}
+				else {
+					//console.log('both something, saving active and replacing with route')
+					context.commit('save_map_active_route')
+					context.commit('set_map_active_route', route)
+				}
+			}
+		},
 		set_active_trip: (context, payload) => {
 			context.commit('set_active_trip', payload)
 			context.commit('set_itinerary_dates')
@@ -271,6 +302,12 @@ export const store = new Vuex.Store({
 		},
 	},
 	mutations: {
+		save_map_active_route: (state) => {
+			console.log('Need to saving active route now')
+		},
+		set_map_active_route: (state, payload) => {
+			state.map.active_route = payload
+		},
 		toggle_loading: (state) => {
 			console.log('toggling loading')
 			if(!state.hasOwnProperty('is_loading'))
@@ -325,6 +362,8 @@ export const store = new Vuex.Store({
 			Vue.set(day.activities[i], 'marker_color_hex', '#D63E2A')
 			Vue.set(day.activities[i], 'marker_coordinates', null)
 			Vue.set(day.activities[i], 'tmp_id', 'activity_' + new_id())
+
+			state.active_trip.dirty = true
 		},
 		add_route: (state, day) => {
 			day.routes.push({})
@@ -332,7 +371,10 @@ export const store = new Vuex.Store({
 			Vue.set(day.routes[i], 'name', '')
 			Vue.set(day.routes[i], 'color_hex', '#FF0000')
 			Vue.set(day.routes[i], 'url', null)
+			Vue.set(day.routes[i], 'points', [])
 			Vue.set(day.routes[i], 'tmp_id', 'route_' + new_id())
+
+			state.active_trip.dirty = true
 		},
 		delete_activity: (state, payload) => {
 			state.active_trip.itinerary[payload.day_index].activities.splice(payload.activity_index, 1)

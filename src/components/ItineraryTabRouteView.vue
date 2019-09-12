@@ -16,6 +16,26 @@
 							</div>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group" v-if="active_route != null && active_route.tmp_id == route.tmp_id">
+								<a
+									href="#"
+									@click="toggle_active_route(null)"
+									class="btn btn-primary active"
+								>
+									<i class="fa fa-route" title="Stop editing route" />Stop editing</a>
+							</div>
+							<div class="form-group" v-else>
+								<a
+									href="#"
+									@click="toggle_active_route(route)"
+									class="btn btn-primary"
+								>
+									<i class="fa fa-route" title="Start route edit" />Edit route</a>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -29,10 +49,13 @@
 		},
 		data() {
 			return {
-				tmp_route_name_is_valid: true
+				tmp_route_name_is_valid: true,
 			}
 		},
 		methods: {
+			toggle_active_route(route) {
+				this.$store.dispatch('replace_active_route', route)
+			},
 			show_route(day_index, route_index) {
 				return this.$store.state.active_trip.itinerary_navigation.show_day_index == day_index && this.$store.state.active_trip.itinerary_navigation.show_route_index == route_index
 			},
@@ -78,6 +101,9 @@
 				set(value) {
 					this.$store.commit('update_active_route', {property: 'name', value: value})
 				}
+			},
+			active_route: function() {
+				return this.$store.state.map.active_route
 			},
 		}
 	}

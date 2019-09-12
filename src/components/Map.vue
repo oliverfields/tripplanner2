@@ -50,6 +50,7 @@
 
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js'
+	import '../../public/js/leaflet.plotter.js'
 
 	export default {
 		name: 'Map',
@@ -74,7 +75,8 @@
 					image_url: 'images/MapCenterCoordIcon2.svg',
 					size: [30, 30],
 					anchor: [15, 15]
-				}
+				},
+				plotter: null,
 			}
 		},
 		methods: {
@@ -158,7 +160,7 @@
 			},
 			latlng_array(activity) {
 				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
-			}
+			},
 		},
 		computed: {
 			map_center() {
@@ -166,7 +168,10 @@
 			},
 			map_zoom() {
 				return this.$store.state.map.zoom
-			}
+			},
+			active_route() {
+				return this.$store.state.map.active_route
+			},
 		},
 		mounted() {
 			window.addEventListener('resize', this.handleResize)
@@ -178,7 +183,42 @@
 		},
 		destroyed() {
 			window.removeEventListener('resize', this.handleResize)
-		}
+		},
+		watch: {
+			active_route: function() {
+				//console.log(this.$refs.map.mapObject)
+console.log('LAYERS BEFORE')
+this.$refs.map.mapObject.eachLayer(function(layer) {
+    console.log(layer)
+});
+
+				if(this.$store.state.map.active_route == null) {
+					console.log('destroying plotter')
+					this.plotter.clear()
+					console.log(this.plotter)
+console.log('LAYERS AFTER')
+this.$refs.map.mapObject.eachLayer(function(layer) {
+    console.log(layer)
+});
+
+
+
+					this.plotter = null
+				}
+				else {
+					console.log('creating plotter')
+					this.plotter = new L.Polyline.Plotter([
+					],{
+						weight: 5
+					})
+					//this.plotter = Object.freeze(plotter)
+					this.plotter.addTo(this.$refs.map.mapObject)
+				}
+
+				console.log('active_route changed')
+				console.log(this.$store.state.map.active_route)
+			}
+		},
 	}
 </script>
 

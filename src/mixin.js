@@ -91,6 +91,15 @@ export default {
 			let result = new Date(date)
 			result.setDate(result.getDate() + days)
 			return result
+		},
+		tp_get_route_by_tmp_id(tmp_id) {
+			for (let i = 0; i < this.$store.state.active_trip.itinerary.length; i++) {
+				for (let r = 0; r < this.$store.state.active_trip.itinerary[i].routes.length; r++) {
+					if(this.$store.state.active_trip.itinerary[i].routes[r].tmp_id == tmp_id)
+						return this.$store.state.active_trip.itinerary[i].routes[r]
+				}
+			}
+			return false
 		}
 	}
 }
