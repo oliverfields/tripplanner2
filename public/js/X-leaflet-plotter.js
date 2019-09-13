@@ -3,18 +3,24 @@ L.Polyline.plotter = L.Polyline.extend({
 	_editIcon: L.divIcon({className: 'leaflet-div-icon leaflet-editing-icon'}),
 	_halfwayPointMarkers: [],
 	_existingLatLngs: [],
+	_plotterLayer: L.layerGroup(),
 	options: {
 		weight: 2,
 		color: '#f00',
 		readOnly: false,
 	},
-	initialize: function (latlngs, options){
+	initialize: function (latlngs, options, map){
+		console.log('initializing')
+		this._map = map
 		this._setExistingLatLngs(latlngs)
-		L.Polyline.prototype.initialize.call(this, [], options)
+		//L.Polyline.prototype.initialize.call(this, [], options)
+		this._plotterLayer.addTo(this._map)
 	},
 	onAdd: function (map) {
-		L.Polyline.prototype.onAdd.call(this, map)
-		this._map = map
+		//L.Polyline.prototype.onAdd.call(this, map)
+		console.log('adding onAdd')
+		console.log(map)
+		//this._map = map
 		this._plotExisting()
 		if(!this.options.readOnly){
 			this._bindMapClick()
@@ -45,7 +51,9 @@ L.Polyline.plotter = L.Polyline.extend({
 		this._existingLatLngs = []
 	},
 	setLatLngs: function(latlngs){
-		L.Polyline.prototype.setLatLngs.call(this, latlngs)
+		//L.Polyline.prototype.setLatLngs.call(this, latlngs)
+		let pl = L.polyline(latlngs)
+		this._plotterLayer.addLayer(pl)
 	},
 	setReadOnly: function(readOnly){
 		let visibility = 'visible'
@@ -90,12 +98,12 @@ L.Polyline.plotter = L.Polyline.extend({
 	_unbindMarkerEvents: function(marker){
 		marker.off('click', this._removePoint, this)
 		marker.off('drag', this._replot, this)
-		marker.dragging.disable()
+		//marker.dragging.disable()
 	},
 	_bindMarkerEvents: function(marker){
 		marker.on('click', this._removePoint, this)
 		marker.on('drag', this._replot, this)
-		marker.dragging.enable()
+		//marker.dragging.enable()
 	},
 	_unbindHalfwayMarker: function(marker){
 		marker.off('click', this._addHalfwayPoint, this)
@@ -104,9 +112,10 @@ L.Polyline.plotter = L.Polyline.extend({
 		marker.on('click', this._addHalfwayPoint, this)
 	},
 	_addToMapAndBindMarker: function(newMarker){
-		newMarker.addTo(this._map)
+		//newMarker.addTo(this._map)
+		this._plotterLayer.addLayer(newMarker)
 		if(!this.options.readOnly){
-			this._bindMarkerEvents(newMarker)
+		this._bindMarkerEvents(newMarker)
 		}
 	},
 	_removePoint: function(e){
@@ -137,10 +146,17 @@ L.Polyline.plotter = L.Polyline.extend({
 			if(typeof this._lineMarkers[index + 1] === 'undefined'){
 				return
 			}
+/*
 			var halfwayMarker = new L.Marker([
 				(this._lineMarkers[index].getLatLng().lat + this._lineMarkers[index + 1].getLatLng().lat) / 2,
 				(this._lineMarkers[index].getLatLng().lng + this._lineMarkers[index + 1].getLatLng().lng) / 2,
 			], { icon: this._editIcon, opacity: 0.5 }).addTo(this._map)
+*/
+			var halfwayMarker = new L.Marker([
+							(this._lineMarkers[index].getLatLng().lat + this._lineMarkers[index + 1].getLatLng().lat) / 2,
+							(this._lineMarkers[index].getLatLng().lng + this._lineMarkers[index + 1].getLatLng().lng) / 2,
+						], { icon: this._editIcon, opacity: 0.5 })
+			this._plotterLayer.addLayer(halfwayMarker)
 			halfwayMarker.index = index
 			if(!this.options.readOnly){
 				this._bindHalfwayMarker(halfwayMarker)
@@ -177,6 +193,6 @@ L.Polyline.plotter = L.Polyline.extend({
 	}
 })
 
-L.Polyline.Plotter = function(latlngs, options){
-	return new L.Polyline.plotter(latlngs, options)
+L.Polyline.Plotter = function(latlngs, options, map){
+	return new L.Polyline.plotter(latlngs, options, map)
 }

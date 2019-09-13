@@ -124,6 +124,7 @@ export const store = new Vuex.Store({
 			center: { lat: 51.1739726374, lng: -1.82237671048 },
 			bounds: null,
 			active_route: null,
+			registry: []
 		},
 		
 	},
@@ -300,8 +301,17 @@ export const store = new Vuex.Store({
 			if(payload.property == 'start_date')
 				context.commit('set_itinerary_dates')
 		},
+		replace_route_points: (context, payload) => {
+			context.commit('replace_route_points', payload)
+			context.commit('update_active_trip', { property: 'dirty', value: true })
+		}
 	},
 	mutations: {
+		replace_route_points: (state, payload) => {
+			console.log('replacing points on route: ' + payload.route.tmp_id + ' with:')
+			console.log(payload.points)
+			payload.route.points = payload.points
+		},
 		save_map_active_route: (state) => {
 			console.log('Need to saving active route now')
 		},
@@ -344,9 +354,11 @@ export const store = new Vuex.Store({
 			let day_date = mixin.methods.tp_add_days_to_date(state.active_trip.start_date, state.active_trip.itinerary.length)
 			state.active_trip.itinerary.push({})
 			let i = state.active_trip.itinerary.length - 1 // New index is length - 1
+			let tmp_id = 'day_' + new_id()
+
 			Vue.set(state.active_trip.itinerary[i], 'date', day_date)
 			Vue.set(state.active_trip.itinerary[i], 'date_pretty', mixin.methods.tp_date_format(day_date))
-			Vue.set(state.active_trip.itinerary[i], 'tmp_id', 'day_' + new_id())
+			Vue.set(state.active_trip.itinerary[i], 'tmp_id', tmp_id)
 			Vue.set(state.active_trip.itinerary[i], 'activities', [])
 			Vue.set(state.active_trip.itinerary[i], 'routes', [])
 			Vue.set(state.active_trip.itinerary[i], 'notes', '')
@@ -356,14 +368,18 @@ export const store = new Vuex.Store({
 		add_activity: (state, day) => {
 			day.activities.push({})
 			let i = day.activities.length - 1 // New index is length - 1
+			let tmp_id = 'activity_' + new_id()
+
 			Vue.set(day.activities[i], 'description', 'new activity')
 			Vue.set(day.activities[i], 'marker_icon', 'circle')
 			Vue.set(day.activities[i], 'marker_color', 'red')
 			Vue.set(day.activities[i], 'marker_color_hex', '#D63E2A')
 			Vue.set(day.activities[i], 'marker_coordinates', null)
-			Vue.set(day.activities[i], 'tmp_id', 'activity_' + new_id())
+			Vue.set(day.activities[i], 'tmp_id', tmp_id)
 
 			state.active_trip.dirty = true
+
+			state.map.registry.push({id: tmp_id, action: 'added'})
 		},
 		add_route: (state, day) => {
 			day.routes.push({})
@@ -377,7 +393,11 @@ export const store = new Vuex.Store({
 			state.active_trip.dirty = true
 		},
 		delete_activity: (state, payload) => {
+			let tmp_id = state.active_trip.itinerary[payload.day_index].activities[payload.activity_index].tmp_id.valueOf()
+
 			state.active_trip.itinerary[payload.day_index].activities.splice(payload.activity_index, 1)
+
+			state.map.registry.push({id: tmp_id, action: 'removed'})
 		},
 		delete_route: (state, payload) => {
 			state.active_trip.itinerary[payload.day_index].routes.splice(payload.route_index, 1)
