@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { db } from '@/main'
 import { auth } from '@/main'
+import { s3 } from '@/main'
 import mixin from '@/mixin'
 
 Vue.use(Vuex)
@@ -124,7 +125,6 @@ export const store = new Vuex.Store({
 			center: { lat: 51.1739726374, lng: -1.82237671048 },
 			bounds: null,
 			active_route: null,
-			registry: []
 		},
 		
 	},
@@ -190,7 +190,39 @@ export const store = new Vuex.Store({
 			commit('delete_active_trip')
 			commit('delete_trip', delete_trip_id)
 		},
+		OLD_set_trips: context => {
+			let trips = []
+			db.collection('users').doc(auth.currentUser.uid).collection('trips').orderBy('name').onSnapshot(snapshot => {
+				snapshot.forEach(doc => {
+					let trip = doc.data()
+					trip.id = doc.id
+
+					// Firebase timestamps need converting JavaScript date objects
+					if(trip.start_date)
+						trip.start_date = convert_firebase_timestamp_to_js_date_object(trip.start_date)
+
+					// Convert firestore coordinates to tp style
+					if(trip.map_center)
+						trip.map_center = convert_firebase_geopoint(trip.map_center)
+
+					// .. and for activity coordinates
+					for(let i=0; i < trip.itinerary.length; i++) {
+						for(let n=0; n < trip.itinerary[i].activities.length; n++) {
+							if(trip.itinerary[i].activities[n].marker_coordinates)
+								trip.itinerary[i].activities[n].marker_coordinates = convert_firebase_geopoint(trip.itinerary[i].activities[n].marker_coordinates)
+						}
+					}
+
+					trip = setup_trip(trip)
+
+					trips.push(trip)
+				})
+				context.commit('set_trips', trips)
+			})
+		},
 		set_trips: context => {
+			console.log(s3)
+			let uid = auth.currentUser.uid
 			let trips = []
 			db.collection('users').doc(auth.currentUser.uid).collection('trips').orderBy('name').onSnapshot(snapshot => {
 				snapshot.forEach(doc => {
@@ -354,11 +386,9 @@ export const store = new Vuex.Store({
 			let day_date = mixin.methods.tp_add_days_to_date(state.active_trip.start_date, state.active_trip.itinerary.length)
 			state.active_trip.itinerary.push({})
 			let i = state.active_trip.itinerary.length - 1 // New index is length - 1
-			let tmp_id = 'day_' + new_id()
-
 			Vue.set(state.active_trip.itinerary[i], 'date', day_date)
 			Vue.set(state.active_trip.itinerary[i], 'date_pretty', mixin.methods.tp_date_format(day_date))
-			Vue.set(state.active_trip.itinerary[i], 'tmp_id', tmp_id)
+			Vue.set(state.active_trip.itinerary[i], 'tmp_id', 'day_' + new_id())
 			Vue.set(state.active_trip.itinerary[i], 'activities', [])
 			Vue.set(state.active_trip.itinerary[i], 'routes', [])
 			Vue.set(state.active_trip.itinerary[i], 'notes', '')
@@ -368,18 +398,14 @@ export const store = new Vuex.Store({
 		add_activity: (state, day) => {
 			day.activities.push({})
 			let i = day.activities.length - 1 // New index is length - 1
-			let tmp_id = 'activity_' + new_id()
-
 			Vue.set(day.activities[i], 'description', 'new activity')
 			Vue.set(day.activities[i], 'marker_icon', 'circle')
 			Vue.set(day.activities[i], 'marker_color', 'red')
 			Vue.set(day.activities[i], 'marker_color_hex', '#D63E2A')
 			Vue.set(day.activities[i], 'marker_coordinates', null)
-			Vue.set(day.activities[i], 'tmp_id', tmp_id)
+			Vue.set(day.activities[i], 'tmp_id', 'activity_' + new_id())
 
 			state.active_trip.dirty = true
-
-			state.map.registry.push({id: tmp_id, action: 'added'})
 		},
 		add_route: (state, day) => {
 			day.routes.push({})
@@ -393,11 +419,7 @@ export const store = new Vuex.Store({
 			state.active_trip.dirty = true
 		},
 		delete_activity: (state, payload) => {
-			let tmp_id = state.active_trip.itinerary[payload.day_index].activities[payload.activity_index].tmp_id.valueOf()
-
 			state.active_trip.itinerary[payload.day_index].activities.splice(payload.activity_index, 1)
-
-			state.map.registry.push({id: tmp_id, action: 'removed'})
 		},
 		delete_route: (state, payload) => {
 			state.active_trip.itinerary[payload.day_index].routes.splice(payload.route_index, 1)

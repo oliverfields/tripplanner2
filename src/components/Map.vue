@@ -1,6 +1,4 @@
 <template>
-	<div id="map"></div>
-<!--
 	<v-map
 		id="map"
 		ref="map"
@@ -28,69 +26,125 @@
 				:icon="marker_icon(activity)"
 				@click="show_activity_tab(activity)"
 			>
-!!--
+<!--
 				:title="marker_title(day, activity)"
 				<v-popup :content="activity_popup(day, activity)"></v-popup>
---!!
+-->
 			</v-marker>
+
+			<v-polyline
+				v-for="route in day_routes(day_index)"
+				v-bind:lat-lng="route.points"
+			 />
+
 		</v-layer-group>
 	</v-map>
--->
 </template>
 
 <script>
 	// Fine guide: https://github.com/KoRiGaN/Vue2Leaflet/blob/master/examples/src/components/Example.vue
 
-	//import '../../public/js/leaflet.js' -> Included in html instead..
-	//import '../../public/css/leaflet.css'
+/*
+// Leaflet
+import 'leaflet/dist/leaflet.css'
+// fix icon for marker
+import { Icon } from 'leaflet'
+delete Icon.Default.prototype._getIconUrl;
+Icon.Default.mergeOptions({
+	iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+	iconUrl: require('leaflet/dist/images/marker-icon.png'),
+	shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+})
+*/
+	import {
+		LMap,
+		LTileLayer,
+		LMarker,
+		LPopup,
+		LIcon,
+		LControlLayers,
+		LLayerGroup,
+		LPolyline
+	} from 'vue2-leaflet'
 	import '../../public/js/leaflet-plotter.js'
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js'
 
-	const L = window.L
-	var _map = null
-	const _baselayers_conf = {
-		opentopo: {
-			url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-			attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-			name: 'Topo',
-		},
-		esriArieal: {
-			url: 'https://server.arcgisonline.com/ArcGIS/rest/services' + '/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, ' + 'USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the' + ' GIS User Community',
-			name: 'Arieal',
-		}
-	}
-
-
 	export default {
 		name: 'Map',
 		components: {
+			'v-map': LMap,
+			'v-tile-layer': LTileLayer,
+			'v-marker': LMarker,
+			'v-icon': LIcon,
+			'v-control-layer': LControlLayers,
+			'v-layer-group': LLayerGroup,
+			'v-popup': LPopup,
+			'v-polyline': LPolyline,
 		},
 		data() {
 			return {
-
+				url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+				map_dimensions: {
+					width: 0,
+					height: 0
+				},
+				center_crosshairs_icon: {
+					image_url: 'images/MapCenterCoordIcon2.svg',
+					size: [30, 30],
+					anchor: [15, 15]
+				},
+				plotter: null,
+				routes_map_polylines: {},
 			}
 		},
-		computed: {
-			active_route() {
-				return this.$store.state.map.active_route
-			},
-			map_registry() {
-				return this.$store.state.map.registry
-			},
-		},
 		methods: {
-			handle_resize() {
+/*
+			activity_popup(day, activity) {
+				return '<div class="tp-popup"><p class="description">' + activity.description + '</p><p>' + day.date_pretty + '</p></div>'
+			},
+			marker_title(day, activity) {
+				return activity.description + ', ' + day.date_pretty
+			},
+*/
+			marker_icon(activity) {
+				let icon_name = 'circle'
+				let icon_color = 'red'
+
+				if(activity.marker_icon)
+					icon_name = activity.marker_icon
+
+				if(activity.marker_color)
+					icon_color = activity.marker_color
+
+				let icon = L.AwesomeMarkers.icon({
+					prefix: 'fa',
+					icon: icon_name,
+					markerColor: icon_color
+				})
+
+				return icon
+			},
+			show_activity_tab(activity) {
+				this.$store.dispatch('show_tab', activity)
+			},
+			zoom_updated () {
+				this.$store.commit('update_map_settings', {'zoom': this.$refs.map.mapObject._zoom})
+			},
+			center_updated (center) {
+				this.$store.commit('update_map_settings', {'center': center})
+			},
+			handleResize() {
 				let nav_height = 50 // 50 is hardcoded nav height..
 				let tabs_width = 400 // 400 is hardcoded tabs width..
 
 				// map width
-				$('#map').css('width', (window.innerWidth - tabs_width) + 'px')
+				this.map_dimensions.width = (window.innerWidth - tabs_width) + 'px'
 
 				// map height
 				let available_height = window.innerHeight - nav_height
-				$('#map').css('height', available_height + 'px')
+				this.map_dimensions.height = available_height + 'px'
 
 				let map_horizontal_center = (window.innerWidth - tabs_width) / 2
 				let map_vertical_center = (window.innerHeight - nav_height) / 2
@@ -109,51 +163,108 @@
 					})
 				}
 				$('#map_center_crosshairs').css({'top': map_vertical_center + 'px', 'left': map_horizontal_center + 'px'})
+
 			},
-			setup_map() {
-				_map = new L.Map(
-					'map',
-					{
-						center: [60.001046, 10.623779],
-						zoom: 8,
-						layers: [
-							new L.TileLayer(_baselayers_conf['opentopo'].url, {
-								attribution: _baselayers_conf['opentopo'].attribution
-							})
-						]
+			day_activities_with_markers(day_index) {
+				let markers = []
+				let itinerary = this.$store.state.active_trip.itinerary[day_index]
+
+				if(itinerary.activities) {
+					for (let n = 0; n < itinerary.activities.length; n++) {
+						if(itinerary.activities[n].marker_coordinates != null) {
+							markers.push(itinerary.activities[n])
+						}
 					}
-				)
-				window.addEventListener('resize', this.handle_resize)
-				this.handle_resize()
+				}
+				return markers
+			},
+			day_routes(day_index) {
+				let routes = []
+				let day = this.$store.state.active_trip.itinerary[day_index]
 
-				_map.zoomControl.setPosition('bottomright')
+				if(day.routes) {
+					for (let n = 0; n < day.routes.length; n++) {
+						if(day.routes[n].points != null) {
+							routes.push(day.routes[n])
+						}
+					}
+				}
+				return routes
+			},
+			latlng_array(activity) {
+				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
+			},
+			add_routes_to_map() {
 
-				let base_maps = {
-					"Topo": new L.TileLayer(_baselayers_conf['opentopo'].url, {
-						attribution: _baselayers_conf['opentopo'].attribution
-					}),
-					"Arieal": new L.TileLayer(_baselayers_conf['esriArieal'].url, {
-						attribution: _baselayers_conf['esriArieal'].attribution
-					})
+				console.log('HERE')
+				console.log(this.$refs.map.mapObject)
+this.$refs.map.mapObject.eachLayer(function(layer) {
+	if (layer instanceof L.LayerGroup) {
+		console.log('LAYERGROUP!! _leflet_id: ' + layer._leaflet_id)
+	}
+});
+				console.log('THERE')
+
+
+
+				// Add all routes as polylines to map
+				for (let d = 0; d < this.$store.state.active_trip.itinerary.length; d++) {
+					for(let r = 0; r < this.$store.state.active_trip.itinerary[d].routes.length; r++) {
+						let route = this.$store.state.active_trip.itinerary[d].routes[r]
+
+						// Only redraw if not already drawn
+						if(!(route.tmp_id.valueOf() in this.routes_map_polylines)) {
+							this.routes_map_polylines[route.tmp_id.valueOf()] = L.polyline(route.points).addTo(this.$refs.map.mapObject)
+						}
+					}
 				}
 
-				L.control.layers(base_maps).addTo(_map);
+				console.log(this.routes_map_polylines)
+
+			}
+		},
+		computed: {
+			map_center() {
+				return [this.$store.state.map.center.lat, this.$store.state.map.center.lng]
+			},
+			map_zoom() {
+				return this.$store.state.map.zoom
+			},
+			active_route() {
+				return this.$store.state.map.active_route
 			},
 		},
 		mounted() {
-			this.setup_map()
-
+			window.addEventListener('resize', this.handleResize)
+			this.handleResize()
 			this.$nextTick(function () {
-				_map.invalidateSize()
+				this.$refs.map.mapObject.invalidateSize()
+			})
+			this.$refs.map.mapObject.zoomControl.setPosition('bottomright')
+
+			this.plotter = L.Polyline.Plotter([],{weight: 5}).addTo(this.$refs.map.mapObject);
+			this.plotter.setReadOnly(true)
+
+
+			// Load test data
+			this.$store.commit('replace_route_points', {
+				route: this.$store.state.active_trip.itinerary[0].routes[0],
+				points: [
+					[58.43910842173683,8.808631896972658],
+					[58.43088633990959,8.852491378784181],
+					[58.41848219019944,8.801765441894533],
+					[58.437131703111895,8.807430267333986]
+				]
+			})
+
+			this.$nextTick(function () { // Do this so all layergroups are added first
+				this.add_routes_to_map()
 			})
 		},
 		destroyed() {
-			window.removeEventListener('resize', this.handle_resize)
+			window.removeEventListener('resize', this.handleResize)
 		},
 		watch: {
-			map_registry: function() {
-				console.log('map registry changed')
-			},
 			active_route: function() {
 				let ar = this.$store.state.map.active_route
 				//console.log(this.$refs.map.mapObject)
