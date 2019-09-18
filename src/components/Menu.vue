@@ -28,7 +28,7 @@
 
 					<div class="dropdown-menu" aria-labelledby="trip-dropdown">
 						<div v-for="trip in this.$store.getters.get_trips" :key="trip.id">
-							<a class="dropdown-item" href="#" @click="set_active_trip(trip)">{{ trip.name }}</a>
+							<a class="dropdown-item" href="#" @click="set_active_trip(trip.id)">{{ trip.name }}</a>
 						</div>
 					</div>
 				</li>

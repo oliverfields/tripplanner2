@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { db } from '@/main'
-import { auth } from '@/main'
-import { s3 } from '@/main'
+import { auth, s3, s3_bucket } from '@/main'
 import mixin from '@/mixin'
 
 Vue.use(Vuex)
@@ -109,6 +107,47 @@ function setup_trip(trip) {
 	return trip
 }
 
+
+function get_json (key) {
+	console.log('getting key: ' + key)
+	return new Promise((resolve, reject) => {
+		s3.getObject({ Bucket: s3_bucket, Key: key }, (err, data) => {
+			if (err) return reject(err)
+
+			try {
+				const bodyString = data.Body.toString('utf8')
+				const obj = JSON.parse(bodyString)
+				resolve(obj)
+			} catch (e) {
+				reject(err)
+			}
+		})
+	})
+}
+
+function s3_upload(key, content) {
+	let params = {
+		Bucket: s3_bucket,
+		Key: key,
+		Body: content
+	}
+
+	let options = {
+		partSize: 10 * 1024 * 1024, // 10 MB
+		queueSize: 10
+	}
+
+	s3.upload(params, options, function (err, data) {
+		if (!err) {
+			//console.log(data); // successful response
+		}
+		else {
+			console.error('Unable to upload to s3: ' + err); // an error occurred
+		}
+		}
+	)
+}
+
 var id_counter = 0
 function new_id() {
 	id_counter += 1
@@ -118,7 +157,7 @@ function new_id() {
 export const store = new Vuex.Store({
 	strict: true,
 	state: {
-		trips: null,
+		trips_list: null,
 		active_trip: false,
 		map: {
 			zoom: 2,
@@ -133,7 +172,7 @@ export const store = new Vuex.Store({
 			return state.map
 		},
 		get_trips: state => {
-			let tmp_trips = state.trips
+			let tmp_trips = state.trips_list
 			if(tmp_trips) {
 				return tmp_trips.slice().sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
 			}
@@ -141,6 +180,10 @@ export const store = new Vuex.Store({
 		}
 	},
 	actions: {
+		save_active_trip: (context) => {
+			context.commit('save_trips_list')
+			context.commit('save_active_trip')
+		},
 		replace_active_route: (context, route) => {
 			let active_route = context.state.map.active_route
 			if(route == null && active_route == null) {
@@ -166,17 +209,39 @@ export const store = new Vuex.Store({
 			}
 		},
 		set_active_trip: (context, payload) => {
-			context.commit('set_active_trip', payload)
-			context.commit('set_itinerary_dates')
 
-			if(payload.map_center)
-				context.commit('update_map_settings', { center: context.state.active_trip.map_center })
+			let uid = auth.currentUser.uid
+			let trip_id = payload
 
-			if(payload.map_zoom)
-				context.commit('update_map_settings', { zoom: context.state.active_trip.map_zoom })
-		},
-		setItems: context => {
-			context.commit('setItems')
+			// First try to get user trips file, if not create it
+			get_json(uid + '/' + trip_id + '/trip.json')
+			.then(
+				function(json) {
+					let trip = setup_trip(json)
+
+					// Set trip name and add reference to trips_list id
+					for (let i = 0; i < context.state.trips_list.length; i++) {
+						if(context.state.trips_list[i].id == trip_id) {
+							trip.name = context.state.trips_list[i].name
+							trip.trip_id = trip_id
+						}
+					}
+
+					context.commit('set_active_trip', trip)
+
+					context.commit('set_itinerary_dates')
+
+					if(payload.map_center)
+						context.commit('update_map_settings', { center: context.state.active_trip.map_center })
+
+					if(payload.map_zoom)
+						context.commit('update_map_settings', { zoom: context.state.active_trip.map_zoom })
+
+				},
+				function error(error) {
+					console.error('Error getting trip: ' + error)
+				}
+			)
 		},
 		create_trip: context => {
 			let new_trip = setup_trip({})
@@ -221,36 +286,21 @@ export const store = new Vuex.Store({
 			})
 		},
 		set_trips: context => {
-			console.log(s3)
 			let uid = auth.currentUser.uid
-			let trips = []
-			db.collection('users').doc(auth.currentUser.uid).collection('trips').orderBy('name').onSnapshot(snapshot => {
-				snapshot.forEach(doc => {
-					let trip = doc.data()
-					trip.id = doc.id
 
-					// Firebase timestamps need converting JavaScript date objects
-					if(trip.start_date)
-						trip.start_date = convert_firebase_timestamp_to_js_date_object(trip.start_date)
-
-					// Convert firestore coordinates to tp style
-					if(trip.map_center)
-						trip.map_center = convert_firebase_geopoint(trip.map_center)
-
-					// .. and for activity coordinates
-					for(let i=0; i < trip.itinerary.length; i++) {
-						for(let n=0; n < trip.itinerary[i].activities.length; n++) {
-							if(trip.itinerary[i].activities[n].marker_coordinates)
-								trip.itinerary[i].activities[n].marker_coordinates = convert_firebase_geopoint(trip.itinerary[i].activities[n].marker_coordinates)
-						}
-					}
-
-					trip = setup_trip(trip)
-
-					trips.push(trip)
-				})
-				context.commit('set_trips', trips)
-			})
+			// First try to get user trips file, if not create it
+			get_json(uid + '/trips_list.json')
+			.then(
+				function(json) {
+					context.commit('set_trips_list', json)
+				},
+				function error(error) {
+					if(error.code == "NoSuchKey")
+						context.commit('set_trips_list', []) // Just initialize tirps list
+					else
+						console.error('Error getting trips_list from s3: ' + error)
+				}
+			)
 		},
 		show_tab: (context, object) => {
 			// Display tab based on object tmp_id
@@ -339,6 +389,9 @@ export const store = new Vuex.Store({
 		}
 	},
 	mutations: {
+		set_trips_list: (state, payload) => {
+			state.trips_list = payload
+		},
 		replace_route_points: (state, payload) => {
 			console.log('replacing points on route: ' + payload.route.tmp_id + ' with:')
 			console.log(payload.points)
@@ -579,6 +632,54 @@ export const store = new Vuex.Store({
 					}
 				}
 			)
+		},
+		save_trips_list: (state) => {
+			for (let i = 0; i < state.trips_list.length; i++) {
+				if (state.trips_list[i].id == state.active_trip.trip_id) {
+					state.trips_list[i].name = state.active_trip.name
+					break
+				}
+			}
+			let uid = auth.currentUser.uid
+			s3_upload(uid + '/trips_list.json',  JSON.stringify(state.trips_list))
+		},
+		save_active_trip: (state) => {
+			// Only save relevant stuff
+			let uid = auth.currentUser.uid
+			let trip = JSON.parse(JSON.stringify(state)).active_trip // Hehe, horrible way to dump stuff
+			let trip_id = trip.trip_id
+
+			// Delete superflous stuff
+			for(let p of [
+				'dirty',
+				'error_registry',
+				'itinerary_navigation',
+				'name', // Gets set from trips_list
+				'trip_id', // Gets set from trips_list
+				'tmp_id'
+			]) {
+				delete trip[p]
+			}
+
+			for (let d = 0; d < trip.itinerary.length; d++) {
+				delete trip.itinerary.tmp_id
+				delete trip.itinerary[d].date
+				delete trip.itinerary[d].date_pretty
+				delete trip.itinerary[d].day_number
+				delete trip.itinerary[d].tmp_id
+
+				for (let a = 0; a < trip.itinerary[d].activities.length; a++) {
+					delete trip.itinerary[d].activities[a].tmp_id
+				}
+
+				for (let r = 0; r < trip.itinerary[d].routes.length; r++) {
+					delete trip.itinerary[d].routes[r].tmp_id
+				}
+			}
+
+			s3_upload(uid + '/' + trip_id + '/trip.json',  JSON.stringify(trip))
+
+			state.active_trip.dirty = false
 		}
 	},
 })

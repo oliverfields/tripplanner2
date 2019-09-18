@@ -32,7 +32,7 @@ firebase.auth().onAuthStateChanged(() => {
 })
 
 //var spacesEndpoint = new aws.Endpoint(ambulate_config.digitaloceans_spaces.endPoint)
-
+export const s3_bucket = ambulate_config.digitaloceans_spaces.bucket
 export const s3 = new aws.S3({
 	endpoint: ambulate_config.digitaloceans_spaces.endPoint,
 	accessKeyId: ambulate_config.digitaloceans_spaces.accessKeyId,

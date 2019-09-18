@@ -63,7 +63,7 @@
 		},
 		methods: {
 			save_trip() {
-				console.log(this.$store.state.active_trip)
+				this.$store.dispatch('save_active_trip')
 			},
 			show_itinerary() {
 				this.$store.dispatch('show_tab', null)
