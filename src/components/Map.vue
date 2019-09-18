@@ -20,16 +20,13 @@
 			layer-type="overlay"
 			v-bind:name="day.date_pretty"
 		>
+
 			<v-marker
 				v-for="activity in day_activities_with_markers(day_index)"
-				v-bind:lat-lng="latlng_array(activity)"
+				:lat-lng="latlng_array(activity)"
 				:icon="marker_icon(activity)"
 				@click="show_activity_tab(activity)"
 			>
-<!--
-				:title="marker_title(day, activity)"
-				<v-popup :content="activity_popup(day, activity)"></v-popup>
--->
 			</v-marker>
 
 			<v-polyline
@@ -38,24 +35,14 @@
 			 />
 
 		</v-layer-group>
+
 	</v-map>
 </template>
 
 <script>
 	// Fine guide: https://github.com/KoRiGaN/Vue2Leaflet/blob/master/examples/src/components/Example.vue
 
-/*
-// Leaflet
-import 'leaflet/dist/leaflet.css'
-// fix icon for marker
-import { Icon } from 'leaflet'
-delete Icon.Default.prototype._getIconUrl;
-Icon.Default.mergeOptions({
-	iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-	iconUrl: require('leaflet/dist/images/marker-icon.png'),
-	shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-})
-*/
+	import 'leaflet/dist/leaflet.css'
 	import {
 		LMap,
 		LTileLayer,
@@ -181,14 +168,15 @@ Icon.Default.mergeOptions({
 			day_routes(day_index) {
 				let routes = []
 				let day = this.$store.state.active_trip.itinerary[day_index]
-
+				console.log(day)
 				if(day.routes) {
 					for (let n = 0; n < day.routes.length; n++) {
-						if(day.routes[n].points != null) {
+						if(Array.isArray(day.routes[n].points)) {
 							routes.push(day.routes[n])
 						}
 					}
 				}
+
 				return routes
 			},
 			latlng_array(activity) {
@@ -242,29 +230,20 @@ this.$refs.map.mapObject.eachLayer(function(layer) {
 			})
 			this.$refs.map.mapObject.zoomControl.setPosition('bottomright')
 
+
 			this.plotter = L.Polyline.Plotter([],{weight: 5}).addTo(this.$refs.map.mapObject);
 			this.plotter.setReadOnly(true)
-
-
-			// Load test data
-			this.$store.commit('replace_route_points', {
-				route: this.$store.state.active_trip.itinerary[0].routes[0],
-				points: [
-					[58.43910842173683,8.808631896972658],
-					[58.43088633990959,8.852491378784181],
-					[58.41848219019944,8.801765441894533],
-					[58.437131703111895,8.807430267333986]
-				]
-			})
-
+/*
 			this.$nextTick(function () { // Do this so all layergroups are added first
 				this.add_routes_to_map()
 			})
+*/
 		},
 		destroyed() {
 			window.removeEventListener('resize', this.handleResize)
 		},
 		watch: {
+
 			active_route: function() {
 				let ar = this.$store.state.map.active_route
 				//console.log(this.$refs.map.mapObject)

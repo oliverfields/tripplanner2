@@ -278,10 +278,10 @@ export const store = new Vuex.Store({
 
 					context.commit('set_itinerary_dates')
 
-					if(payload.map_center)
+					if(trip.map_center)
 						context.commit('update_map_settings', { center: context.state.active_trip.map_center })
 
-					if(payload.map_zoom)
+					if(trip.map_zoom)
 						context.commit('update_map_settings', { zoom: context.state.active_trip.map_zoom })
 
 				},
