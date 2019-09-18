@@ -108,7 +108,7 @@ function setup_trip(trip) {
 }
 
 
-function get_json (key) {
+function s3_get_json (key) {
 	console.log('getting key: ' + key)
 	return new Promise((resolve, reject) => {
 		s3.getObject({ Bucket: s3_bucket, Key: key }, (err, data) => {
@@ -126,6 +126,7 @@ function get_json (key) {
 }
 
 function s3_upload(key, content) {
+	console.log('Uploading to s3: ' + key)
 	let params = {
 		Bucket: s3_bucket,
 		Key: key,
@@ -138,15 +139,62 @@ function s3_upload(key, content) {
 	}
 
 	s3.upload(params, options, function (err, data) {
-		if (!err) {
-			//console.log(data); // successful response
-		}
-		else {
-			console.error('Unable to upload to s3: ' + err); // an error occurred
-		}
-		}
-	)
+			if (!err) {
+				//console.log(data); // successful response
+			}
+			else {
+				console.error('Unable to upload to s3: ' + err)
+			}
+	})
 }
+
+function s3_remove(key) {
+	console.log('Removing from s3: ' + key)
+	var params = {
+		Bucket: s3_bucket,
+		Key: key
+	};
+	s3.deleteObject(params, function(err, data) {
+		if (!err) {}
+		else {console.error('Unable to delete from s3: ' + err)}
+	})
+}
+
+function s3_remove_folder(folder) {
+	console.log('Removing folder from s3: ' + folder)
+	if (folder.charAt(folder.length-1) != '/')
+		folder = folder + '/' // Must end with slash
+
+	let currentData
+	let params = {
+		Bucket: s3_bucket,
+		Prefix: folder
+	};
+
+	return s3.listObjects(params).promise().then(data => {
+		if (data.Contents.length === 0) {
+			throw new Error('List of objects empty.')
+		}
+
+		currentData = data
+
+		params = {Bucket: s3_bucket}
+		params.Delete = {Objects:[]}
+
+		currentData.Contents.forEach(content => {
+			params.Delete.Objects.push({Key: content.Key})
+		});
+
+		return s3.deleteObjects(params).promise()
+	}).then(() => {
+		if (currentData.Contents.length === 1000) {
+			s3_remove_folder(callback)
+		} else {
+			return true
+		}
+	})
+}
+
 
 var id_counter = 0
 function new_id() {
@@ -208,13 +256,12 @@ export const store = new Vuex.Store({
 				}
 			}
 		},
-		set_active_trip: (context, payload) => {
+		set_active_trip: (context, trip_id) => {
 
 			let uid = auth.currentUser.uid
-			let trip_id = payload
 
 			// First try to get user trips file, if not create it
-			get_json(uid + '/' + trip_id + '/trip.json')
+			s3_get_json(uid + '/' + trip_id + '/trip.json')
 			.then(
 				function(json) {
 					let trip = setup_trip(json)
@@ -245,51 +292,41 @@ export const store = new Vuex.Store({
 		},
 		create_trip: context => {
 			let new_trip = setup_trip({})
-			context.commit('create_trip', new_trip)
-			context.dispatch('set_active_trip', new_trip)
+			let uid = auth.currentUser.uid
+
+			// Get new trip id
+			let new_id = 1
+			let trips_list = context.state.trips_list
+
+			for(let i = 0; i < trips_list.length; i++) {
+				if(new_id <= trips_list[i].id ) {
+					new_id = Number(trips_list[i].id) + 1
+				}
+			}
+
+			new_trip.trip_id = new_id
+
+			context.commit('add_to_trips_list', { name: new_trip.name, id: new_id })
+			context.commit('set_active_trip', new_trip)
 			context.commit('set_itinerary_dates')
-			context.commit('update_active_trip', {property: 'dirty', value: false})
+			context.commit('save_active_trip')
 		},
 		delete_active_trip: ({commit, state}, payload) => {
-			let delete_trip_id = state.active_trip.id
-			commit('delete_active_trip')
-			commit('delete_trip', delete_trip_id)
-		},
-		OLD_set_trips: context => {
-			let trips = []
-			db.collection('users').doc(auth.currentUser.uid).collection('trips').orderBy('name').onSnapshot(snapshot => {
-				snapshot.forEach(doc => {
-					let trip = doc.data()
-					trip.id = doc.id
+			let uid = auth.currentUser.uid
+			let active_trip = state.active_trip
 
-					// Firebase timestamps need converting JavaScript date objects
-					if(trip.start_date)
-						trip.start_date = convert_firebase_timestamp_to_js_date_object(trip.start_date)
+			// First remove evidence of trip from persistent storage
+			s3_remove_folder(uid + '/' + active_trip.trip_id + '/')
 
-					// Convert firestore coordinates to tp style
-					if(trip.map_center)
-						trip.map_center = convert_firebase_geopoint(trip.map_center)
-
-					// .. and for activity coordinates
-					for(let i=0; i < trip.itinerary.length; i++) {
-						for(let n=0; n < trip.itinerary[i].activities.length; n++) {
-							if(trip.itinerary[i].activities[n].marker_coordinates)
-								trip.itinerary[i].activities[n].marker_coordinates = convert_firebase_geopoint(trip.itinerary[i].activities[n].marker_coordinates)
-						}
-					}
-
-					trip = setup_trip(trip)
-
-					trips.push(trip)
-				})
-				context.commit('set_trips', trips)
-			})
+			// then delete trip from vuex store
+			commit('delete_from_trips_list') // Requires active_trip to delete
+			commit('delete_active_trip') 
 		},
 		set_trips: context => {
 			let uid = auth.currentUser.uid
 
 			// First try to get user trips file, if not create it
-			get_json(uid + '/trips_list.json')
+			s3_get_json(uid + '/trips_list.json')
 			.then(
 				function(json) {
 					context.commit('set_trips_list', json)
@@ -389,6 +426,11 @@ export const store = new Vuex.Store({
 		}
 	},
 	mutations: {
+		add_to_trips_list: (state, payload) => {
+			let uid = auth.currentUser.uid
+			state.trips_list.push({ name: payload.name, id: payload.id })
+			s3_upload(uid + '/trips_list.json',  JSON.stringify(state.trips_list))
+		},
 		set_trips_list: (state, payload) => {
 			state.trips_list = payload
 		},
@@ -608,9 +650,6 @@ export const store = new Vuex.Store({
 			}
 			state.active_trip.dirty = dirty
 		},
-		create_trip: (state, payload) => {
-			state.trips.push(payload)
-		},
 		set_active_trip_id: (state, payload) => {
 			state.active_trip_id = payload
 		},
@@ -623,12 +662,14 @@ export const store = new Vuex.Store({
 		delete_active_trip: (state) => {
 			state.active_trip = false
 		},
-		delete_trip: (state, payload) => {
-			state.trips.forEach(
+		delete_from_trips_list: (state) => {
+			let delete_id = state.active_trip.trip_id
+			let uid = auth.currentUser.uid
+			state.trips_list.forEach(
 				function (trip, index, array) {
-					if(trip.id == payload) {
-						console.log('Deleting trip.id: ' + trip.id + ' at index ' + index)
-						state.trips.splice(index, 1) // remove 1 element starting at index from array
+					if(trip.id == delete_id) {
+						state.trips_list.splice(index, 1) // remove 1 element starting at index from array
+						s3_upload(uid + '/trips_list.json',  JSON.stringify(state.trips_list))
 					}
 				}
 			)
@@ -646,8 +687,8 @@ export const store = new Vuex.Store({
 		save_active_trip: (state) => {
 			// Only save relevant stuff
 			let uid = auth.currentUser.uid
-			let trip = JSON.parse(JSON.stringify(state)).active_trip // Hehe, horrible way to dump stuff
-			let trip_id = trip.trip_id
+			let trip = JSON.parse(JSON.stringify(state.active_trip)) // Hehe, horrible way to dump stuff
+			let trip_id = Number(trip.trip_id)
 
 			// Delete superflous stuff
 			for(let p of [

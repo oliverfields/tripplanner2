@@ -38,5 +38,4 @@ export const s3 = new aws.S3({
 	accessKeyId: ambulate_config.digitaloceans_spaces.accessKeyId,
 	secretAccessKey: ambulate_config.digitaloceans_spaces.secretAccessKey
 })
-export const db = firebase.firestore()
 export const auth = firebase.auth()
