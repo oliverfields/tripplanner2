@@ -33,6 +33,7 @@
 				v-for="(route, route_index) in day_routes(day_index)"
 				:lat-lngs="route.points"
 				:color="route.color_hex"
+				:visible="route.visible"
 				@click="show_route(day_index, route_index)"
 			 />
 		</v-layer-group>
@@ -52,7 +53,8 @@
 		LIcon,
 		LControlLayers,
 		LLayerGroup,
-		LPolyline
+		LPolyline,
+		LLatLng,
 	} from 'vue2-leaflet'
 	import '../../public/js/leaflet-plotter.js'
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
@@ -177,6 +179,17 @@
 			latlng_array(activity) {
 				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
 			},
+			points_distance_m(points) {
+				let mDistanse = 0
+				let length = points.length
+
+				for (let i = 1; i < length; i++) {
+					let a = L.latLng(points[i])
+					let b = L.latLng(points[i - 1])
+					mDistanse += a.distanceTo(b)
+				}
+				return mDistanse
+			},
 		},
 		computed: {
 			map_center() {
@@ -212,22 +225,21 @@
 
 			active_route: function() {
 				let ar = this.$store.state.map.active_route
-				//console.log(this.$refs.map.mapObject)
-
-
-let i = 0
-this.$refs.map.mapObject.eachLayer(function(layer) {
-	//console.log('_leflet_id: ' + layer._leaflet_id)
-	//console.log(layer)
-	i += 1
-});
-console.log('LAYERS BEFORE: ' + i)
 
 				// ----------------------------------------
 				// Stop plotting
 				// ----------------------------------------
 				if(ar == null) {
 					window.L.DomUtil.removeClass(this.$refs.map.mapObject._container,'crosshair-cursor-enabled');
+					// Show route ployline
+					this.$store.commit('update_active_route', { property: 'visible', value: true })
+
+					// Set distances, metric, ofcourse;)
+					let distance_m = this.points_distance_m(this.plotter.getPlotLatLngs())
+					let distance_km = Number(parseFloat(Math.round(distance_m) / 1000).toFixed(1))
+					this.$store.commit('update_active_route', { property: 'distance_m', value: distance_m })
+					this.$store.commit('update_active_route', { property: 'distance_km', value: distance_km })
+
 
 					this.$store.dispatch('replace_route_points', {
 						route: this.$store.state.active_trip.itinerary[
@@ -246,15 +258,18 @@ console.log('LAYERS BEFORE: ' + i)
 				// Start plotting
 				// ----------------------------------------
 				else {
+/*
 					// Remove route from map if already drawn
 					if(ar.tmp_id in this.routes_map_polylines) {
 						this.$refs.map.mapObject.removeLayer(this.routes_map_polylines[ar.tmp_id])
 						delete this.routes_map_polylines[ar.tmp_id]
 					}
-
+*/
+					// Hide route ployline
+					this.$store.commit('update_active_route', { property: 'visible', value: false })
 					window.L.DomUtil.addClass(this.$refs.map.mapObject._container,'crosshair-cursor-enabled');
 
-					// Make route editable
+					// Load plotter with route points and make editable
 					if(ar.points.length > 0) {
 						for (let i = 0; i < ar.points.length; i++) {
 							this.plotter.addNewMarker(ar.points[i])
@@ -262,20 +277,6 @@ console.log('LAYERS BEFORE: ' + i)
 					}
 					this.plotter.setReadOnly(false)
 				}
-
-				console.log('active_route changed')
-				console.log(this.$store.state.map.active_route)
-
-let n = 0
-this.$refs.map.mapObject.eachLayer(function(layer) {
-	//console.log('_leflet_id: ' + layer._leaflet_id)
-	//console.log(layer)
-	n += 1
-});
-console.log('LAYERS After: ' + n)
-
-
-
 			}
 		},
 	}

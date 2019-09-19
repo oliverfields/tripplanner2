@@ -6,6 +6,30 @@
 					<h2>Route</h2>
 					<div class="row">
 						<div class="col-md-12">
+							<div class="form-group" v-if="active_route != null && active_route.tmp_id == route.tmp_id">
+								<a
+									href="#"
+									style="margin-top: 2rem;"
+									@click="toggle_active_route(null)"
+									class="btn btn-primary active"
+								>
+									<i class="fa fa-route" title="Stop editing route" />Stop editing</a>
+									<span v-if="route.distance_km > 0" class="route_distance">{{ route.distance_km }}km</span>
+							</div>
+							<div class="form-group" v-else>
+								<a
+									href="#"
+									style="margin-top: 2rem;"
+									@click="toggle_active_route(route)"
+									class="btn btn-primary"
+								>
+									<i class="fa fa-route" title="Start route edit" />Edit route</a>
+									<span v-if="route.distance_km > 0" class="route_distance">{{ route.distance_km }}km</span>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
 							<div class="form-group">
 								<label for="route_name">Name</label>
 								<input
@@ -18,21 +42,34 @@
 					</div>
 					<div class="row">
 						<div class="col-md-12">
-							<div class="form-group" v-if="active_route != null && active_route.tmp_id == route.tmp_id">
-								<a
-									href="#"
-									@click="toggle_active_route(null)"
-									class="btn btn-primary active"
-								>
-									<i class="fa fa-route" title="Stop editing route" />Stop editing</a>
-							</div>
-							<div class="form-group" v-else>
-								<a
-									href="#"
-									@click="toggle_active_route(route)"
-									class="btn btn-primary"
-								>
-									<i class="fa fa-route" title="Start route edit" />Edit route</a>
+							<div class="form-group">
+								<label for="route_color">Color</label>
+								<div>
+									<div class="selected_route_color" :style="route_color_css"></div>
+									<div id="route_color">
+	<!--
+										<span style="background-color: #FFFFFF;" @click="activity_marker_color = 'white'">&nbsp;</span>
+	-->
+										<span style="background-color: #EB7D7F;" @click="route_color = '#EB7D7F'" title="Light red">&nbsp;</span>
+										<span style="background-color: #D63E2A;" @click="route_color = '#D63E2A'" title="Red">&nbsp;</span>
+										<span style="background-color: #A23336;" @click="route_color = '#A23336'" title="Dark red">&nbsp;</span>
+										<span style="background-color: #F69730;" @click="route_color = '#F69730'" title="Orange">&nbsp;</span>
+										<span style="background-color: #FFCB92;" @click="route_color = '#FFCB92'" title="Beige">&nbsp;</span>
+										<span style="background-color: #BBF970;" @click="route_color = '#BBF970'" title="Light green">&nbsp;</span>
+										<span style="background-color: #72AF26;" @click="route_color = '#72AF26'" title="Green">&nbsp;</span>
+										<span style="background-color: #728224;" @click="route_color = '#728224'" title="Dark green">&nbsp;</span>
+										<span style="background-color: #8ADAFF;" @click="route_color = '#8ADAFF'" title="Light blue">&nbsp;</span>
+										<span style="background-color: #38AADD;" @click="route_color = '#38AADD'" title="Blue">&nbsp;</span>
+										<span style="background-color: #0067A3;" @click="route_color = '#0067A3'" title="Dark blue">&nbsp;</span>
+										<span style="background-color: #436978;" @click="route_color = '#436978'" title="Cadet blue">&nbsp;</span>
+										<span style="background-color: #FF91EA;" @click="route_color = '#FF91EA'" title="Pink">&nbsp;</span>
+										<span style="background-color: #D252B9;" @click="route_color = '#D252B9'" title="Purple">&nbsp;</span>
+										<span style="background-color: #5B396B;" @click="route_color = '#5B396B'" title="Dark purple">&nbsp;</span>
+										<span style="background-color: #A3A3A3;" @click="route_color = '#A3A3A3'" title="Light grey">&nbsp;</span>
+										<span style="background-color: #575757;" @click="route_color = '#575757'" title="Gray">&nbsp;</span>
+										<span style="background-color: #000000;" @click="route_color = '#000000'" title="Black">&nbsp;</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -80,6 +117,17 @@
 			},
 		},
 		computed: {
+			route_color_css: function() {
+				return 'background-color: ' + this.route.color_hex + ';'
+			},
+			route_color: {
+				get() {
+					return this.route.color_hex
+				},
+				set(value) {
+					this.$store.commit('update_active_route', {property: 'color_hex', value: value})
+				}
+			},
 			route_name_class: function() {
 				return {
 					'form-control': true,
@@ -110,4 +158,28 @@
 </script>
 
 <style>
+	#route_color span {
+		margin: 0 .5rem 0 0 ! important;
+		height: 1rem;
+		width: 1rem;
+		display: inline-block;
+		border: solid 1px #000;
+	}
+	.selected_route_color {
+		font-size: 2rem;
+		width: 4rem;
+		float: left;
+		background-color: red;
+		height: 4rem;
+		padding: .5rem 0 0 .5rem;
+		margin-right: 1rem;
+		color: white;
+		text-align: center;
+	}
+	.route_distance {
+		vertical-align: bottom;
+		font-size: 1.5rem;
+		margin-left: 1rem;
+		color: #666;
+	}
 </style>

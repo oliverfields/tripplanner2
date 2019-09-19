@@ -102,6 +102,12 @@ function setup_trip(trip) {
 		for (let r = 0; r < trip.itinerary[i].routes.length; r++) {
 			if(!trip.itinerary[i].routes[r].tmp_id)
 				Vue.set(trip.itinerary[i].routes[r], 'tmp_id', 'route_' + new_id())
+			if(!trip.itinerary[i].routes[r].visible)
+				Vue.set(trip.itinerary[i].routes[r], 'visible', true)
+			if(!trip.itinerary[i].routes[r].distance_m)
+				Vue.set(trip.itinerary[i].routes[r], 'distance_m', 0)
+			if(!trip.itinerary[i].routes[r].distance_km)
+				Vue.set(trip.itinerary[i].routes[r], 'distance_km', 0)
 		}
 	}
 
@@ -251,7 +257,6 @@ export const store = new Vuex.Store({
 					//console.log('route is already active, doing nothing')
 				}
 				else {
-					//console.log('both something, saving active and replacing with route')
 					context.commit('save_map_active_route')
 					context.commit('set_map_active_route', route)
 				}
@@ -436,8 +441,6 @@ export const store = new Vuex.Store({
 			state.trips_list = payload
 		},
 		replace_route_points: (state, payload) => {
-			console.log('replacing points on route: ' + payload.route.tmp_id + ' with:')
-			console.log(payload.points)
 			payload.route.points = payload.points
 		},
 		save_map_active_route: (state) => {
@@ -507,8 +510,10 @@ export const store = new Vuex.Store({
 			day.routes.push({})
 			let i = day.routes.length - 1 // New index is length - 1
 			Vue.set(day.routes[i], 'name', '')
-			Vue.set(day.routes[i], 'color_hex', '#FF0000')
-			Vue.set(day.routes[i], 'url', null)
+			Vue.set(day.routes[i], 'color_hex', '#A23336')
+			Vue.set(day.routes[i], 'visible', true)
+			Vue.set(day.routes[i], 'distance_m', 0)
+			Vue.set(day.routes[i], 'distance_km', 0)
 			Vue.set(day.routes[i], 'points', [])
 			Vue.set(day.routes[i], 'tmp_id', 'route_' + new_id())
 
@@ -570,11 +575,17 @@ export const store = new Vuex.Store({
 				case 'name':
 					active_route.name = payload.value
 					break
-				case 'url':
-					active_route.url = payload.value
-					break
 				case 'color_hex':
 					active_route.color_hex = payload.value
+					break
+				case 'distance_m':
+					active_route.distance_m = payload.value
+					break
+				case 'distance_km':
+					active_route.distance_km = payload.value
+					break
+				case 'visible':
+					active_route.visible = payload.value
 					break
 				default:
 					console.log('Unkown active route property: ' + payload.property)
@@ -719,8 +730,11 @@ export const store = new Vuex.Store({
 
 				for (let r = 0; r < trip.itinerary[d].routes.length; r++) {
 					delete trip.itinerary[d].routes[r].tmp_id
+					delete trip.itinerary[d].routes[r].visible
 				}
 			}
+
+			console.log(trip)
 
 			s3_upload(uid + '/' + trip_id + '/trip.json',  JSON.stringify(trip))
 

@@ -45,7 +45,7 @@
 										<span v-if="route.name">{{ route.name }}</span>
 										<span v-else><em>empty</em></span>
 									</a>
-									<span>34km</span>
+									<span class="text-to-left">{{ route.distance_km }}km</span>
 									<a href="#" @click="delete_route({day_index: day_index, route_index: route_index})"><i class="danger fa fa-trash-alt text-to-left" title="Delete route" /></a>
 								</li>
 							</ul>

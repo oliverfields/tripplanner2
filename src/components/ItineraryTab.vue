@@ -26,13 +26,18 @@
 					<div>
 						<a href="#" @click="show_day(day_index)">{{ day.date_pretty }}, day {{ day.day_number }}</a>
 						<span class="routes" v-if="day.routes.length > -1">
-							<i
+							<span
+								class="route_shortcut"
 								v-for="(route, route_index) in day.routes"
-								class="fa fa-route text-to-left"
-								:title="route.name"
-								:style="{ color: route.color_hex }"
 								@click="show_route(day_index, route_index)"
-						/>
+							>
+								{{ route.distance_km }}km
+								<i
+									class="fa fa-route text-to-left"
+									:title="route.name"
+									:style="{ color: route.color_hex }"
+								/>
+							</span>
 						</span>
 					</div>
 
@@ -160,5 +165,16 @@
 	}
 	.notes {
 		font-style: italic;
+		margin: .3rem 1rem;
+	}
+	.routes {
+		margin-left: .5rem;
+		color: #666;
+	}
+	.route_shortcut {
+		cursor: pointer;
+	}
+	.route_shortcut:hover {
+		text-decoration: underline;
 	}
 </style>

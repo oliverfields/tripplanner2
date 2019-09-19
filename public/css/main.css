@@ -33,6 +33,6 @@ h3 {
 i.fa {
 margin: 0 .5rem 0 0;
 }
-i.text-to-left {
-margin-left: .5rem;
+.text-to-left {
+margin-left: .5rem ! important;
 }
