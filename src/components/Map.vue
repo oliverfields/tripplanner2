@@ -19,8 +19,8 @@
 			v-for="(day,day_index) in this.$store.state.active_trip.itinerary"
 			layer-type="overlay"
 			v-bind:name="day.date_pretty"
+			:ref="day.tmp_id"
 		>
-
 			<v-marker
 				v-for="activity in day_activities_with_markers(day_index)"
 				:lat-lng="latlng_array(activity)"
@@ -30,10 +30,11 @@
 			</v-marker>
 
 			<v-polyline
-				v-for="route in day_routes(day_index)"
-				v-bind:lat-lng="route.points"
+				v-for="(route, route_index) in day_routes(day_index)"
+				:lat-lngs="route.points"
+				:color="route.color_hex"
+				@click="show_route(day_index, route_index)"
 			 />
-
 		</v-layer-group>
 
 	</v-map>
@@ -87,14 +88,10 @@
 			}
 		},
 		methods: {
-/*
-			activity_popup(day, activity) {
-				return '<div class="tp-popup"><p class="description">' + activity.description + '</p><p>' + day.date_pretty + '</p></div>'
+			show_route(day_index, route_index){
+				this.$store.dispatch('show_route', {day_index: day_index, route_index: route_index})
+				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
 			},
-			marker_title(day, activity) {
-				return activity.description + ', ' + day.date_pretty
-			},
-*/
 			marker_icon(activity) {
 				let icon_name = 'circle'
 				let icon_color = 'red'
@@ -168,7 +165,6 @@
 			day_routes(day_index) {
 				let routes = []
 				let day = this.$store.state.active_trip.itinerary[day_index]
-				console.log(day)
 				if(day.routes) {
 					for (let n = 0; n < day.routes.length; n++) {
 						if(Array.isArray(day.routes[n].points)) {
@@ -176,40 +172,11 @@
 						}
 					}
 				}
-
 				return routes
 			},
 			latlng_array(activity) {
 				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
 			},
-			add_routes_to_map() {
-
-				console.log('HERE')
-				console.log(this.$refs.map.mapObject)
-this.$refs.map.mapObject.eachLayer(function(layer) {
-	if (layer instanceof L.LayerGroup) {
-		console.log('LAYERGROUP!! _leflet_id: ' + layer._leaflet_id)
-	}
-});
-				console.log('THERE')
-
-
-
-				// Add all routes as polylines to map
-				for (let d = 0; d < this.$store.state.active_trip.itinerary.length; d++) {
-					for(let r = 0; r < this.$store.state.active_trip.itinerary[d].routes.length; r++) {
-						let route = this.$store.state.active_trip.itinerary[d].routes[r]
-
-						// Only redraw if not already drawn
-						if(!(route.tmp_id.valueOf() in this.routes_map_polylines)) {
-							this.routes_map_polylines[route.tmp_id.valueOf()] = L.polyline(route.points).addTo(this.$refs.map.mapObject)
-						}
-					}
-				}
-
-				console.log(this.routes_map_polylines)
-
-			}
 		},
 		computed: {
 			map_center() {
@@ -229,7 +196,6 @@ this.$refs.map.mapObject.eachLayer(function(layer) {
 				this.$refs.map.mapObject.invalidateSize()
 			})
 			this.$refs.map.mapObject.zoomControl.setPosition('bottomright')
-
 
 			this.plotter = L.Polyline.Plotter([],{weight: 5}).addTo(this.$refs.map.mapObject);
 			this.plotter.setReadOnly(true)
@@ -271,8 +237,6 @@ console.log('LAYERS BEFORE: ' + i)
 						],
 						points: this.plotter.getPlotLatLngs(),
 					})
-
-					this.add_routes_to_map()
 
 					this.plotter.clearPoints()
 					this.plotter.setReadOnly(true)

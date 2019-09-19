@@ -42,24 +42,24 @@
 <!--
 										<span style="background-color: #FFFFFF;" @click="activity_marker_color = 'white'">&nbsp;</span>
 -->
-										<span style="background-color: #D63E2A;" @click="activity_marker_color = 'red'">&nbsp;</span>
-										<span style="background-color: #EB7D7F;" @click="activity_marker_color = 'lightred'">&nbsp;</span>
-										<span style="background-color: #A23336;" @click="activity_marker_color = 'darkred'">&nbsp;</span>
-										<span style="background-color: #F69730;" @click="activity_marker_color = 'orange'">&nbsp;</span>
-										<span style="background-color: #FFCB92;" @click="activity_marker_color = 'beige'">&nbsp;</span>
-										<span style="background-color: #BBF970;" @click="activity_marker_color = 'lightgreen'">&nbsp;</span>
-										<span style="background-color: #72AF26;" @click="activity_marker_color = 'green'">&nbsp;</span>
-										<span style="background-color: #728224;" @click="activity_marker_color = 'darkgreen'">&nbsp;</span>
-										<span style="background-color: #8ADAFF;" @click="activity_marker_color = 'lightblue'">&nbsp;</span>
-										<span style="background-color: #38AADD;" @click="activity_marker_color = 'blue'">&nbsp;</span>
-										<span style="background-color: #0067A3;" @click="activity_marker_color = 'darkblue'">&nbsp;</span>
-										<span style="background-color: #436978;" @click="activity_marker_color = 'cadetblue'">&nbsp;</span>
-										<span style="background-color: #D252B9;" @click="activity_marker_color = 'purple'">&nbsp;</span>
-										<span style="background-color: #5B396B;" @click="activity_marker_color = 'darkpurple'">&nbsp;</span>
-										<span style="background-color: #FF91EA;" @click="activity_marker_color = 'pink'">&nbsp;</span>
-										<span style="background-color: #A3A3A3;" @click="activity_marker_color = 'lightgray'">&nbsp;</span>
-										<span style="background-color: #575757;" @click="activity_marker_color = 'gray'">&nbsp;</span>
-										<span style="background-color: #000000;" @click="activity_marker_color = 'black'">&nbsp;</span>
+										<span style="background-color: #EB7D7F;" @click="activity_marker_color = 'lightred'" title="Light red">&nbsp;</span>
+										<span style="background-color: #D63E2A;" @click="activity_marker_color = 'red'" title="Red">&nbsp;</span>
+										<span style="background-color: #A23336;" @click="activity_marker_color = 'darkred'" title="Dark red">&nbsp;</span>
+										<span style="background-color: #F69730;" @click="activity_marker_color = 'orange'" title="Orange">&nbsp;</span>
+										<span style="background-color: #FFCB92;" @click="activity_marker_color = 'beige'" title="Beige">&nbsp;</span>
+										<span style="background-color: #BBF970;" @click="activity_marker_color = 'lightgreen'" title="Light green">&nbsp;</span>
+										<span style="background-color: #72AF26;" @click="activity_marker_color = 'green'" title="Green">&nbsp;</span>
+										<span style="background-color: #728224;" @click="activity_marker_color = 'darkgreen'" title="Dark green">&nbsp;</span>
+										<span style="background-color: #8ADAFF;" @click="activity_marker_color = 'lightblue'" title="Light blue">&nbsp;</span>
+										<span style="background-color: #38AADD;" @click="activity_marker_color = 'blue'" title="Blue">&nbsp;</span>
+										<span style="background-color: #0067A3;" @click="activity_marker_color = 'darkblue'" title="Dark blue">&nbsp;</span>
+										<span style="background-color: #436978;" @click="activity_marker_color = 'cadetblue'" title="Cadet blue">&nbsp;</span>
+										<span style="background-color: #FF91EA;" @click="activity_marker_color = 'pink'" title="Pink">&nbsp;</span>
+										<span style="background-color: #D252B9;" @click="activity_marker_color = 'purple'" title="Purple">&nbsp;</span>
+										<span style="background-color: #5B396B;" @click="activity_marker_color = 'darkpurple'" title="Dark purple">&nbsp;</span>
+										<span style="background-color: #A3A3A3;" @click="activity_marker_color = 'lightgray'" title="Light grey">&nbsp;</span>
+										<span style="background-color: #575757;" @click="activity_marker_color = 'gray'" title="Gray">&nbsp;</span>
+										<span style="background-color: #000000;" @click="activity_marker_color = 'black'" title="Black">&nbsp;</span>
 									</div>
 									<div class="available_marker_icons">
 										<i class="fa fa-circle" @click="activity_marker_icon = 'circle'"/>

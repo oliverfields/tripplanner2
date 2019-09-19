@@ -37,6 +37,7 @@ function setup_trip(trip) {
 		trip.itinerary = []
 		trip.itinerary.push({})
 		Vue.set(trip.itinerary[0], 'notes', '')
+		Vue.set(trip.itinerary[0], 'map_layergroup', '')
 	}
 
 	if(!trip.itinerary_navigation)
@@ -552,6 +553,9 @@ export const store = new Vuex.Store({
 			switch (payload.property) {
 				case 'notes':
 					active_day.notes = payload.value
+					break
+				case 'map_layergroup':
+					active_day.map_layergroup = payload.value
 					break
 				default:
 					console.log('Unkown active day property: ' + payload.property)
