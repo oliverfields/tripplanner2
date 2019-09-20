@@ -55,6 +55,7 @@
 		LLayerGroup,
 		LPolyline,
 		LLatLng,
+		LLatLngBounds
 	} from 'vue2-leaflet'
 	import '../../public/js/leaflet-plotter.js'
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
@@ -198,6 +199,12 @@
 			map_zoom() {
 				return this.$store.state.map.zoom
 			},
+			map_pan_to() {
+				return this.$store.state.map.pan_to
+			},
+			map_bounds() {
+				return this.$store.state.map.bounds
+			},
 			active_route() {
 				return this.$store.state.map.active_route
 			},
@@ -212,17 +219,17 @@
 
 			this.plotter = L.Polyline.Plotter([],{weight: 5}).addTo(this.$refs.map.mapObject);
 			this.plotter.setReadOnly(true)
-/*
-			this.$nextTick(function () { // Do this so all layergroups are added first
-				this.add_routes_to_map()
-			})
-*/
 		},
 		destroyed() {
 			window.removeEventListener('resize', this.handleResize)
 		},
 		watch: {
-
+			map_pan_to: function() {
+				this.$refs.map.mapObject.panTo(this.map_pan_to)
+			},
+			map_bounds: function() {
+				this.$refs.map.mapObject.fitBounds(this.map_bounds)
+			},
 			active_route: function() {
 				let ar = this.$store.state.map.active_route
 
@@ -240,6 +247,13 @@
 					this.$store.commit('update_active_route', { property: 'distance_m', value: distance_m })
 					this.$store.commit('update_active_route', { property: 'distance_km', value: distance_km })
 
+					// Set polyline bounds
+					let bounds = L.latLngBounds(this.plotter.getPlotLatLngs())
+					bounds = [
+						[bounds._northEast.lat, bounds._northEast.lng],
+						[bounds._southWest.lat, bounds._southWest.lng]
+					]
+					this.$store.commit('update_active_route', { property: 'map_bounds', value: bounds })
 
 					this.$store.dispatch('replace_route_points', {
 						route: this.$store.state.active_trip.itinerary[

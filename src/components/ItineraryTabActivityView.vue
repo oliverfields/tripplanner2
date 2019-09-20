@@ -3,7 +3,29 @@
 		<div v-for="(day, day_index) in this.$store.state.active_trip.itinerary">
 			<div v-for="(activity, activity_index) in day.activities">
 				<div class="activity" v-show="show_activity(day_index, activity_index)">
+
 					<h2>Activity</h2>
+
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="activity_day">Day</label>
+								<select
+									id="activity_day"
+									class="form-control"
+									@change="move_activity_to_day(activity, activity_index, day)"
+									:ref="'move_activity_day_' + activity.tmp_id"
+								>
+									<option
+										v-for="activity_day in itinerary_days()"
+										:value="activity_day.tmp_id"
+										:selected="activity_day.tmp_id == day.tmp_id"
+									>{{ activity_day.date_pretty }}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
@@ -16,6 +38,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
@@ -32,6 +55,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
@@ -77,6 +101,8 @@
 										<i class="fa fa-money-bill-alt" @click="activity_marker_icon = 'money-bill-alt'"/>
 										<i class="fa fa-envelope" @click="activity_marker_icon = 'envelope'"/>
 										<i class="fa fa-gas-pump" @click="activity_marker_icon = 'gas-pump'"/>
+										<i class="fa fa-home" @click="activity_marker_icon = 'home'"/>
+										<i class="fa fa-heart" @click="activity_marker_icon = 'heart'"/>
 										<i class="fa fa-plus-square" @click="activity_marker_icon = 'plus-square'"/>
 										<i class="fa fa-tint" @click="activity_marker_icon = 'tint'"/>
 										<i class="fa fa-cross" @click="activity_marker_icon = 'cross'"/>
@@ -92,6 +118,7 @@
 							</div>
 						</div>
 					</div>
+
 				</div>
 			</div>
 		</div>
@@ -113,6 +140,29 @@
 			}
 		},
 		methods: {
+			move_activity_to_day(activity, activity_index, day) {
+				let target_day_tmp_id = this.$refs['move_activity_day_' + activity.tmp_id][0].value
+				let target_day = null
+				let target_day_index = null
+
+				// Get target day
+				let itinerary = this.$store.state.active_trip.itinerary
+
+				for(let d = 0; d < itinerary.length; d++) {
+					if(itinerary[d].tmp_id == target_day_tmp_id) {
+						target_day = itinerary[d]
+						target_day_index = d
+						break
+					}
+				}
+
+				this.$store.commit('move_activity_to_day', { activity: activity, source_day: day, target_day: target_day })
+				this.$store.dispatch('show_activity', {day_index: target_day_index, activity_index: activity_index})
+				this.$store.commit('update_itinerary_navigation', {property: 'show_route_index', value: null})
+			},
+			itinerary_days() {
+				return this.$store.state.active_trip.itinerary
+			},
 			use_current_map_center() {
 				this.$store.commit('update_active_activity', {property: 'marker_coordinates', value: this.$store.getters.map_settings.center})
 				this.tmp_activity_coordinates =  this.tp_latlng_2_str(this.$store.getters.map_settings.center)

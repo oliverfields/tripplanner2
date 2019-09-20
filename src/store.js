@@ -5,18 +5,6 @@ import mixin from '@/mixin'
 
 Vue.use(Vuex)
 
-function convert_firebase_timestamp_to_js_date_object(firebase_timestamp) {
-	let js_date = new Date(firebase_timestamp.seconds*1000)
-	return js_date
-}
-
-function convert_firebase_geopoint(firebase_geopoint) {
-	return {
-		lat: firebase_geopoint._lat,
-		lng: firebase_geopoint._long
-	}
-}
-
 function setup_trip(trip) {
 	if(!trip.name)
 		trip.name = 'new trip'
@@ -108,6 +96,8 @@ function setup_trip(trip) {
 				Vue.set(trip.itinerary[i].routes[r], 'distance_m', 0)
 			if(!trip.itinerary[i].routes[r].distance_km)
 				Vue.set(trip.itinerary[i].routes[r], 'distance_km', 0)
+			if(!trip.itinerary[i].routes[r].map_bounds)
+				Vue.set(trip.itinerary[i].routes[r], 'map_bounds', 0)
 		}
 	}
 
@@ -217,6 +207,7 @@ export const store = new Vuex.Store({
 		map: {
 			zoom: 2,
 			center: { lat: 51.1739726374, lng: -1.82237671048 },
+			pan_to: null,
 			bounds: null,
 			active_route: null,
 		},
@@ -432,6 +423,9 @@ export const store = new Vuex.Store({
 		}
 	},
 	mutations: {
+		set_map_bounds: (state, payload) => {
+			state.map.bounds = payload
+		},
 		add_to_trips_list: (state, payload) => {
 			let uid = auth.currentUser.uid
 			state.trips_list.push({ name: payload.name, id: payload.id })
@@ -514,6 +508,7 @@ export const store = new Vuex.Store({
 			Vue.set(day.routes[i], 'visible', true)
 			Vue.set(day.routes[i], 'distance_m', 0)
 			Vue.set(day.routes[i], 'distance_km', 0)
+			Vue.set(day.routes[i], 'map_bounds', null)
 			Vue.set(day.routes[i], 'points', [])
 			Vue.set(day.routes[i], 'tmp_id', 'route_' + new_id())
 
@@ -550,6 +545,10 @@ export const store = new Vuex.Store({
 			if(payload.center) {
 				state.map.center = payload.center
 			}
+
+			if(payload.pan_to) {
+				state.map.pan_to = payload.pan_to
+			}
 		},
 		update_active_day: (state, payload) => {
 			let active_day = state.active_trip.itinerary[state.active_trip.itinerary_navigation.show_day_index]
@@ -583,6 +582,9 @@ export const store = new Vuex.Store({
 					break
 				case 'distance_km':
 					active_route.distance_km = payload.value
+					break
+				case 'map_bounds':
+					active_route.map_bounds = payload.value
 					break
 				case 'visible':
 					active_route.visible = payload.value
@@ -734,11 +736,23 @@ export const store = new Vuex.Store({
 				}
 			}
 
-			console.log(trip)
-
 			s3_upload(uid + '/' + trip_id + '/trip.json',  JSON.stringify(trip))
 
 			state.active_trip.dirty = false
-		}
+		},
+		move_activity_to_day: (state, payload) => {
+			let activity = payload.activity
+			let source_day = payload.source_day
+			let target_day = payload.target_day
+
+			// Add activity to new day
+			target_day.activities.push(activity)
+
+			// Remove activity from existing day
+			for(let a = 0; a < source_day.activities.length; a++) {
+				if(source_day.activities[a].tmp_id == activity.tmp_id) // Remove from current day
+					source_day.activities.splice(a, 1)
+			}
+		},
 	},
 })
