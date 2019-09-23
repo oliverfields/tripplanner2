@@ -4,6 +4,7 @@
 			<div v-for="(route, route_index) in day.routes">
 				<div class="route" v-show="show_route(day_index, route_index)">
 					<h2>Route</h2>
+
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group" v-if="active_route != null && active_route.tmp_id == route.tmp_id">
@@ -28,6 +29,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
@@ -40,6 +42,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
@@ -73,6 +76,27 @@
 							</div>
 						</div>
 					</div>
+
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="route_day">Day</label>
+								<select
+									id="route_day"
+									class="form-control"
+									@change="move_route_to_day(route, route_index, day)"
+									:ref="'move_route_day_' + route.tmp_id"
+								>
+									<option
+										v-for="route_day in itinerary_days()"
+										:value="route_day.tmp_id"
+										:selected="route_day.tmp_id == day.tmp_id"
+									>{{ route_day.date_pretty }}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
 				</div>
 			</div>
 		</div>
@@ -90,6 +114,29 @@
 			}
 		},
 		methods: {
+			itinerary_days() {
+				return this.$store.state.active_trip.itinerary
+			},
+			move_route_to_day(route, route_index, day) {
+				let target_day_tmp_id = this.$refs['move_route_day_' + route.tmp_id][0].value
+				let target_day = null
+				let target_day_index = null
+
+				// Get target day
+				let itinerary = this.$store.state.active_trip.itinerary
+
+				for(let d = 0; d < itinerary.length; d++) {
+					if(itinerary[d].tmp_id == target_day_tmp_id) {
+						target_day = itinerary[d]
+						target_day_index = d
+						break
+					}
+				}
+
+				this.$store.dispatch('move_route_to_day', { route: route, source_day: day, target_day: target_day })
+				this.$store.dispatch('show_route', {day_index: target_day_index, route_index: this.$store.state.active_trip.itinerary[target_day_index].routes.length - 1}) // Show last route
+				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
+			},
 			toggle_active_route(route) {
 				this.$store.dispatch('replace_active_route', route)
 			},

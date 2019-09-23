@@ -420,7 +420,15 @@ export const store = new Vuex.Store({
 		replace_route_points: (context, payload) => {
 			context.commit('replace_route_points', payload)
 			context.commit('update_active_trip', { property: 'dirty', value: true })
-		}
+		},
+		move_activity_to_day: (context, payload) => {
+			context.commit('move_activity_to_day', payload)
+			context.commit('update_active_trip', { property: 'dirty', value: true })
+		},
+		move_route_to_day: (context, payload) => {
+			context.commit('move_route_to_day', payload)
+			context.commit('update_active_trip', { property: 'dirty', value: true })
+		},
 	},
 	mutations: {
 		set_map_bounds: (state, payload) => {
@@ -752,6 +760,20 @@ export const store = new Vuex.Store({
 			for(let a = 0; a < source_day.activities.length; a++) {
 				if(source_day.activities[a].tmp_id == activity.tmp_id) // Remove from current day
 					source_day.activities.splice(a, 1)
+			}
+		},
+		move_route_to_day: (state, payload) => {
+			let route = payload.route
+			let source_day = payload.source_day
+			let target_day = payload.target_day
+
+			// Add route to new day
+			target_day.routes.push(route)
+
+			// Remove route from existing day
+			for(let r = 0; r < source_day.routes.length; r++) {
+				if(source_day.routes[r].tmp_id == route.tmp_id) // Remove from current day
+					source_day.routes.splice(r, 1)
 			}
 		},
 	},

@@ -9,26 +9,6 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								<label for="activity_day">Day</label>
-								<select
-									id="activity_day"
-									class="form-control"
-									@change="move_activity_to_day(activity, activity_index, day)"
-									:ref="'move_activity_day_' + activity.tmp_id"
-								>
-									<option
-										v-for="activity_day in itinerary_days()"
-										:value="activity_day.tmp_id"
-										:selected="activity_day.tmp_id == day.tmp_id"
-									>{{ activity_day.date_pretty }}</option>
-								</select>
-							</div>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-md-12">
-							<div class="form-group">
 								<label for="activity_description">Description</label>
 								<textarea
 									:class="activity_description_class"
@@ -119,6 +99,26 @@
 						</div>
 					</div>
 
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="activity_day">Day</label>
+								<select
+									id="activity_day"
+									class="form-control"
+									@change="move_activity_to_day(activity, activity_index, day)"
+									:ref="'move_activity_day_' + activity.tmp_id"
+								>
+									<option
+										v-for="activity_day in itinerary_days()"
+										:value="activity_day.tmp_id"
+										:selected="activity_day.tmp_id == day.tmp_id"
+									>{{ activity_day.date_pretty }}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
 				</div>
 			</div>
 		</div>
@@ -156,8 +156,8 @@
 					}
 				}
 
-				this.$store.commit('move_activity_to_day', { activity: activity, source_day: day, target_day: target_day })
-				this.$store.dispatch('show_activity', {day_index: target_day_index, activity_index: activity_index})
+				this.$store.dispatch('move_activity_to_day', { activity: activity, source_day: day, target_day: target_day })
+				this.$store.dispatch('show_activity', {day_index: target_day_index, activity_index: this.$store.state.active_trip.itinerary[target_day_index].activities.length - 1}) // Show last activity
 				this.$store.commit('update_itinerary_navigation', {property: 'show_route_index', value: null})
 			},
 			itinerary_days() {
