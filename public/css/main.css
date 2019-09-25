@@ -31,8 +31,11 @@ h3 {
 	margin-top: 0 ! important;
 }
 i.fa {
-margin: 0 .5rem 0 0;
+	margin: 0 .5rem 0 0;
 }
 .text-to-left {
-margin-left: .5rem ! important;
+	margin-left: .5rem ! important;
+}
+.click-confirm {
+z-index: 9000 ! important;
 }

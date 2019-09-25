@@ -19,16 +19,24 @@
 					<div class="col-md-12">
 						<div class="form-group">
 							<label for="activities">Activities</label>
-							<ul id="activities" v-if="day.activities">
-								<li class="activity" v-for="(activity, activity_index) in day.activities">
-									<a href="#" @click="show_activity(day_index, activity_index)">
-										<span v-if="activity.description">{{ activity.description }}</span>
-										<span v-else><em>empty</em></span>
-									</a>
+							<draggable
+								tag="ul"
+								v-model="day_activities_list"
+								handle=".handle"
+								class="activities"
+							>
+								<li
+									v-for="(activity, activity_index) in day.activities"
+									:key="activity.tmp_id"
+								>
+									<i class="fa fa-grip-vertical handle"></i>
+									<a href="#" @click="show_activity(day_index, activity_index)">{{ activity.description }} </a>
 									<MarkerLink :activity="activity" class="text-to-left" />
-									<a href="#" @click="delete_activity({day_index: day_index, activity_index: activity_index})"><i class="danger fa fa-trash-alt text-to-left" title="Delete activity" /></a>
+									<click-confirm button-size="sm" :messages="{ title: 'Delete \'' + activity.description + '\'?'}">
+										<i class="fa fa-times danger text-to-left" @click="delete_activity({day_index: day_index, activity_index: activity_index})"></i>
+									</click-confirm>
 								</li>
-							</ul>
+							</draggable>
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -39,16 +47,45 @@
 					<div class="col-md-12">
 						<div class="form-group">
 							<label for="routes">Routes</label>
+
+							<draggable
+								tag="ul"
+								v-model="day_routes_list"
+								handle=".handle"
+								class="activities"
+							>
+								<li
+									v-for="(route, route_index) in day.routes"
+									:key="route.tmp_id"
+								>
+									<i class="fa fa-grip-vertical handle"></i>
+									<a href="#" @click="show_route(day_index, route_index)">
+										<span v-if="route.name">{{ route.name }}</span>
+										<span v-else><em>empty</em></span>
+									</a>&nbsp;
+									<span>{{ route.distance_km }}km</span>
+									<RouteLink :route="route" class="text-to-left" />
+									<click-confirm button-size="sm" :messages="{ title: 'Delete \'' + route.name + '\'?'}">
+										<i class="fa fa-times danger text-to-left" @click="delete_route({day_index: day_index, route_index: route_index})"></i>
+									</click-confirm>
+								</li>
+							</draggable>
+
+
+<!--
 							<ul id="label">
 								<li  v-if="day.routes.length > 0" class="route" v-for="(route, route_index) in day.routes">
 									<a href="#" @click="show_route(day_index, route_index)">
 										<span v-if="route.name">{{ route.name }}</span>
 										<span v-else><em>empty</em></span>
 									</a>
+									&nbsp;
 									<span class="text-to-left">{{ route.distance_km }}km</span>
-									<a href="#" @click="delete_route({day_index: day_index, route_index: route_index})"><i class="danger fa fa-trash-alt text-to-left" title="Delete route" /></a>
+									<a href="#" @click="delete_route({day_index: day_index, route_index: route_index})"><i class="danger fa fa-times text-to-left" title="Delete route" /></a>
 								</li>
 							</ul>
+-->
+
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -62,11 +99,15 @@
 
 <script>
 	import MarkerLink from '@/components/MarkerLink'
+	import RouteLink from '@/components/RouteLink'
+	import draggable from "vuedraggable"
 
 	export default {
 		name: 'ItineraryTabDayVeiw',
 		components: {
-			MarkerLink
+			RouteLink,
+			MarkerLink,
+			draggable
 		},
 		methods: {
 			show_activity(day_index, activity_index) {
@@ -82,10 +123,10 @@
 				this.$store.dispatch('add_route_and_show', {day_index: day_index, day: day})
 			},
 			delete_activity(payload) {
-				this.$store.commit('delete_activity', payload)
+				this.$store.dispatch('delete_activity', payload)
 			},
 			delete_route(payload) {
-				this.$store.commit('delete_route', payload)
+				this.$store.dispatch('delete_route', payload)
 			},
 			validate_day_notes() {
 				let action = 'remove'
@@ -107,6 +148,28 @@
 			},
 		},
 		computed: {
+			day_activities_list: {
+				get() {
+					return this.$store.state.active_trip.itinerary[
+						this.$store.state.active_trip.itinerary_navigation.show_day_index
+					]
+					.activities
+				},
+				set(value) {
+					this.$store.commit('update_active_day', { property: 'activities', value: value })
+				}
+			},
+			day_routes_list: {
+				get() {
+					return this.$store.state.active_trip.itinerary[
+						this.$store.state.active_trip.itinerary_navigation.show_day_index
+					]
+					.routes
+				},
+				set(value) {
+					this.$store.commit('update_active_day', { property: 'routes', value: value })
+				}
+			},
 			show_day_index: function() {
 				return this.$store.state.active_trip.itinerary_navigation.show_day_index
 			},
@@ -134,8 +197,22 @@
 	}
 </script>
 
-<style>
+<style scoped>
 	.slim-button {
 		margin-bottom: 2rem;
+	}
+	.activities {
+		padding: .5rem 0 .5rem 0 ! important;
+	}
+	.activities li {
+		list-style: none;
+		margin-left: 0;
+	}
+	.activities li div {
+		display: inline-block;
+	}
+	.handle {
+		cursor: grab;
+		color: #999;
 	}
 </style>

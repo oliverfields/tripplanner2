@@ -17,6 +17,25 @@
 		components: {
 			Menu,
 			Workspace
-		}
+		},
+		methods: {
+			confirm_unload: function confirm_unload(event) {
+				alert('ho')
+				console.log(event)
+				event.preventDefault()
+				// Chrome requires returnValue to be set.
+				event.returnValue = ''
+				return false
+			},
+		},
+		created() {
+			window.addEventListener('beforeunload', (event) => {
+				if(this.$store.state.active_trip.dirty) {
+					event.preventDefault()
+					// Chrome requires returnValue to be set.
+					event.returnValue = ''
+				}
+			}, false)
+		},
 	}
 </script>

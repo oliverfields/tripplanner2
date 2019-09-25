@@ -41,8 +41,10 @@
 					<div class="form-group">
 						<div class="form-group-danger">
 							<h1>Delete trip</h1>
-							<p><i class="danger fa fa-exclamation-triangle" /> Deleted trips can <strong>not</strong> be undeleted</p>
-							<a @click="delete_trip" id="delete_trip" href="#" class="btn btn-danger"><i class="fa fa-trash-alt" /> Delete</a>
+							<p><i class="danger fa fa-exclamation-triangle" /> Delete <strong>cannot</strong> be undone</p>
+							<click-confirm button-size="sm" :messages="{ title: 'Delete \'' + this.$store.state.active_trip.name + '\'?'}">
+								<a @click="delete_trip" id="delete_trip" href="#" class="btn btn-danger"><i class="fa fa-times" /> Delete {{ this.$store.state.active_trip.name }}</a>
+							</click-confirm>
 						</div>
 					</div>
 				</div>

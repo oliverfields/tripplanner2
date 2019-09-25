@@ -1,15 +1,21 @@
 const ambulate_config = require('../config.json')
 import Vue from 'vue'
-import firebase from 'firebase'
 import aws from 'aws-sdk'
 import App from './App.vue'
 import router from './router'
 import { store } from './store'
 import mixin from './mixin.js'
+//import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../public/css/fontawesome.css'
 import '../public/css/main.css'
+
+import ClickConfirm from 'click-confirm/dist/click-confirm.min.js'
+Vue.component('clickConfirm', ClickConfirm)
+
 import XRegExp from 'xregexp'
 Object.defineProperty(Vue.prototype, '$XRegExp', { value: XRegExp });
 
@@ -31,7 +37,6 @@ firebase.auth().onAuthStateChanged(() => {
 	}
 })
 
-//var spacesEndpoint = new aws.Endpoint(ambulate_config.digitaloceans_spaces.endPoint)
 export const s3_bucket = ambulate_config.digitaloceans_spaces.bucket
 export const s3 = new aws.S3({
 	endpoint: ambulate_config.digitaloceans_spaces.endPoint,

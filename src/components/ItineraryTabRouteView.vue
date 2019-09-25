@@ -204,7 +204,7 @@
 	}
 </script>
 
-<style>
+<style scoped>
 	#route_color span {
 		margin: 0 .5rem 0 0 ! important;
 		height: 1rem;
@@ -228,5 +228,9 @@
 		font-size: 1.5rem;
 		margin-left: 1rem;
 		color: #666;
+	}
+	.route li {
+		list-style: none;
+		margin-left: 0;
 	}
 </style>

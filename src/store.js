@@ -429,8 +429,24 @@ export const store = new Vuex.Store({
 			context.commit('move_route_to_day', payload)
 			context.commit('update_active_trip', { property: 'dirty', value: true })
 		},
+		delete_route: (context, payload) => {
+			context.commit('delete_route', payload)
+			context.commit('update_active_trip', { property: 'dirty', value: true })
+		},
+		delete_activity: (context, payload) => {
+			context.commit('delete_activity', payload)
+			context.commit('update_active_trip', { property: 'dirty', value: true })
+		},
+		delete_day: (context, payload) => {
+			context.commit('delete_day', payload)
+			context.commit('set_itinerary_dates')
+			context.commit('update_active_trip', { property: 'dirty', value: true })
+		},
 	},
 	mutations: {
+		delete_day: (state, payload) => {
+			state.active_trip.itinerary.splice(payload.day_index, 1)
+		},
 		set_map_bounds: (state, payload) => {
 			state.map.bounds = payload
 		},
@@ -568,6 +584,12 @@ export const store = new Vuex.Store({
 					break
 				case 'map_layergroup':
 					active_day.map_layergroup = payload.value
+					break
+				case 'activities':
+					active_day.activities = payload.value
+					break
+				case 'routes':
+					active_day.routes = payload.value
 					break
 				default:
 					console.log('Unkown active day property: ' + payload.property)
