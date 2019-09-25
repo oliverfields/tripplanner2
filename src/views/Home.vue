@@ -2,8 +2,14 @@
 	<div>
 		<Menu />
 		<Workspace v-if="this.$store.state.active_trip" />
-		<div id="workspace" v-else>
-			<p>Go on trip, man;)</p>
+		<div v-else class="just-a-thought container d-flex align-items-center justify-content-center">
+			<div>A journey of a thousand miles begins with a <a
+					class="btn btn-success"
+					href="#" @click="create_trip"
+				>
+					<i class="fa fa-plus" /> New trip
+				</a>
+			</div>
 		</div>
 	</div>
 </template>
@@ -19,6 +25,9 @@
 			Workspace
 		},
 		methods: {
+			create_trip() {
+				this.$store.dispatch('create_trip')
+			},
 			confirm_unload: function confirm_unload(event) {
 				alert('ho')
 				console.log(event)
@@ -39,3 +48,11 @@
 		},
 	}
 </script>
+
+<style scoped>
+	.just-a-thought {
+		height: 500px;
+		font-size: 1.4rem;
+		color: #666;
+	}
+</style>

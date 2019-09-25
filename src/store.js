@@ -15,6 +15,9 @@ function setup_trip(trip) {
 	if(!trip.start_date)
 		trip.start_date = new Date()
 
+	if(!trip.route_file)
+		trip.route_file = false
+
 	if(!trip.map_center)
 		trip.map_center = { lat: 51.1739726374, lng: -1.82237671048 }
 
@@ -442,6 +445,16 @@ export const store = new Vuex.Store({
 			context.commit('set_itinerary_dates')
 			context.commit('update_active_trip', { property: 'dirty', value: true })
 		},
+		upload_gpx_route: (context, payload) => {
+			let uid = auth.currentUser.uid
+			s3_upload(uid + '/' + context.state.active_trip.trip_id + '/route.gpx',  payload.data)
+			context.commit('update_active_trip', {property: 'route_file', value: payload.file_name})
+		},
+		remove_gpx_route: (context) => {
+			let uid = auth.currentUser.uid
+			s3_remove(uid + '/' + context.state.active_trip.trip_id + '/route.gpx')
+			context.commit('update_active_trip', {property: 'route_file', value: false})
+		}
 	},
 	mutations: {
 		delete_day: (state, payload) => {
@@ -680,6 +693,9 @@ export const store = new Vuex.Store({
 					break
 				case 'start_date':
 					state.active_trip.start_date = payload.value
+					break
+				case 'route_file':
+					state.active_trip.route_file = payload.value
 					break
 				case 'map_center':
 					state.active_trip.map_center.lat = payload.value.lat

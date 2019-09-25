@@ -1,0 +1,14 @@
+{
+	"firebase": {
+		"apiKey": "",
+		"authDomain": "",
+		"messagingSenderId": "",
+		"appId": ""
+	},
+	"digitaloceans_spaces": {
+		"bucket": "",
+		"endPoint": "",
+		"accessKeyId": "",
+		"secretAccessKey": ""
+	}
+}

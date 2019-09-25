@@ -27,7 +27,8 @@
 							href="#" @click="create_trip"
 							style="margin-top: 3px;"
 					>
-						<i class="fa fa-plus" /> New trip</a>
+							<i class="fa fa-plus" /> New trip
+						</a>
 					</click-confirm>
 				</li>
 				<li v-if="this.$store.getters.get_trips && this.$store.getters.get_trips.length > 0" class="nav-item dropdown" style="margin-left: 0;">
@@ -57,8 +58,9 @@
 						:messages="{ title: 'Trip has unsaved changes, discard them and logout?'}"
 						placement="bottom"
 						:disabled="trip_saved"
+						class="logout-link"
 					>
-						<a class="logout-link nav-link" href="#" @click="logout"><i class="fa fa-sign-out-alt" /> Logout</a>
+						<a class="nav-link" href="#" @click="logout"><i class="fa fa-sign-out-alt" /> Logout</a>
 					</click-confirm>
 					<img
 						v-if="current_user_photo"
@@ -176,9 +178,10 @@
 		height: 30px;
 		width: 30px;
 		margin: 0 1rem 0 0;
+		display: inline-block;
 	}
 	.logout-link {
 		display: inline-block ! important;
-		margin-right: .5rem;
+		margin-right: 0;
 	}
 </style>
