@@ -34,22 +34,6 @@
 				</div>
 			</div>
 
-			<div class="row">
-				<div class="col-md-12">
-					<div class="form-group">
-						<label for="trip_route">Route</label>
-						<div v-if="!this.$store.state.active_trip.route_file">
-							<input type="file" accept=".gpx" @change="on_upload_file_change">
-						</div>
-						<div v-else>
-							<click-confirm button-size="sm" :messages="{ title: 'Delete route?'}">
-								<button @click="remove_route_file" class="btn btn-danger"><i class="fa fa-times" /> Delete {{ this.$store.state.active_trip.route_file.name }}</button>
-							</click-confirm>
-						</div>
-					</div>
-				</div>
-			</div>
-
 			<hr style="margin-top: 3rem;" />
 
 			<div class="row">
@@ -102,28 +86,6 @@
 			},
 		},
 		methods: {
-			on_upload_file_change(e) {
-				let files = e.target.files || e.dataTransfer.files
-				let reader = new FileReader()
-				let store = this.$store
-
-				if (!files.length)
-					return // Exit, no file selected
-
-				reader.readAsText(files[0], "UTF-8")
-
-				reader.onload = function (event) {
-					store.dispatch('upload_gpx_route', {data: event.target.result, file_name: files[0]})
-				}
-
-				reader.onerror = function (event) {
-					console.error('error reading file')
-				}
-
-			},
-			remove_route_file: function (e) {
-				this.$store.dispatch('remove_gpx_route')
-			},
 			delete_trip: function() {
 				this.$store.dispatch('delete_active_trip')
 			},

@@ -7,6 +7,19 @@
 
 					<div class="row">
 						<div class="col-md-12">
+							<div class="form-group">
+								<label for="route_name">Name</label>
+								<input
+									:class="route_name_class"
+									v-model="route_name"
+								/>
+								<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> Name can only use letters and numbers</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12">
 							<div class="form-group" v-if="active_route != null && active_route.tmp_id == route.tmp_id">
 								<a
 									href="#"
@@ -26,19 +39,6 @@
 								>
 									<i class="fa fa-route" title="Start route edit" />Edit route</a>
 									<span v-if="route.distance_km > 0" class="route_distance">{{ route.distance_km }}km</span>
-							</div>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-md-12">
-							<div class="form-group">
-								<label for="route_name">Name</label>
-								<input
-									:class="route_name_class"
-									v-model="route_name"
-								/>
-								<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> Name can only use letters and numbers</div>
 							</div>
 						</div>
 					</div>
@@ -80,6 +80,16 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
+								<label for="route_gpx">Import route</label>
+								<ImportGPXRoute :route="route" />
+								<small id="coordinates-help" class="form-text text-muted">Import route from .gpx file</small>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
 								<label for="route_day">Day</label>
 								<select
 									id="route_day"
@@ -104,9 +114,12 @@
 </template>
 
 <script>
+	import ImportGPXRoute from '@/components/ImportGPXRoute'
+
 	export default {
 		name: 'ItineraryTabRouteView',
 		components: {
+			ImportGPXRoute
 		},
 		data() {
 			return {

@@ -15,6 +15,8 @@
 			:attribution="this.attribution"
 		></v-tile-layer>
 
+		<v-layer-group ref="route_layer" />
+
 		<v-layer-group
 			v-for="(day,day_index) in this.$store.state.active_trip.itinerary"
 			layer-type="overlay"
@@ -27,6 +29,7 @@
 				:icon="marker_icon(activity)"
 				@click="show_activity_tab(activity)"
 			>
+				<v-tooltip>{{ activity.description }}, {{ day.date_pretty }}</v-tooltip>
 			</v-marker>
 
 			<v-polyline
@@ -35,7 +38,9 @@
 				:color="route.color_hex"
 				:visible="route.visible"
 				@click="show_route(day_index, route_index)"
-			 />
+			 >
+				<v-tooltip>{{ route.name }}, {{ day.date_pretty }}</v-tooltip>
+			</v-polyline>
 		</v-layer-group>
 
 	</v-map>
@@ -55,8 +60,10 @@
 		LLayerGroup,
 		LPolyline,
 		LLatLng,
-		LLatLngBounds
+		LLatLngBounds,
+		LTooltip
 	} from 'vue2-leaflet'
+	import { auth, s3, s3_bucket } from '@/main'
 	import '../../public/js/leaflet-plotter.js'
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
 	import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js'
@@ -72,6 +79,7 @@
 			'v-layer-group': LLayerGroup,
 			'v-popup': LPopup,
 			'v-polyline': LPolyline,
+			'v-tooltip': LTooltip
 		},
 		data() {
 			return {
@@ -217,7 +225,7 @@
 			})
 			this.$refs.map.mapObject.zoomControl.setPosition('bottomright')
 
-			this.plotter = L.Polyline.Plotter([],{weight: 5}).addTo(this.$refs.map.mapObject);
+			this.plotter = L.Polyline.Plotter([],{weight: 5}).addTo(this.$refs.map.mapObject)
 			this.plotter.setReadOnly(true)
 		},
 		destroyed() {
@@ -249,11 +257,15 @@
 
 					// Set polyline bounds
 					let bounds = L.latLngBounds(this.plotter.getPlotLatLngs())
-					bounds = [
-						[bounds._northEast.lat, bounds._northEast.lng],
-						[bounds._southWest.lat, bounds._southWest.lng]
-					]
-					this.$store.commit('update_active_route', { property: 'map_bounds', value: bounds })
+
+					try {
+						bounds = [
+							[bounds._northEast.lat, bounds._northEast.lng],
+							[bounds._southWest.lat, bounds._southWest.lng]
+						]
+						this.$store.commit('update_active_route', { property: 'map_bounds', value: bounds })
+					}
+					catch {}
 
 					this.$store.dispatch('replace_route_points', {
 						route: this.$store.state.active_trip.itinerary[
