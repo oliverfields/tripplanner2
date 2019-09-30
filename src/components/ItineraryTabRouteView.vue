@@ -88,6 +88,15 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
+								<label for="route_gpx">Download route</label>
+								<DownloadGPXRoute :route="route" />
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
 								<label for="route_gpx">Import route</label>
 								<ImportGPXRoute :route="route" />
 								<small id="coordinates-help" class="form-text text-muted">Import route from .gpx file</small>
@@ -123,11 +132,13 @@
 
 <script>
 	import ImportGPXRoute from '@/components/ImportGPXRoute'
+	import DownloadGPXRoute from '@/components/DownloadGPXRoute'
 
 	export default {
 		name: 'ItineraryTabRouteView',
 		components: {
-			ImportGPXRoute
+			ImportGPXRoute,
+			DownloadGPXRoute
 		},
 		data() {
 			return {
