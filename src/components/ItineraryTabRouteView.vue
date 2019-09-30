@@ -31,14 +31,22 @@
 									<span v-if="route.distance_km > 0" class="route_distance">{{ route.distance_km }}km</span>
 							</div>
 							<div class="form-group" v-else>
-								<a
-									href="#"
-									style="margin-top: 2rem;"
-									@click="toggle_active_route(route)"
-									class="btn btn-primary"
+								<click-confirm
+									button-size="sm"
+									:messages="{ title: 'Route contains many points, editing may decrease app performance, continue?'}"
+									:disabled="!route_has_many_points"
+									style="display: inline-block;"
 								>
-									<i class="fa fa-route" title="Start route edit" />Edit route</a>
-									<span v-if="route.distance_km > 0" class="route_distance">{{ route.distance_km }}km</span>
+									<a
+										href="#"
+										style="margin-top: 2rem;"
+										@click="toggle_active_route(route)"
+										class="btn btn-primary"
+									>
+										<i class="fa fa-route" title="Start route edit" />Edit route
+									</a>
+								</click-confirm>
+								<span v-if="route.distance_km > 0" class="route_distance">{{ route.distance_km }}km</span>
 							</div>
 						</div>
 					</div>
@@ -177,6 +185,12 @@
 			},
 		},
 		computed: {
+			route_has_many_points:function(){
+				if (this.route.points.length > 50)
+					return true
+
+				return false
+			},
 			route_color_css: function() {
 				return 'background-color: ' + this.route.color_hex + ';'
 			},

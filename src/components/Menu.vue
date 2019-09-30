@@ -1,6 +1,6 @@
 <template>
 	<nav id="nav" class="navbar navbar-expand navbar-dark bg-dark">
-		<a class="navbar-brand" href="#"><object id="logo" type="image/svg+xml" data="images/ambulate-logo.svg"></object></a>
+		<a class="navbar-brand" href="#"><object id="logo" type="image/svg+xml" data="images/ambulate-logo-bindle.svg"></object> Ambulate</a>
 		<button
 			class="navbar-toggler"
 			style="border: none;"
@@ -165,6 +165,9 @@
 	}
 	.navbar-brand i {
 		margin-left: 1rem ! important;
+	}
+	.navbar-brand {
+		font-size: 2rem ! important;
 	}
 	#logo {
 		height: 28px;

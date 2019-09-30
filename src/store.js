@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { auth, s3, s3_bucket } from '@/main'
 import mixin from '@/mixin'
+import { LLatLngBounds } from 'vue2-leaflet'
 
 Vue.use(Vuex)
 
@@ -436,6 +437,27 @@ export const store = new Vuex.Store({
 		replace_route_points: (context, payload) => {
 			context.commit('replace_route_points', payload)
 			context.commit('update_active_trip', { property: 'dirty', value: true })
+
+			// Set distances, metric, ofcourse;)
+			let distance_m = mixin.methods.tp_points_distance_m(payload.points)
+			let distance_km = Number(parseFloat(Math.round(distance_m) / 1000).toFixed(1))
+
+			context.commit('update_active_route', { property: 'distance_m', value: distance_m })
+			context.commit('update_active_route', { property: 'distance_km', value: distance_km })
+
+			// Set polyline bounds
+			let bounds = L.latLngBounds(payload.points)
+			try {
+				bounds = [
+					[bounds._northEast.lat, bounds._northEast.lng],
+					[bounds._southWest.lat, bounds._southWest.lng]
+				]
+				context.commit('update_active_route', { property: 'map_bounds', value: bounds })
+			}
+			catch(e) {
+				console.error('Unable to set route bounds: ' + e)
+			}
+
 		},
 		move_activity_to_day: (context, payload) => {
 			context.commit('move_activity_to_day', payload)

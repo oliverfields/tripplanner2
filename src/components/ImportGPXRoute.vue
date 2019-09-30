@@ -1,5 +1,9 @@
 <template>
-	<click-confirm button-size="sm" :messages="{ title: 'Imported route will overwrite existing route'}">
+	<click-confirm
+		button-size="sm"
+		:messages="{ title: 'Imported route will overwrite existing route'}"
+		:disabled="!route_has_points"
+	>
 		<input type="file" accept=".gpx" @change="on_upload_file_change">
 	</click-confirm>
 </template>
@@ -10,6 +14,14 @@
 		props: [
 			'route',
 		],
+		computed: {
+			route_has_points:function(){
+				if (this.route.points.length > 0)
+					return true
+
+				return false
+			},
+		},
 		methods: {
 			on_upload_file_change(e) {
 				let files = e.target.files || e.dataTransfer.files
@@ -50,14 +62,22 @@
 
 					route = route[0]
 
-					for (let s = 0; s < route.segments.length; s++) {
-						for (let p = 0; p < route.segments[s].length; p++) {
-							latlngs.push([route.segments[s][p].lat,route.segments[s][p].lon])
+					console.log(route)
+
+					if(route.points) {
+						for (let p = 0; p < route.points.length; p++) {
+							latlngs.push([route.points[p].lat,route.points[p].lon])
+						}
+					}
+					else {
+						for (let s = 0; s < route.segments.length; s++) {
+							for (let p = 0; p < route.segments[s].length; p++) {
+								latlngs.push([route.segments[s][p].lat,route.segments[s][p].lon])
+							}
 						}
 					}
 
 					self.$store.dispatch('replace_route_points', { route: self.route, points: latlngs })
-
 				})
 
 			},

@@ -100,6 +100,18 @@ export default {
 				}
 			}
 			return false
-		}
+		},
+		tp_points_distance_m(points) {
+			let mDistance = 0
+			let length = points.length
+
+			for (let i = 1; i < length; i++) {
+				let a = L.latLng(points[i])
+				let b = L.latLng(points[i - 1])
+				mDistance += a.distanceTo(b)
+			}
+
+			return mDistance
+		},
 	}
 }

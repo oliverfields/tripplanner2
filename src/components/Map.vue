@@ -188,17 +188,6 @@
 			latlng_array(activity) {
 				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
 			},
-			points_distance_m(points) {
-				let mDistanse = 0
-				let length = points.length
-
-				for (let i = 1; i < length; i++) {
-					let a = L.latLng(points[i])
-					let b = L.latLng(points[i - 1])
-					mDistanse += a.distanceTo(b)
-				}
-				return mDistanse
-			},
 		},
 		computed: {
 			map_center() {
@@ -236,7 +225,8 @@
 				this.$refs.map.mapObject.panTo(this.map_pan_to)
 			},
 			map_bounds: function() {
-				this.$refs.map.mapObject.fitBounds(this.map_bounds)
+				if(this.map_bounds)
+					this.$refs.map.mapObject.fitBounds(this.map_bounds)
 			},
 			active_route: function() {
 				let ar = this.$store.state.map.active_route
@@ -248,24 +238,6 @@
 					window.L.DomUtil.removeClass(this.$refs.map.mapObject._container,'crosshair-cursor-enabled');
 					// Show route ployline
 					this.$store.commit('update_active_route', { property: 'visible', value: true })
-
-					// Set distances, metric, ofcourse;)
-					let distance_m = this.points_distance_m(this.plotter.getPlotLatLngs())
-					let distance_km = Number(parseFloat(Math.round(distance_m) / 1000).toFixed(1))
-					this.$store.commit('update_active_route', { property: 'distance_m', value: distance_m })
-					this.$store.commit('update_active_route', { property: 'distance_km', value: distance_km })
-
-					// Set polyline bounds
-					let bounds = L.latLngBounds(this.plotter.getPlotLatLngs())
-
-					try {
-						bounds = [
-							[bounds._northEast.lat, bounds._northEast.lng],
-							[bounds._southWest.lat, bounds._southWest.lng]
-						]
-						this.$store.commit('update_active_route', { property: 'map_bounds', value: bounds })
-					}
-					catch {}
 
 					this.$store.dispatch('replace_route_points', {
 						route: this.$store.state.active_trip.itinerary[
