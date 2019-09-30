@@ -4,7 +4,7 @@
 			<div v-for="(activity, activity_index) in day.activities">
 				<div class="activity" v-show="show_activity(day_index, activity_index)">
 
-					<h2>Activity</h2>
+					<h2>Activity <MarkerLink :activity="activity" class="text-to-left" /></h2>
 
 					<div class="row">
 						<div class="col-md-12">
@@ -22,7 +22,7 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								<label for="activity_coordinates">Marker coordinates <MarkerLink :activity="activity" class="text-to-left" /></label>
+								<label for="activity_coordinates">Marker coordinates</label>
 								<input
 									:class="activity_coordinates_class"
 									v-model="activity_coordinates"

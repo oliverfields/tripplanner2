@@ -3,7 +3,7 @@
 		<div v-for="(day, day_index) in this.$store.state.active_trip.itinerary">
 			<div v-for="(route, route_index) in day.routes">
 				<div class="route" v-show="show_route(day_index, route_index)">
-					<h2>Route</h2>
+					<h2>Route <RouteLink :route="route" class="text-to-left" /></h2>
 
 					<div class="row">
 						<div class="col-md-12">
@@ -133,12 +133,14 @@
 <script>
 	import ImportGPXRoute from '@/components/ImportGPXRoute'
 	import DownloadGPXRoute from '@/components/DownloadGPXRoute'
+	import RouteLink from '@/components/RouteLink'
 
 	export default {
 		name: 'ItineraryTabRouteView',
 		components: {
 			ImportGPXRoute,
-			DownloadGPXRoute
+			DownloadGPXRoute,
+			RouteLink
 		},
 		data() {
 			return {
