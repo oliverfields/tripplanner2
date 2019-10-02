@@ -44,7 +44,8 @@
 			},
 
 			parse_route(data) {
-				let gpxParse = require('gpx-parse')
+				//let gpxParse = require('gpx-parse')
+				let gpxParse = require('gpx-parse/lib/gpx-parse')
 				let route = null
 				let latlngs = []
 				let self = this
