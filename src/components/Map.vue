@@ -83,7 +83,7 @@
 		},
 		data() {
 			return {
-				url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+				url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
 				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 				map_dimensions: {
 					width: 0,
