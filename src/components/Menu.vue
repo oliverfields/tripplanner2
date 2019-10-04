@@ -168,13 +168,12 @@
 	}
 	#logo {
 		height: 28px;
-		margin: 8px 0 0 1rem;
 	}
 	.profile-pic {
 		border-radius: 50%;
 		height: 30px;
 		width: 30px;
-		margin: 0 1rem 0 1rem;
+		margin: 0 0 0 1rem;
 		display: inline-block;
 	}
 	.logout-link {

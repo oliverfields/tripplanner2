@@ -314,6 +314,7 @@
 		height: 4rem;
 		padding: .5rem 0 0 .5rem;
 		margin-right: 1rem;
+		margin-bottom: 1rem;
 		color: white;
 		text-align: center;
 	}
