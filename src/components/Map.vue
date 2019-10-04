@@ -2,7 +2,7 @@
 	<v-map
 		id="map"
 		ref="map"
-		:style="{'width': this.map_dimensions.width, 'height': this.map_dimensions.height}"
+		:style="{'width': this.map_dimensions.width + 'px', 'height': this.map_dimensions.height + 'px'}"
 		:zoom="this.map_zoom"
 		:center="this.map_center"
 		@update:zoom="zoom_updated"
@@ -130,19 +130,48 @@
 			center_updated (center) {
 				this.$store.commit('update_map_settings', {'center': center})
 			},
-			handleResize() {
-				let nav_height = 50 // 50 is hardcoded nav height..
-				let tabs_width = 400 // 400 is hardcoded tabs width..
+			handle_map_resize() {
+				let bootstrap_breakpoint = 768 // XSmall <576px, Small ≥576px, Medium ≥768px, Large ≥992px, XLarge ≥1200px
+				let available_width = window.innerWidth
 
-				// map width
-				this.map_dimensions.width = (window.innerWidth - tabs_width) + 'px'
+				let nav_height = $('#nav').outerHeight()
+				if($('#navbars-site-menu').css('display') != 'none' && available_width < bootstrap_breakpoint) {
+					nav_height = nav_height - $('#navbars-site-menu').outerHeight()
+				}
 
-				// map height
 				let available_height = window.innerHeight - nav_height
-				this.map_dimensions.height = available_height + 'px'
+				let tabs_pane_max_width = 400
 
-				let map_horizontal_center = (window.innerWidth - tabs_width) / 2
-				let map_vertical_center = (window.innerHeight - nav_height) / 2
+				// Position panes just under navigation and set height
+
+				$('#tabs-pane').css('top', nav_height + 'px')
+				$('#tabs-pane').css('height', available_height + 'px')
+				$('#map-pane').css('top', nav_height + 'px')
+				$('#map-pane').css('height', available_height + 'px')
+				this.map_dimensions.height = available_height
+
+				// Large screen, show only one pane
+				if (available_width < bootstrap_breakpoint) {
+					$('#tabs-pane').css('width', available_width + 'px')
+					$('#tabs-pane').css('visibility', 'visible')
+					$('#map-pane').css('visibility', 'hidden')
+					$('#map-pane').css('width', available_width + 'px')
+					$('#map-pane').css('left', 0)
+					this.map_dimensions.width = available_width
+				}
+				// Large screen, show both tabs pane and map pane
+				else {
+					let map_width = available_width - tabs_pane_max_width
+					$('#tabs-pane').css('width', tabs_pane_max_width + 'px')
+					$('#tabs-pane').css('visibility', 'visible')
+					$('#map-pane').css('visibility', 'visible')
+					$('#map-pane').css('left', tabs_pane_max_width)
+					$('#map-pane').css('width', map_width + 'px')
+					this.map_dimensions.width = map_width
+				}
+
+				let map_horizontal_center = this.map_dimensions.width / 2
+				let map_vertical_center = this.map_dimensions.height / 2
 
 				if(!$('#map_center_crosshairs').length) {
 					$('#map').append('<div id="map_center_crosshairs" />')
@@ -207,8 +236,8 @@
 			},
 		},
 		mounted() {
-			window.addEventListener('resize', this.handleResize)
-			this.handleResize()
+			window.addEventListener('resize', this.handle_map_resize)
+			this.handle_map_resize()
 			this.$nextTick(function () {
 				this.$refs.map.mapObject.invalidateSize()
 			})
@@ -298,5 +327,20 @@
 	.leaflet-marker-icon.leaflet-interactive {
 		border-radius: 50%;
 		cursor: crosshair;
+	}
+	#tabs-pane {
+		overflow-y: auto;
+		position: absolute;
+		top: 75;
+		left: 0;
+		margin: 0 ! important;
+		padding: 1rem ! important;
+	}
+	#map-pane {
+		padding: 0 ! important;
+		margin: 0 ! important;
+		position: absolute;
+		top: 75;
+		left: 400;
 	}
 </style>

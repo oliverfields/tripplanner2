@@ -1,10 +1,11 @@
 <template>
 	<div id="workspace">
-		<div id="tabs_pane" ref="tab_pane">
-			<Tabs />
-		</div>
-		<div id="map_pane">
-			<Map />
+			<div id="tabs-pane">
+				<Tabs />
+			</div>
+			<div id="map-pane">
+				<Map />
+			</div>
 		</div>
 	</div>
 </template>
@@ -22,29 +23,11 @@
 		methods: {
 		},
 		computed: {
-		}
+		},
+		mounted() {
+		},
 	}
 </script>
 
 <style>
-	#workspace {
-		margin-top: 50px;
-	}
-	#tabs_pane {
-		padding: 1rem;
-		width: 400px;
-		position: absolute;
-		top: 50px;
-		left: 0px;
-		overflow-x: hidden;
-		overflow-y: visible;
-		height: calc(100% - 50px);
-	}
-	#map_pane {
-		padding: 0;
-		background-color: #DBF4FF;
-		position: absolute;
-		top: 50px;
-		left: 400px;
-	}
 </style>

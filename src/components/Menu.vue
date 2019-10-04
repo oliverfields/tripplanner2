@@ -1,15 +1,18 @@
 <template>
-	<nav id="nav" class="navbar navbar-expand navbar-dark bg-dark">
-		<a class="navbar-brand" href="#"><object id="logo" type="image/svg+xml" data="images/ambulate-logo-bindle.svg"></object> Ambulate</a>
-		<button
-			class="navbar-toggler"
-			style="border: none;"
-			type="button"
-			data-toggle="collapse"
-			data-target="#navbars-site-menu"
-			aria-expanded="false"
-			aria-label="Toggle navigation"
-		>
+	<nav id="nav" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+		<a class="navbar-brand" href="#"><object id="logo" type="image/svg+xml" data="images/ambulate-logo-bindle.svg"></object><span class="app-name d-none d-md-inline-block">Ambulate</span></a>
+
+		<div class="toggle d-sm-block d-md-none">
+			<i
+				v-if="this.$store.state.active_trip"
+				@click="toggle_panes"
+				:class="toogle_panes_icon"
+			/>
+
+		</div>
+
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars-site-menu" aria-controls="navbars-site-menu" aria-expanded="false" aria-label="Toggle navigation">
 			<span><i class="fa fa-bars" /></span>
 		</button>
 
@@ -23,9 +26,8 @@
 						:disabled="trip_saved"
 					>
 						<a
-							class="btn btn-success"
+							class="nav-link"
 							href="#" @click="create_trip"
-							style="margin-top: 3px;"
 					>
 							<i class="fa fa-plus" /> New trip
 						</a>
@@ -46,9 +48,6 @@
 							</click-confirm>
 						</div>
 					</div>
-				</li>
-				<li class="nav-item">
-					<a class="btn btn-secondary" href="#" @click="log_trip">Console log active trip</a>
 				</li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
@@ -80,6 +79,11 @@
 
 	export default {
 		name: 'Menu',
+		data() {
+			return {
+				active_pane: 'tabs-pane'
+			}
+		},
 		beforeCreate: function() {
 			this.$store.dispatch('set_trips')
 		},
@@ -96,8 +100,26 @@
 
 				return true
 			},
+			toogle_panes_icon: function() {
+				if(this.active_pane == 'tabs-pane')
+					return ['fa', 'fa-map-marked-alt']
+
+				return ['fa', 'fa-clipboard-list']
+			},
 		},
 		methods: {
+			toggle_panes: function() {
+				if($('#tabs-pane').css('visibility') == 'visible') {
+					this.active_pane = 'map-pane'
+					$('#tabs-pane').css('visibility', 'hidden')
+					$('#map-pane').css('visibility', 'visible')
+				}
+				else {
+					this.active_pane = 'tabs-pane'
+					$('#tabs-pane').css('visibility', 'visible')
+					$('#map-pane').css('visibility', 'hidden')
+				}
+			},
 			logout: function() {
 				auth.signOut().then(() => {
 					this.$router.replace('login')
@@ -120,33 +142,8 @@
 </script>
 
 <style>
-	#nav {
-		position: absolute;
-		top: 0px;
-		right: 0px;
-		width: 100%;
-		height: 50px; /* NB! This is hardcoded into Workspace component */
-		padding: 0;
-	}
-	.tp-nav-group-title {
-		font-size: 1rem;
-		color: #fff;
-	}
-	.tp-nav-group ul {
-		padding-left: 3rem;
-	}
 	svg.svg-inline--fa {
 		margin: 0 .5rem;
-	}
-	.nav-link {
-		padding: .5rem 1rem ! important;
-		margin: 0 1rem;
-	}
-	#nav .nav-item {
-		margin-left: 2rem;
-	}
-	.dropdown-toggle {
-		margin-top: 4px;
 	}
 	.dropdown-menu {
 		background-color: #343A40 ! important;
@@ -173,18 +170,27 @@
 		height: 28px;
 		margin: 8px 0 0 1rem;
 	}
-	#trip-dropdown {
-		margin-top: 2px ! important;
-	}
 	.profile-pic {
 		border-radius: 50%;
 		height: 30px;
 		width: 30px;
-		margin: 0 1rem 0 0;
+		margin: 0 1rem 0 1rem;
 		display: inline-block;
 	}
 	.logout-link {
 		display: inline-block ! important;
 		margin-right: 0;
+	}
+	.navbar-toggler {
+		border: none ! important;
+		font-size: 1.5rem ! important;
+		color: white ! important;
+	}
+	.app-name {
+		margin: 0 1.5rem 0 1rem;
+	}
+	.toggle i {
+		font-size: 1.5rem;
+		color: white;
 	}
 </style>
