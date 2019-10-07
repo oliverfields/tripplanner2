@@ -8,6 +8,7 @@
 				v-if="this.$store.state.active_trip"
 				@click="toggle_panes"
 				:class="toogle_panes_icon"
+				title="Toggle itinerary/map view"
 			/>
 
 		</div>

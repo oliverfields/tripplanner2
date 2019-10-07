@@ -1,15 +1,19 @@
 <template>
 	<div>
-		<div key="breadcrumb" class="breadcrumb">
+		<div
+			key="breadcrumb"
+			class="breadcrumb"
+			v-if="this.show_day_index != null || this.show_activity_index != null || this.show_route_index != null"
+		>
 			<a
 				href="#"
 				v-if="this.show_day_index != null || this.show_activity_index != null || this.show_route_index != null"
 				@click="show_itinerary()"
-			><i class="fa fa-chevron-left" /> Overview</a> <a
+			><i class="fa fa-chevron-left" />Itinerary</a> <a
 				href="#"
 				v-if="this.show_activity_index != null || this.show_route_index != null"
 				@click="show_day(show_day_index)"
-			><i class="fa fa-chevron-left" /> {{ selected_day_date_pretty }}</a>
+			><i class="fa fa-chevron-left" />{{ selected_day_date_pretty }}</a>
 		</div>
 		<div v-if="this.show_activity_index != null">
 			<ItineraryTabActivityView />
@@ -23,8 +27,38 @@
 		<div v-else>
 			<div class="day" v-for="(day, day_index) in this.$store.state.active_trip.itinerary">
 				<div>
-					<a href="#" @click="show_day(day_index)">{{ day.date_pretty }}, day {{ day.day_number }}</a>
-					<click-confirm button-size="sm" :messages="{ title: 'Delete \'' + day.date_pretty + '\'?'}" v-if="day_index > 0">
+
+
+					<div
+						v-if="day_index == 0"
+					>
+							<Datepicker
+							v-model="start_date"
+							format="D d MMM yyyy"
+							monday-first
+							calendar-button
+							calendar-button-icon="fa fa-calendar"
+							title="Start date"
+						></Datepicker>
+						<a
+							style="margin-left: -1.5rem"
+							href="#"
+							@click="show_day(day_index)"
+						>{{ day.date_pretty }}, day {{ day.day_number }}</a>
+					</div>
+					<div v-else>
+						<a
+							href="#"
+							@click="show_day(day_index)"
+						>
+							{{ day.date_pretty }}, day {{ day.day_number }}
+						</a>
+					</div>
+					<click-confirm
+						button-size="sm"
+						:messages="{ title: 'Delete \'' + day.date_pretty + '\'?'}"
+						v-if="day_index > 0"
+					>
 						<i
 							class="fa fa-times danger text-to-left"
 							@click="delete_day({day_index: day_index})"
@@ -58,7 +92,7 @@
 			</div>
 
 			<div class="col-md-6">
-				<a class="btn btn-primary slim-button" href="#" @click="add_day_and_show()"><i class="fa fa-plus" /> Add day</a>
+				<a class="btn btn-primary slim-button" style="margin: 1rem 0 2rem -1rem;" href="#" @click="add_day_and_show()"><i class="fa fa-plus" /> Add day</a>
 			</div>
 		</div>
 	</div>
@@ -70,6 +104,7 @@
 	import ItineraryTabRouteView from '@/components/ItineraryTabRouteView'
 	import MarkerLink from '@/components/MarkerLink'
 	import RouteLink from '@/components/RouteLink'
+	import Datepicker from 'vuejs-datepicker'
 	
 	export default {
 		name: 'ItineraryTab',
@@ -79,8 +114,17 @@
 			ItineraryTabRouteView,
 			MarkerLink,
 			RouteLink,
+			Datepicker,
 		},
 		computed: {
+			start_date: {
+				get() {
+					return this.$store.state.active_trip.start_date
+				},
+				set(value) {
+					this.$store.dispatch('update_active_trip', { property: 'start_date', value: value })
+				}
+			},
 			show_day_index: {
 				get() {
 					return this.$store.state.active_trip.itinerary_navigation.show_day_index
@@ -152,9 +196,6 @@
 </script>
 
 <style>
-	.day {
-		margin: 1rem 1rem 1.5rem 1rem;
-	}
 	.day>a {
 		display: block;
 	}
@@ -163,6 +204,9 @@
 	}
 	.activity {
 		list-style: disc;
+	}
+	.breadcrumb {
+		margin-top: 0 !important;
 	}
 	.breadcrumb a:nth-child(2) {
 		margin: 0 .5rem 0 1.5rem;
@@ -183,5 +227,14 @@
 	}
 	.day > div > div {
 		display: inline-block;
+	}
+	.vdp-datepicker {
+		padding-right: 0;
+	}
+	.vdp-datepicker input {
+		display: none;
+	}
+	.vdp-datepicker i {
+		color: #007bff;
 	}
 </style>

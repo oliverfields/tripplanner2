@@ -329,7 +329,7 @@
 		cursor: crosshair;
 	}
 	#tabs-pane {
-		overflow-y: auto;
+		overflow-y: scroll;
 		position: absolute;
 		top: 75;
 		left: 0;

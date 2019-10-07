@@ -22,43 +22,34 @@
 					href="#itinerary-tab-content"
 					role="tab"
 					@click="show_itinerary()"
-				>Itinerary</a>
+					title="Itinerary"
+				><i class="fa fa-clipboard-list" /></a>
 			</li>
 			<li class="nav-item">
 				<a 
 					class="nav-link"
 					data-toggle="tab"
-					href="#trip-tab-content"
+					href="#trip-settings-tab-content"
 					role="tab"
-				>Trip</a>
-			</li>
-			<li class="nav-item">
-				<a
-					class="nav-link"
-					data-toggle="tab"
-					href="#map-tab-content"
-					role="tab"
-				>Map</a>
+					title="Trip settings"
+				><i class="fa fa-cog" /></a>
 			</li>
 		</ul>
 		<div class="tab-content" id="trip-tabs-content">
 			<div class="tab-pane show active" id="itinerary-tab-content" role="tabpanel" aria-labelledby="itinerary-tab-content"><ItineraryTab /></div>
-			<div class="tab-pane" id="trip-tab-content" role="tabpanel" aria-labelledby="trip-tab-content"><TripTab /></div>
-			<div class="tab-pane" id="map-tab-content" role="tabpanel" aria-labelledby="map-tab-content"><MapTab /></div>
+			<div class="tab-pane" id="trip-settings-tab-content" role="tabpanel" aria-labelledby="trip-settings-tab-content"><TripSettingsTab /></div>
 		</div>
 	</div>
 </template>
 
 <script>
-	import TripTab from '@/components/TripTab'
-	import MapTab from '@/components/MapTab'
+	import TripSettingsTab from '@/components/TripSettingsTab'
 	import ItineraryTab from '@/components/ItineraryTab'
 
 	export default {
 		name: 'Tabs',
 		components: {
-			TripTab,
-			MapTab,
+			TripSettingsTab,
 			ItineraryTab
 		},
 		methods: {
@@ -87,16 +78,21 @@
 </script>
 
 <style>
-	#trip-tabs-content {
-	margin-top: 1rem;
-	}
-	.trip_save_button {
-		margin-bottom: 1.5rem;
-	}
 	#trip-tabs a.active {
-		border-color: #6C757D #6C757D #ffffff !important;
+		display: none
+	}
+	#trip-tabs a {
+		padding-right: 0 !important;
+	}
+	#trip-tabs a:hover {
+		border: 1px solid white !important;
 	}
 	#trip-tabs {
-		border-bottom: 1px solid #6C757D !important;
+		border: none !important;
+		display: inline-block;
+		float: right;
+	}
+	.tab-content {
+		padding: 2rem 0;
 	}
 </style>

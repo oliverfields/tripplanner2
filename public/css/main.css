@@ -36,6 +36,9 @@ i.fa {
 .text-to-left {
 	margin-left: .5rem ! important;
 }
+.text-to-right {
+	margin-right: .5rem ! important;
+}
 .click-confirm {
 z-index: 9000 ! important;
 }
