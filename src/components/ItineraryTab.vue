@@ -32,6 +32,10 @@
 					<div
 						v-if="day_index == 0"
 					>
+						<a
+							href="#"
+							@click="show_day(day_index)"
+						>{{ day.date_pretty }}, day {{ day.day_number }}</a>
 							<Datepicker
 							v-model="start_date"
 							format="D d MMM yyyy"
@@ -39,12 +43,8 @@
 							calendar-button
 							calendar-button-icon="fa fa-calendar"
 							title="Start date"
+							class="text-to-left"
 						></Datepicker>
-						<a
-							style="margin-left: -1.5rem"
-							href="#"
-							@click="show_day(day_index)"
-						>{{ day.date_pretty }}, day {{ day.day_number }}</a>
 					</div>
 					<div v-else>
 						<a
