@@ -36,7 +36,7 @@
 							href="#"
 							@click="show_day(day_index)"
 						>{{ day.date_pretty }}, day {{ day.day_number }}</a>
-							<Datepicker
+						<Datepicker
 							v-model="start_date"
 							format="D d MMM yyyy"
 							monday-first
@@ -230,11 +230,16 @@
 	}
 	.vdp-datepicker {
 		padding-right: 0;
+		width: 0;
+		display: inline-block;
 	}
 	.vdp-datepicker input {
 		display: none;
 	}
 	.vdp-datepicker i {
 		color: #007bff;
+	}
+	.vdp-datepicker__calendar {
+		margin-left: -10rem;
 	}
 </style>

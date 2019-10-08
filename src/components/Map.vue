@@ -1,49 +1,53 @@
 <template>
-	<v-map
-		id="map"
-		ref="map"
-		:style="{'width': this.map_dimensions.width + 'px', 'height': this.map_dimensions.height + 'px'}"
-		:zoom="this.map_zoom"
-		:center="this.map_center"
-		@update:zoom="zoom_updated"
-		@update:center="center_updated"
-	>
-		<v-control-layer></v-control-layer>
-
-		<v-tile-layer
-			:url="url"
-			:attribution="this.attribution"
-		></v-tile-layer>
-
-		<v-layer-group ref="route_layer" />
-
-		<v-layer-group
-			v-for="(day,day_index) in this.$store.state.active_trip.itinerary"
-			layer-type="overlay"
-			v-bind:name="day.date_pretty"
-			:ref="day.tmp_id"
+	<div>
+		<v-map
+			id="map"
+			ref="map"
+			:style="{'width': this.map_dimensions.width + 'px', 'height': this.map_dimensions.height + 'px'}"
+			:zoom="this.map_zoom"
+			:center="this.map_center"
+			@update:zoom="zoom_updated"
+			@update:center="center_updated"
+			@click="add_menu"
 		>
-			<v-marker
-				v-for="activity in day_activities_with_markers(day_index)"
-				:lat-lng="latlng_array(activity)"
-				:icon="marker_icon(activity)"
-				@click="show_activity_tab(activity)"
+			<v-control-layer></v-control-layer>
+
+			<v-tile-layer
+				:url="url"
+				:attribution="this.attribution"
+			></v-tile-layer>
+
+			<v-layer-group ref="route_layer" />
+
+			<v-layer-group
+				v-for="(day,day_index) in this.$store.state.active_trip.itinerary"
+				layer-type="overlay"
+				v-bind:name="day.date_pretty"
+				:ref="day.tmp_id"
 			>
-				<v-tooltip>{{ activity.description }}, {{ day.date_pretty }}</v-tooltip>
-			</v-marker>
+				<v-marker
+					v-for="activity in day_activities_with_markers(day_index)"
+					:lat-lng="latlng_array(activity)"
+					:icon="marker_icon(activity)"
+					@click="show_activity_tab(activity)"
+				>
+					<v-tooltip>{{ activity.description }}, {{ day.date_pretty }}</v-tooltip>
+				</v-marker>
 
-			<v-polyline
-				v-for="(route, route_index) in day_routes(day_index)"
-				:lat-lngs="route.points"
-				:color="route.color_hex"
-				:visible="route.visible"
-				@click="show_route(day_index, route_index)"
-			 >
-				<v-tooltip>{{ route.name }}, {{ day.date_pretty }}</v-tooltip>
-			</v-polyline>
-		</v-layer-group>
+				<v-polyline
+					v-for="(route, route_index) in day_routes(day_index)"
+					:lat-lngs="route.points"
+					:color="route.color_hex"
+					:visible="route.visible"
+					@click="show_route(day_index, route_index)"
+				 >
+					<v-tooltip>{{ route.name }}, {{ day.date_pretty }}</v-tooltip>
+				</v-polyline>
+			</v-layer-group>
 
-	</v-map>
+		</v-map>
+		<div id="map_add_form">Hello</div>
+	</div>
 </template>
 
 <script>
@@ -217,6 +221,18 @@
 			latlng_array(activity) {
 				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
 			},
+			add_menu(event) {
+				let latlng = event.latlng
+				let click_x = event.originalEvent.clientX
+				let click_y = event.originalEvent.clientY
+
+				console.log('clicked position: ' + click_x +'x'+ click_y)
+
+				$('#map_add_form').css('top', click_y)
+				$('#map_add_form').css('left', click_x)
+				$('#map_add_form').css('display', 'block')
+				//this.markers.push(event.latlng);
+			},
 		},
 		computed: {
 			map_center() {
@@ -342,5 +358,13 @@
 		position: absolute;
 		top: 75;
 		left: 400;
+	}
+	#map_add_form {
+		display: none;
+		position: fixed;
+		z-index: 9999;
+		width: 100px;
+		height: 100px;
+		background-color: white;
 	}
 </style>

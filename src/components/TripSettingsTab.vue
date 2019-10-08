@@ -11,6 +11,21 @@
 			<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" />Name can only use letters and numbers</div>
 		</div>
 
+<!--
+		<div class="form-group">
+			<label for="trip_start_date">Start date</label>
+			<Datepicker
+				v-model="start_date"
+				format="D d MMM yyyy"
+				monday-first
+				calendar-button
+				calendar-button-icon="fa fa-calendar"
+				title="Start date"
+				style="clear: both; display: block;"
+			></Datepicker>
+		</div>
+-->
+
 		<div class="form-group">
 			<label for="trip_name">Map</label>
 			<a
@@ -83,10 +98,12 @@
 </template>
 
 <script>
+	import Datepicker from 'vuejs-datepicker'
 
 	export default {
 		name: 'TripSettingsTab',
 		components: {
+			Datepicker
 		},
 		data() {
 			return {
@@ -189,19 +206,5 @@
 	}
 	.form-group-danger h1{
 		font-size: 2rem;
-	}
-	.date-input input {
-		border: none;
-		background-color: none;
-		color: #228CFF;
-	}
-	.datepicker-input, .datepicker-input input {
-		cursor: pointer;
-	}
-	.datepicker-input input {
-	}
-	.vdp-datepicker {
-		display: inline-block;
-		min-width: 50px;
 	}
 </style>
