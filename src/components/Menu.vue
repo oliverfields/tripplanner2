@@ -50,6 +50,12 @@
 						</div>
 					</div>
 				</li>
+				<li class="nav-item">
+					<a
+						class="nav-link"
+						href="#" @click="console_log_active_trip"
+					>Console log active trip</a>
+				</li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item">
@@ -109,6 +115,9 @@
 			},
 		},
 		methods: {
+			console_log_active_trip() {
+				console.log(this.$store.state.active_trip)
+			},
 			toggle_panes: function() {
 				if($('#tabs-pane').css('visibility') == 'visible') {
 					this.active_pane = 'map-pane'

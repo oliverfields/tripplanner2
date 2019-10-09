@@ -414,7 +414,12 @@ export const store = new Vuex.Store({
 			let day = payload.day
 			context.commit('add_activity', day)
 			let activity_index = day.activities.length - 1 // New activity is appended to end, so index = length - 1
+
 			context.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})
+
+			if (payload.marker_coordinates) {
+				context.commit('update_active_activity', { property: 'marker_coordinates', value: payload.marker_coordinates })
+			}
 		},
 		add_route_and_show: (context, payload) => {
 			let day_index = payload.day_index

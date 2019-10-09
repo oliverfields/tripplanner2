@@ -8,7 +8,7 @@
 			:center="this.map_center"
 			@update:zoom="zoom_updated"
 			@update:center="center_updated"
-			@click="add_menu"
+			@click="toggle_map_menu"
 		>
 			<v-control-layer></v-control-layer>
 
@@ -46,7 +46,38 @@
 			</v-layer-group>
 
 		</v-map>
-		<div id="map_add_form">Hello</div>
+
+		<div id="map_menu">
+			<div class="content">
+				<i class="fa fa-times map_menu_close_icon" title="Close" @click="toggle_map_menu" />
+				<select
+					id="activity_day"
+					class="form-control"
+				>
+					<option
+						v-for="(activity_day, activity_day_index) in this.$store.state.active_trip.itinerary"
+						:value="activity_day.tmp_id"
+						:selected="activity_day_index == 0"
+					>{{ activity_day.date_pretty }}</option>
+				</select>
+				<a
+					href="#"
+					@click="add_activity_marker()"
+					class="btn btn-primary"
+				>
+					<i class="fa fa-map-marker" title="Add marker" /> Add marker
+				</a>
+				<a
+					href="#"
+					@click="add_route()"
+					class="btn btn-primary"
+				>
+					<i class="fa fa-route" title="Draw route" /> Draw route
+				</a>
+			</div>
+			<div class="arrow-down"></div>
+		</div>
+
 	</div>
 </template>
 
@@ -100,6 +131,12 @@
 				},
 				plotter: null,
 				routes_map_polylines: {},
+				map_menu: {
+					coordinates: {
+						lat: null,
+						lng: null
+					}
+				},
 			}
 		},
 		methods: {
@@ -221,17 +258,76 @@
 			latlng_array(activity) {
 				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
 			},
-			add_menu(event) {
-				let latlng = event.latlng
-				let click_x = event.originalEvent.clientX
-				let click_y = event.originalEvent.clientY
+			toggle_map_menu(event) {
+				let map_menu = $('#map_menu')
+				let map = this.$refs.map.mapObject
 
-				console.log('clicked position: ' + click_x +'x'+ click_y)
+				if(map_menu.css('display') == 'none') {
+					// Disable map moving
+					map.dragging.disable()
+					map.touchZoom.disable()
+					map.doubleClickZoom.disable()
+					map.scrollWheelZoom.disable()
+					map.boxZoom.disable()
+					map.keyboard.disable()
+					if (map.tap) map.tap.disable()
+					document.getElementById('map').style.cursor='default'
 
-				$('#map_add_form').css('top', click_y)
-				$('#map_add_form').css('left', click_x)
-				$('#map_add_form').css('display', 'block')
+					// Set clicked latlng
+					let latlng = event.latlng
+					this.map_menu.coordinates = latlng
+
+					// Show menu
+					let click_x = event.originalEvent.clientX
+					let click_y = event.originalEvent.clientY
+					let menu_height = map_menu.outerHeight()
+					let menu_width = map_menu.outerWidth()
+
+					let top_position = click_y - menu_height;
+					let left_position = click_x - (menu_width / 2);
+
+					map_menu.css('top', top_position)
+					map_menu.css('left', left_position)
+					map_menu.css('display', 'block')
+				}
+				else {
+					// Enable map moving
+					map.dragging.enable()
+					map.touchZoom.enable()
+					map.doubleClickZoom.enable()
+					map.scrollWheelZoom.enable()
+					map.boxZoom.enable()
+					map.keyboard.enable()
+					if (map.tap) map.tap.enable()
+					document.getElementById('map').style.cursor='grab'
+
+					// Hide menu
+					map_menu.css('display', 'none')
+				}
 				//this.markers.push(event.latlng);
+			},
+			add_activity_marker() {
+				let day_tmp_id = $('#activity_day').children("option:selected").val()
+				let day = null
+				let itinerary = this.$store.state.active_trip.itinerary
+				let day_index = null
+
+				// get day
+				for (let d = 0; d < itinerary.length; d++) {
+					if(itinerary[d].tmp_id == day_tmp_id) {
+						day = itinerary[d]
+						day_index = d
+					}
+				}
+
+				let payload = {
+					day: day,
+					day_index: day_index,
+					marker_coordinates: { lat: Number(this.map_menu.coordinates.lat), lng: Number(this.map_menu.coordinates.lng) },
+				}
+
+				this.$store.dispatch('add_activity_and_show', payload)
+				this.toggle_map_menu()
 			},
 		},
 		computed: {
@@ -359,12 +455,34 @@
 		top: 75;
 		left: 400;
 	}
-	#map_add_form {
+	#map_menu {
 		display: none;
 		position: fixed;
 		z-index: 9999;
-		width: 100px;
-		height: 100px;
+		width: 140px;
+	}
+	#map_menu .content {
 		background-color: white;
+		padding: .4rem;
+		border-radius: 3px;
+	}
+	.arrow-down {
+		margin-left: 61.35px;
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 17.3px 10px 0 10px;
+		border-color: #ffffff transparent transparent transparent;
+	}
+	#map_menu .content a, #map_menu .content select {
+		width: 100%;
+		margin: .2rem 0;
+		font-size: .8rem !important;
+		padding: .2rem;
+	}
+	.map_menu_close_icon {
+		color: #999;
+		float: right;
+		margin: -.3rem 0 .2rem 0 !important;
 	}
 </style>
