@@ -52,12 +52,13 @@
 				<i class="fa fa-times map_menu_close_icon" title="Close" @click="toggle_map_menu" />
 				<select
 					id="activity_day"
+					v-model="selected_day_tmp_id"
 					class="form-control"
 				>
 					<option
 						v-for="(activity_day, activity_day_index) in this.$store.state.active_trip.itinerary"
 						:value="activity_day.tmp_id"
-						:selected="activity_day_index == 0"
+						 :selected="activity_day_index === 0"
 					>{{ activity_day.date_pretty }}</option>
 				</select>
 				<a
@@ -135,8 +136,9 @@
 					coordinates: {
 						lat: null,
 						lng: null
-					}
+					},
 				},
+				selected_day_tmp_id: this.$store.state.active_trip.itinerary.length ? this.$store.state.active_trip.itinerary[0].tmp_id : '', // This is needed to set selectbox default select first item.. GULP!
 			}
 		},
 		methods: {
@@ -307,10 +309,11 @@
 				//this.markers.push(event.latlng);
 			},
 			add_activity_marker() {
-				let day_tmp_id = $('#activity_day').children("option:selected").val()
+				let day_tmp_id = this.selected_day_tmp_id
 				let day = null
 				let itinerary = this.$store.state.active_trip.itinerary
 				let day_index = null
+
 
 				// get day
 				for (let d = 0; d < itinerary.length; d++) {

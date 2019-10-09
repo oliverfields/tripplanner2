@@ -418,7 +418,7 @@ export const store = new Vuex.Store({
 			context.dispatch('show_activity', {day_index: day_index, activity_index: activity_index})
 
 			if (payload.marker_coordinates) {
-				context.commit('update_active_activity', { property: 'marker_coordinates', value: payload.marker_coordinates })
+				context.dispatch('update_active_activity', { property: 'marker_coordinates', value: payload.marker_coordinates })
 			}
 		},
 		add_route_and_show: (context, payload) => {
@@ -484,6 +484,9 @@ export const store = new Vuex.Store({
 			context.commit('delete_day', payload)
 			context.commit('set_itinerary_dates')
 			context.commit('update_active_trip', { property: 'dirty', value: true })
+		},
+		update_active_activity: (context, payload) => {
+			context.commit('update_active_activity', payload)
 		},
 	},
 	mutations: {
