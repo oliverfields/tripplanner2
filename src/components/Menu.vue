@@ -1,7 +1,9 @@
 <template>
 	<nav id="nav" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-		<a class="navbar-brand" href="#"><object id="logo" type="image/svg+xml" data="images/ambulate-logo-bindle.svg"></object><span class="app-name d-none d-md-inline-block">Ambulate</span></a>
+		<a class="navbar-brand d-none d-md-inline-block" href="#">
+			<object id="logo" type="image/svg+xml" data="images/ambulate-logo-bindle.svg"></object><span class="app-name">Ambulate</span>
+		</a>
 
 		<div class="toggle d-sm-block d-md-none">
 			<i
@@ -17,9 +19,13 @@
 			<span><i class="fa fa-bars" /></span>
 		</button>
 
-		<div class="collapse navbar-collapse navbar-dark bg-dark" id="navbars-site-menu">
+		<div class="nav-collapse collapse navbar-collapse navbar-dark bg-dark" id="navbars-site-menu">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item">
+				<li
+					class="nav-item"
+					data-toggle="collapse"
+					data-target=".navbar-collapse.show"
+				>
 					<click-confirm
 						button-size="sm"
 						:messages="{ title: 'Trip has unsaved changes, discard them and create new trip?'}"
@@ -34,8 +40,21 @@
 						</a>
 					</click-confirm>
 				</li>
-				<li v-if="this.$store.getters.get_trips && this.$store.getters.get_trips.length > 0" class="nav-item dropdown" style="margin-left: 0;">
-					<a class="nav-link dropdown-toggle" href="#" id="trip-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select trip</a>
+				<li
+					v-if="this.$store.getters.get_trips && this.$store.getters.get_trips.length > 0"
+					class="nav-item dropdown"
+					style="margin-left: 0;"
+					data-toggle="collapse"
+					data-target=".navbar-collapse.show"
+				>
+					<a
+						class="nav-link dropdown-toggle"
+						href="#"
+						id="trip-dropdown"
+						data-toggle="dropdown"
+						aria-haspopup="true"
+						aria-expanded="false"
+					>Select trip</a>
 
 					<div class="dropdown-menu" aria-labelledby="trip-dropdown">
 						<div v-for="trip in this.$store.getters.get_trips" :key="trip.id">
@@ -45,7 +64,11 @@
 								placement="bottom"
 								:disabled="trip_saved"
 							>
-								<a class="dropdown-item" href="#" @click="set_active_trip(trip.id)">{{ trip.name }}</a>
+								<a
+									class="dropdown-item"
+									href="#"
+									@click="set_active_trip(trip.id)"
+								>{{ trip.name }}</a>
 							</click-confirm>
 						</div>
 					</div>
@@ -147,7 +170,7 @@
 				console.log('Photo: ' + auth.currentUser.photoURL)
 				console.log(this.$store.state.active_trip)
 			}
-		}
+		},
 	}
 </script>
 

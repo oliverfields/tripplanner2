@@ -77,6 +77,7 @@
 				</a>
 			</div>
 			<div class="arrow-down"></div>
+			<div class="map-menu-shadow"></div>
 		</div>
 
 	</div>
@@ -487,5 +488,11 @@
 		color: #999;
 		float: right;
 		margin: -.3rem 0 .2rem 0 !important;
+	}
+	.map-menu-shadow {
+		background-image: url('../../public/images/map-menu-shadow.png');
+		background-repeat: no-repeat;
+		width: 277px;
+		height: 141px;
 	}
 </style>
