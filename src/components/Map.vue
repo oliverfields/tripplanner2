@@ -43,7 +43,7 @@
 					@click="show_route(day_index, route_index)"
 				 >
 
-					<v-tooltip>{{ route.name }}, {{ day.date_pretty }}</v-tooltip>
+					<v-tooltip>{{ route.name }}, {{route.distance_km }}km, {{ day.date_pretty }}</v-tooltip>
 				</v-polyline>
 			</v-layer-group>
 
