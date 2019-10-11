@@ -10,6 +10,7 @@
 			@update:center="center_updated"
 			@click="toggle_map_menu"
 		>
+
 			<v-control-layer></v-control-layer>
 
 			<v-tile-layer
@@ -41,11 +42,26 @@
 					:visible="route.visible"
 					@click="show_route(day_index, route_index)"
 				 >
+
 					<v-tooltip>{{ route.name }}, {{ day.date_pretty }}</v-tooltip>
 				</v-polyline>
 			</v-layer-group>
 
 		</v-map>
+
+		<div
+			id="route_menu"
+			v-if="this.$store.state.map.active_route != null"
+		>
+			<span v-if="plotter_distance > 0" style="margin-right: 1rem;">{{ plotter_distance }}km</span>
+			<a
+				href="#"
+				@click="toggle_active_route(null)"
+				class="btn btn-primary active"
+			>
+				<i class="fa fa-route" title="Stop editing route" />Stop editing
+			</a>
+		</div>
 
 		<div id="map_menu">
 			<div class="content">
@@ -143,6 +159,9 @@
 			}
 		},
 		methods: {
+			toggle_active_route(route) {
+				this.$store.dispatch('replace_active_route', route)
+			},
 			show_route(day_index, route_index){
 				this.$store.dispatch('show_route', {day_index: day_index, route_index: route_index})
 				this.$store.commit('update_itinerary_navigation', {property: 'show_activity_index', value: null})
@@ -262,6 +281,9 @@
 				return [ activity.marker_coordinates.lat, activity.marker_coordinates.lng ]
 			},
 			toggle_map_menu(event) {
+				// If editing a route then don't show popup onclick
+				if(this.$store.state.map.active_route != null) return true
+
 				let map_menu = $('#map_menu')
 				let map = this.$refs.map.mapObject
 
@@ -315,7 +337,6 @@
 				let itinerary = this.$store.state.active_trip.itinerary
 				let day_index = null
 
-
 				// get day
 				for (let d = 0; d < itinerary.length; d++) {
 					if(itinerary[d].tmp_id == day_tmp_id) {
@@ -333,8 +354,48 @@
 				this.$store.dispatch('add_activity_and_show', payload)
 				this.toggle_map_menu()
 			},
+			add_route() {
+				let selected_day = this.get_map_menu_selected_day()
+				this.$store.dispatch('add_route_and_show', selected_day)
+
+				this.toggle_map_menu()
+
+				let route = selected_day.day.routes[selected_day.day.routes.length - 1] // Get last added route
+				this.$store.dispatch('replace_active_route', route)
+			},
+			get_map_menu_selected_day() {
+				let day_tmp_id = this.selected_day_tmp_id
+				let day = null
+				let itinerary = this.$store.state.active_trip.itinerary
+				let day_index = null
+
+				// get day
+				for (let d = 0; d < itinerary.length; d++) {
+					if(itinerary[d].tmp_id == day_tmp_id) {
+						day = itinerary[d]
+						day_index = d
+					}
+				}
+
+				return {day_index: day_index, day: day}
+			},
+			calculate_route_length() {
+				console.log('calculating length')
+			},
 		},
 		computed: {
+			plotter_distance() {
+				if (this.plotter == null) return 0
+
+				// Set distances, metric, ofcourse;)
+				let distance_m = this.tp_points_distance_m(this.plotter._latlngs)
+				let distance_km = Number(parseFloat(Math.round(distance_m) / 1000).toFixed(1))
+
+				this.$store.commit('update_active_route', { property: 'distance_m', value: distance_m })
+				this.$store.commit('update_active_route', { property: 'distance_km', value: distance_km })
+
+				return distance_km
+			},
 			map_center() {
 				return [this.$store.state.map.center.lat, this.$store.state.map.center.lng]
 			},
@@ -401,13 +462,6 @@
 				// Start plotting
 				// ----------------------------------------
 				else {
-/*
-					// Remove route from map if already drawn
-					if(ar.tmp_id in this.routes_map_polylines) {
-						this.$refs.map.mapObject.removeLayer(this.routes_map_polylines[ar.tmp_id])
-						delete this.routes_map_polylines[ar.tmp_id]
-					}
-*/
 					// Hide route ployline
 					this.$store.commit('update_active_route', { property: 'visible', value: false })
 					window.L.DomUtil.addClass(this.$refs.map.mapObject._container,'crosshair-cursor-enabled');
@@ -438,7 +492,7 @@
 		margin-top: 1rem;
 	}
 	.leaflet-container.crosshair-cursor-enabled {
-		cursor: crosshair;
+		cursor: crosshair !important;
 	}
 	.leaflet-marker-icon.leaflet-interactive {
 		border-radius: 50%;
@@ -469,6 +523,8 @@
 		background-color: white;
 		padding: .4rem;
 		border-radius: 3px;
+		z-index: 2;
+		position: relative;
 	}
 	.arrow-down {
 		margin-left: 61.35px;
@@ -477,6 +533,8 @@
 		border-style: solid;
 		border-width: 17.3px 10px 0 10px;
 		border-color: #ffffff transparent transparent transparent;
+		z-index: 2;
+		position: relative;
 	}
 	#map_menu .content a, #map_menu .content select {
 		width: 100%;
@@ -492,7 +550,28 @@
 	.map-menu-shadow {
 		background-image: url('../../public/images/map-menu-shadow.png');
 		background-repeat: no-repeat;
-		width: 277px;
-		height: 141px;
+		width: 150px;
+		height: 81px;
+		margin-top: -76px;
+		margin-left: 9px;
+		z-index: 0;
+		position: relative;
+	}
+	#route_menu {
+		display: inline-block;
+		position: absolute;
+		bottom: 1rem;
+		left: 0;
+		right: 0;
+		width: 300px;
+		margin-left: auto;
+		margin-right: auto;
+		z-index: 9999;
+		border: 2px solid rgba(0,0,0,0.2);
+		background-clip: padding-box;
+		background-color: white;
+		padding: .5rem;
+		border-radius: 4px;
+		text-align: center;
 	}
 </style>

@@ -22,16 +22,19 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								<label for="activity_coordinates">Marker coordinates</label>
-								<input
-									:class="activity_coordinates_class"
-									v-model="activity_coordinates"
-								/>
-								<small id="coordinates-help" class="form-text text-muted">Latitude, Longitude</small>
-								<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> DD coordinates, e.g. xx.xxxx,yy.yyyy</div>
-							</div>
-							<div class="form-group">
-								<a class="btn btn-primary" href="#" @click="use_current_map_center"><i class="fa fa-map-marked-alt" /> Use current map center</a>
+								<label for="activity_day">Day</label>
+								<select
+									id="activity_day"
+									class="form-control"
+									@change="move_activity_to_day(activity, activity_index, day)"
+									:ref="'move_activity_day_' + activity.tmp_id"
+								>
+									<option
+										v-for="activity_day in itinerary_days()"
+										:value="activity_day.tmp_id"
+										:selected="activity_day.tmp_id == day.tmp_id"
+									>{{ activity_day.date_pretty }}</option>
+								</select>
 							</div>
 						</div>
 					</div>
@@ -102,22 +105,20 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								<label for="activity_day">Day</label>
-								<select
-									id="activity_day"
-									class="form-control"
-									@change="move_activity_to_day(activity, activity_index, day)"
-									:ref="'move_activity_day_' + activity.tmp_id"
-								>
-									<option
-										v-for="activity_day in itinerary_days()"
-										:value="activity_day.tmp_id"
-										:selected="activity_day.tmp_id == day.tmp_id"
-									>{{ activity_day.date_pretty }}</option>
-								</select>
+								<label for="activity_coordinates">Marker coordinates</label>
+								<input
+									:class="activity_coordinates_class"
+									v-model="activity_coordinates"
+								/>
+								<small id="coordinates-help" class="form-text text-muted">Latitude, Longitude</small>
+								<div class="invalid-feedback"><i class="fa fa-exclamation-triangle" /> DD coordinates, e.g. xx.xxxx,yy.yyyy</div>
+							</div>
+							<div class="form-group">
+								<a class="btn btn-primary" href="#" @click="use_current_map_center"><i class="fa fa-map-marked-alt" /> Use current map center</a>
 							</div>
 						</div>
 					</div>
+
 
 				</div>
 			</div>

@@ -265,7 +265,6 @@ export const store = new Vuex.Store({
 					//console.log('route is already active, doing nothing')
 				}
 				else {
-					context.commit('save_map_active_route')
 					context.commit('set_map_active_route', route)
 				}
 			}
@@ -443,12 +442,14 @@ export const store = new Vuex.Store({
 			context.commit('replace_route_points', payload)
 			context.commit('update_active_trip', { property: 'dirty', value: true })
 
+/*
 			// Set distances, metric, ofcourse;)
 			let distance_m = mixin.methods.tp_points_distance_m(payload.points)
 			let distance_km = Number(parseFloat(Math.round(distance_m) / 1000).toFixed(1))
 
 			context.commit('update_active_route', { property: 'distance_m', value: distance_m })
 			context.commit('update_active_route', { property: 'distance_km', value: distance_km })
+*/
 
 			// Set polyline bounds
 			let bounds = L.latLngBounds(payload.points)
@@ -506,9 +507,6 @@ export const store = new Vuex.Store({
 		},
 		replace_route_points: (state, payload) => {
 			payload.route.points = payload.points
-		},
-		save_map_active_route: (state) => {
-			console.log('Need to saving active route now')
 		},
 		set_map_active_route: (state, payload) => {
 			state.map.active_route = payload

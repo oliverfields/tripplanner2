@@ -8,6 +8,7 @@ L.Polyline.plotter = L.Polyline.extend({
 		color: '#f00',
 		readOnly: false,
 	},
+	lineMarkers: function() { return this._lineMarkers },
 	initialize: function (latlngs, options){
 		this._setExistingLatLngs(latlngs)
 		L.Polyline.prototype.initialize.call(this, [], options)
