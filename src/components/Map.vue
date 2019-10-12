@@ -35,16 +35,22 @@
 					<v-tooltip>{{ activity.description }}, {{ day.date_pretty }}</v-tooltip>
 				</v-marker>
 
+<!--
+					draggable
+					:lat-lng.sync="route.sync_marker_coordinates"
+-->
+
 				<v-polyline
 					v-for="(route, route_index) in day_routes(day_index)"
 					:lat-lngs="route.points"
 					:color="route.color_hex"
 					:visible="route.visible"
-					@click="show_route(day_index, route_index)"
+					@click="edit_route(route.tmp_id)"
 				 >
-
 					<v-tooltip>{{ route.name }}, {{route.distance_km }}km, {{ day.date_pretty }}</v-tooltip>
+					<v-popup>Hello</v-popup>
 				</v-polyline>
+
 			</v-layer-group>
 
 		</v-map>
@@ -159,6 +165,21 @@
 			}
 		},
 		methods: {
+			edit_route(route_tmp_id) {
+				console.log('Edit route: ' + route_tmp_id)
+				let itinerary = this.$store.state.active_trip.itinerary
+				for(let d = 0; d < itinerary.length; d++) {
+					let day = itinerary[d]
+					for (let r = 0; r < day.routes.length; r++) {
+						if(day.routes[r].tmp_id == route_tmp_id) {
+							let route = day.routes[r]
+							this.show_route(d, r)
+							this.toggle_active_route(route)
+							break
+						}
+					}
+				}
+			},
 			toggle_active_route(route) {
 				this.$store.dispatch('replace_active_route', route)
 			},
@@ -384,6 +405,12 @@
 			},
 		},
 		computed: {
+			route_has_many_points:function(){
+				if (this.route.points.length > 50)
+					return true
+
+				return false
+			},
 			plotter_distance() {
 				if (this.plotter == null) return 0
 
