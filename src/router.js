@@ -22,10 +22,7 @@ const router = new Router({
     {
       path: '/',
       name: 'landing',
-      component: Landing,
-      meta: {
-        requiresAuth: false
-      }
+      component: Landing
     },
     {
       path: '/home',
