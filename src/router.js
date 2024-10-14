@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import { auth } from '@/main'
 
+import Landing from '@/views/Landing.vue'
 import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import SignUp from '@/views/SignUp.vue'
@@ -14,11 +15,15 @@ const router = new Router({
   routes: [
     {
       path: '*',
-      redirect: '/login'
+      redirect: '/landing'
     },
     {
       path: '/',
-      redirect: '/login'
+      name: 'landing',
+      component: Landing,
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/home',
