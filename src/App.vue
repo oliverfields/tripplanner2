@@ -18,6 +18,12 @@
 			Loading
 		},
 	}
+
+watch: {
+    '$route' (to, from) {
+      console.log('Route changed from ' + from.path + ' to ' + to.path); 
+    }
+}
 </script>
 
 <style>
