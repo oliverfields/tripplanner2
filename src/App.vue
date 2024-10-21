@@ -1,7 +1,7 @@
 <template>
 	<div id="app">
 		<loading :active.sync="this.$store.state.is_loading" :can-cancel="false"></loading>
-		<router-view/>
+		<router-view></router-view>
 	</div>
 </template>
 
@@ -18,12 +18,6 @@
 			Loading
 		},
 	}
-
-watch: {
-    '$route' (to, from) {
-      console.log('Route changed from ' + from.path + ' to ' + to.path); 
-    }
-}
 </script>
 
 <style>

@@ -1,80 +1,63 @@
 <template>
-	<div class="login">
-		<h1>Welcome</h1>
-	</div>
+  <div class="landing bg-dark">
+    <header class="navbar">
+      <a class="logo-header-link" href="#">
+        <object id="logo" type="image/svg+xml" data="images/ambulate-logo-bindle.svg"></object><span class="app-name">Ambulate - detailed trip planning</span>
+      </a>
+      <ul class="nav-links">
+        <li>
+          <a href="/login" class="btn btn-success">Get started</a>
+        </li>
+        <li>
+          <a href="/login" class="btn">Sign in</a>
+        </li>
+      </ul>
+    </header>
+    <article>
+      <img class="showcase" src="images/showcase.gif" alt="Ambulate showcase slides" />
+    </article>
+    <footer>
+      ambulate.app &copy; 2019 :: 
+      <a href="mailto:hello@ambulate.app">Support</a>
+    </footer>
+  </div>
 </template>
 
 <script>
-import firebase from 'firebase'
-import { auth } from '@/main'
-
-export default {
-	name: 'login',
-	data() {
-		return {
-			email: '',
-			password: ''
-		};
-	},
-	methods: {
-		login: function() {
-			auth.signInWithEmailAndPassword(this.email, this.password).then(
-				(user) => {
-					this.$router.replace('home')
-				},
-				(err) => {
-					alert('Nope.. ' + err.message)
-				}
-			);
-		},
-		googleLogin() {
-			const provider = new firebase.auth.GoogleAuthProvider();
-			auth.signInWithPopup(provider).then((result) => {
-				this.$router.replace('home');
-			}).catch((err) => {
-				alert('Nope.. ' + err.message)
-
-			});
-		}
-	}
-}
 </script>
 
 <style scoped>
-.login {
-margin-top: 40px;
+header {
+margin-bottom: 1em;
 }
-input {
-margin: 10px 0;
-width: 20%;
-padding: 15px;
+.logo-header-link {
+color: white;
+font-size: 2em;
 }
-button {
-margin-top: 20px;
-widht: 10%;
-cursor: pointer;
+article {
+text-align: center;
 }
-p {
-margin-top: 40px;
-font-size: 13px;
+footer {
+color: white;
+text-align: center;
+margin: 1em 0 2em 0;
+padding: 1em 0 1em 0;
 }
-p a {
-text-decoration: underline;
-cursor: pointer;
+footer a {
+color: white;
 }
-.social-button {
-width: 75px;
-background: white;
-padding: 10px;
-border-radius: 100%;
-outline: 0;
-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2);
-border: 0;
+.nav-links {
+margin-bottom: 0;
 }
-.social-button:active {
-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
+.nav-links li {
+list-style-type: none;
+display: inline-block;
+float: right;
 }
-.social-button img {
-width: 100%;
+.btn {
+color: white;
+}
+.showcase {
+border: solid 4px black;
 }
 </style>

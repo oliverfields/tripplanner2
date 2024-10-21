@@ -1,24 +1,16 @@
 <template>
-	<div class="login">
-		<h1>Trip planner</h1>
-		<h2>Login with Google user</h2>
-
-		<div>
-			<button class="social-button" @click="googleLogin">
-				<img alt="Google logo" src="images/google-logo.png" />
-			</button>
-		</div>
-
-		<h2>.. or local user</h2>
-		<div>
-			<input type="text" v-model="email" placeholder="Email"><br>
-			<input type="password" v-model="password" placeholder="Password"><br>
-			<button @click="login">Login</button>
-		</div>
-
-
-		<p>I need a <router-link to="/sign-up">new account</router-link>!</p>
-	</div>
+  <div class="login bg-dark">
+    <h1>Ambulate.app</h1>
+    <div class="login-option">
+      <div class="btn btn-success" @click="googleLogin">Login with Google user</div>
+    </div>
+    <div class="login-option">
+      <div><input type="text" v-model="email" placeholder="Email"><br /><input type="password" v-model="password" placeholder="Password"><br /><button class="btn btn-success" @click="login">Login</button></div>
+    </div>
+    <div class="login-option">
+      <div style="color: #343a40;">Create <router-link to="/sign-up">new account</router-link></div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -26,45 +18,53 @@ import firebase from 'firebase'
 import { auth } from '@/main'
 
 export default {
-	name: 'login',
-	data() {
-		return {
-			email: '',
-			password: ''
-		};
-	},
-	methods: {
-		login: function() {
-			auth.signInWithEmailAndPassword(this.email, this.password).then(
-				(user) => {
-					this.$router.replace('home')
-				},
-				(err) => {
-					alert('Nope.. ' + err.message)
-				}
-			);
-		},
-		googleLogin() {
-			const provider = new firebase.auth.GoogleAuthProvider();
-			auth.signInWithPopup(provider).then((result) => {
-				this.$router.replace('home');
-			}).catch((err) => {
-				alert('Nope.. ' + err.message)
+  name: 'login',
+  data() {
+    return {
+      email: '',
+      password: ''
+    };
+  },
+  methods: {
+    login: function() {
+      auth.signInWithEmailAndPassword(this.email, this.password).then(
+        (user) => {
+          this.$router.replace('home')
+        },
+        (err) => {
+          alert('Nope.. ' + err.message)
+        }
+      );
+    },
+    googleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).then((result) => {
+        this.$router.replace('home');
+      }).catch((err) => {
+        alert('Nope.. ' + err.message)
 
-			});
-		}
-	}
+      });
+    }
+  }
 }
 </script>
 
 <style scoped>
 .login {
-margin-top: 40px;
+width: 400px;
+margin: 4em auto;
+color: white;
+text-align: center;
+padding: 1em;
+}
+.login-option {
+background-color: white;
+padding: 1em;
+margin: 1em 0;
 }
 input {
-margin: 10px 0;
-width: 20%;
-padding: 15px;
+margin: 1em 0;
+padding: .5em;
 }
 button {
 margin-top: 20px;
@@ -93,5 +93,10 @@ box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
 }
 .social-button img {
 width: 100%;
+}
+.or {
+margin: 1em;
+font-style: italic;
+font-size: 1.2em;
 }
 </style>
