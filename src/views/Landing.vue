@@ -36,15 +36,13 @@ font-size: 2em;
 }
 article {
 text-align: center;
+margin-bottom: 2em;
 }
 footer {
-color: white;
 text-align: center;
 margin: 1em 0 2em 0;
 padding: 1em 0 1em 0;
-}
-footer a {
-color: white;
+background-color: white;
 }
 .nav-links {
 margin-bottom: 0;
