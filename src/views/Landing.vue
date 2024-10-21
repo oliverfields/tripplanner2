@@ -2,7 +2,7 @@
   <div class="landing bg-dark">
     <header class="navbar">
       <a class="logo-header-link" href="#">
-        <object id="logo" type="image/svg+xml" data="images/ambulate-logo-bindle.svg"></object><span class="app-name">Ambulate - detailed trip planning</span>
+        <object id="logo" type="image/svg+xml" data="images/ambulate-logo-bindle.svg"></object><span class="app-name">Ambulate</span>
       </a>
       <ul class="nav-links">
         <li>
