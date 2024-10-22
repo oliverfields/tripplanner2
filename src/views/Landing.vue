@@ -6,6 +6,7 @@
       </a>
       <ul class="nav-links">
         <li>
+          <router-link to="/sign-up">Get started</router-link>
           <a href="/login" class="btn btn-success">Get started</a>
         </li>
         <li>
