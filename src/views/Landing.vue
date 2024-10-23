@@ -17,7 +17,7 @@
       <img class="showcase" src="images/showcase.gif" alt="Ambulate showcase slides" />
     </article>
     <footer>
-      ambulate.app &copy; 2019 :: 
+      Copyright &copy; 2024 ambulate.app :: 
       <a href="mailto:hello@ambulate.app">Support</a>
     </footer>
   </div>
@@ -57,5 +57,7 @@ color: white;
 }
 .showcase {
 border: solid 4px black;
+max-width: 100%;
+object-fit: contain;
 }
 </style>
